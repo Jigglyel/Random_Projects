@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie
+# Install script for directory: C:/Users/mu37/Random_Projects/Projet survie
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-build/cmake_install.cmake")
+  include("C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-build/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/mu37/Random_Projects/Projet survie/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

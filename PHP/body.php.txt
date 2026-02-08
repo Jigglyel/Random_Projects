@@ -1,4 +1,0 @@
-<?php 
-echo "<p>$methode</p>";
-echo "<p>$fi</p>";
-?>

@@ -4,19 +4,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 file(MAKE_DIRECTORY
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-src"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-build"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/tmp"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src"
-  "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-src"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-build"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/tmp"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src"
+  "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-subbuild/sfml-populate-prefix/src/sfml-populate-stamp${cfgdir}") # cfgdir has leading slash
 endif()

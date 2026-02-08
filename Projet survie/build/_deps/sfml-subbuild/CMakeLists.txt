@@ -22,8 +22,8 @@ set_property(GLOBAL PROPERTY _CMAKE_FindGit_GIT_EXECUTABLE_VERSION
 include(ExternalProject)
 ExternalProject_Add(sfml-populate
                      "UPDATE_DISCONNECTED" "False" "GIT_REPOSITORY" "https://github.com/SFML/SFML.git" "GIT_TAG" "2.6.1"
-                    SOURCE_DIR          "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-src"
-                    BINARY_DIR          "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/_deps/sfml-build"
+                    SOURCE_DIR          "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-src"
+                    BINARY_DIR          "C:/Users/mu37/Random_Projects/Projet survie/build/_deps/sfml-build"
                     CONFIGURE_COMMAND   ""
                     BUILD_COMMAND       ""
                     INSTALL_COMMAND     ""

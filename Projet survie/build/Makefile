@@ -56,10 +56,10 @@ RM = C:\mingw32\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie"
+CMAKE_SOURCE_DIR = "C:\Users\mu37\Random_Projects\Projet survie"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build"
+CMAKE_BINARY_DIR = "C:\Users\mu37\Random_Projects\Projet survie\build"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -77,7 +77,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	C:\mingw32\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/mu37/OneDrive/Images/Documents/Code pour la fac/TPfacL2/Projet survie/build/CPackSourceConfig.cmake"
+	C:\mingw32\bin\cpack.exe --config ./CPackSourceConfig.cmake "C:/Users/mu37/Random_Projects/Projet survie/build/CPackSourceConfig.cmake"
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -151,9 +151,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\CMakeFiles" "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\\CMakeFiles\progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\Random_Projects\Projet survie\build\CMakeFiles" "C:\Users\mu37\Random_Projects\Projet survie\build\\CMakeFiles\progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\Random_Projects\Projet survie\build\CMakeFiles" 0
 .PHONY : all
 
 # The main clean target

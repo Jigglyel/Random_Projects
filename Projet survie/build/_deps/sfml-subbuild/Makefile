@@ -56,10 +56,10 @@ RM = C:\mingw32\bin\cmake.exe -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\_deps\sfml-subbuild"
+CMAKE_SOURCE_DIR = "C:\Users\mu37\Random_Projects\Projet survie\build\_deps\sfml-subbuild"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\_deps\sfml-subbuild"
+CMAKE_BINARY_DIR = "C:\Users\mu37\Random_Projects\Projet survie\build\_deps\sfml-subbuild"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -86,9 +86,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\_deps\sfml-subbuild\CMakeFiles" "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\_deps\sfml-subbuild\\CMakeFiles\progress.marks"
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\Random_Projects\Projet survie\build\_deps\sfml-subbuild\CMakeFiles" "C:\Users\mu37\Random_Projects\Projet survie\build\_deps\sfml-subbuild\\CMakeFiles\progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\OneDrive\Images\Documents\Code pour la fac\TPfacL2\Projet survie\build\_deps\sfml-subbuild\CMakeFiles" 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\mu37\Random_Projects\Projet survie\build\_deps\sfml-subbuild\CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
