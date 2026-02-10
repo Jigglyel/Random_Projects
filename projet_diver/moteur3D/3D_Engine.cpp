@@ -46,13 +46,13 @@ sf::Vector3f prodvect(sf::Vector3f v1,sf::Vector3f v2)
 {
     sf::Vector3f ortho;
     ortho.x=v1.y*v2.z-v1.z*v2.y;
-    ortho.x=v1.z*v2.x-v1.x*v2.z;
-    ortho.x=v1.x*v2.y-v1.y*v2.x;
+    ortho.y=v1.z*v2.x-v1.x*v2.z;
+    ortho.z=v1.x*v2.y-v1.y*v2.x;
     return ortho;
 }
 sf::Vector3f Normalize(sf::Vector3f v)
 {
-    float distance=sqrt(v.x*v.x+v.y*v.y);
+    float distance=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
     return sf::Vector3f(v.x/distance,v.y/distance,v.z/distance);
 }
 void rotate_point(sf::Vector3f &point,float angle,sf::Vector3f sens)
@@ -83,12 +83,13 @@ void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderWindow & window)
     window.draw(line);
 }
 
-void draw_connexions( std::vector<std::pair<int,int>> &connexions,sf::RenderWindow & window,const std::vector<sf::Vector3f> &points)
+void draw_connexions( std::vector<std::pair<int,int>> &connexions,sf::RenderWindow & window,const std::vector<sf::Vector3f> &points,sf::Vector3f décalage)
 {
     
     for(std::pair<int,int> const &connexion : connexions)
     {
-        draw_line(SFMLScale(Projection(points[connexion.first]),window),SFMLScale(Projection(points[connexion.second]),window),window);
+        sf::Vector3f p1=points[connexion.first]+décalage, p2=points[connexion.second]+décalage;
+        draw_line(SFMLScale(Projection(p1),window),SFMLScale(Projection(p2),window),window);
     }
 }
 int main()
@@ -122,7 +123,11 @@ int main()
         {3,7}
     };
     sf::Vector3 center= getcenter(points[6],points[0]);
+    sf::Vector3f décalage(0,0,25);
+    sf::Vector3f décalage2(5,0,20);
+    sf::Vector3f décalage3(-5,0,15);
     window.setFramerateLimit(60);
+    
     while (window.isOpen())
     {
         sf::Event event;
@@ -138,6 +143,9 @@ int main()
         }
         double dt=Time.getElapsedTime().asSeconds();
         angle=2 * M_PI*dt;
+        décalage.z-=dt;
+        décalage2.z-=dt;
+        décalage3.z-=dt;
         Time.restart();
         
         window.clear(sf::Color::Black);
@@ -149,7 +157,9 @@ int main()
             rotate_point(point,angle,rotation_axe);
             point+=center;
         }
-        draw_connexions(connexions,window,points);
+        draw_connexions(connexions,window,points,décalage);
+        draw_connexions(connexions,window,points,décalage2);
+        draw_connexions(connexions,window,points,décalage3);
         window.display();
             
     }
