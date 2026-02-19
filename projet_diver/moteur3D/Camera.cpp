@@ -5,8 +5,8 @@ Camera::Camera(/* args */)
     position={0,0,0};
     offsetX=0;
     offsetY=0;
-    fov=1;
-    speed=0.2;
+    fov=0.2;
+    speed=5;
 }
 
 sf::Vector3f Camera::switch_base(sf::Vector3f P)
