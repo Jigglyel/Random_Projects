@@ -18,6 +18,11 @@ FetchContent_MakeAvailable(SFML)
 #importe la bibliothèque SFML depuis le repo github SFML
 add_executable(3D
     ./3D_Engine.cpp
+    ./3D_object.cpp
+    ./Calcules.cpp
+    ./3D_Rectangle.cpp
+    ./Cube.cpp
+    ./Camera.cpp
 )
 
 target_link_libraries(3D PRIVATE sfml-graphics sfml-window sfml-system)

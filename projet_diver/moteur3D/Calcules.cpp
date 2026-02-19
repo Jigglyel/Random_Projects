@@ -1,4 +1,8 @@
-sf::Vector2f SFMLScale(sf::Vector2f P,sf::RenderWindow & window)
+#include"Calcules.hpp"
+#include"Camera.hpp"
+
+
+sf::Vector2f SFMLScale(sf::Vector2f P,sf::RenderTarget & window)
 {
     P.x=((P.x+1)/2.f)*window.getSize().x;
     P.y=(1-((P.y+1)/2.f))*window.getSize().y;
@@ -7,13 +11,6 @@ sf::Vector2f SFMLScale(sf::Vector2f P,sf::RenderWindow & window)
 
 
 
-sf::Vector2f Projection(sf::Vector3f P)
-{
-    sf::Vector2f Proj;
-    Proj.x=P.x/P.z;
-    Proj.y=P.y/P.z;
-    return Proj;
-}
 
 void drawRectangle(sf::Vector2f P,sf::RenderWindow & window)
 {
@@ -24,18 +21,16 @@ void drawRectangle(sf::Vector2f P,sf::RenderWindow & window)
     R.setSize(sf::Vector2f(s,s));
     window.draw(R);
 }
-void drawPoints(std::vector<sf::Vector3f> &points,sf::RenderWindow & window,double dt)
-{
-    for(sf::Vector3f & point :points)
-    {
-        drawRectangle(SFMLScale(Projection(point),window),window);
-    }
-}
+
 float prodscal3D(sf::Vector3f v1,sf::Vector3f v2)
 {
     return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
 }
-sf::Vector3f prodvect(sf::Vector3f v1,sf::Vector3f v2)
+float prodscal2D(sf::Vector2f v1,sf::Vector2f v2)
+{
+    return v1.x*v2.x+v1.y*v2.y;
+}
+sf::Vector3f prodvect3D(sf::Vector3f v1,sf::Vector3f v2)
 {
     sf::Vector3f ortho;
     ortho.x=v1.y*v2.z-v1.z*v2.y;
@@ -43,25 +38,74 @@ sf::Vector3f prodvect(sf::Vector3f v1,sf::Vector3f v2)
     ortho.z=v1.x*v2.y-v1.y*v2.x;
     return ortho;
 }
-sf::Vector3f Normalize(sf::Vector3f v)
+float prodvect2D(sf::Vector2f v1,sf::Vector2f v2)
+{
+    return v1.x*v2.y-v1.y*v2.x;
+}
+sf::Vector3f Normalize3D(sf::Vector3f v)
 {
     float distance=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
     return sf::Vector3f(v.x/distance,v.y/distance,v.z/distance);
 }
-void rotate_point(sf::Vector3f &point,float angle,sf::Vector3f sens)
+sf::Vector2f Normalize2D(sf::Vector2f v)
+{
+    float distance=sqrt(v.x*v.x+v.y*v.y);
+    return sf::Vector2f(v.x/distance,v.y/distance);
+}
+sf::Vector3f rotate_point(sf::Vector3f point,float angle,sf::Vector3f sens)
 {
         float c=cos(angle);
         float s=sin(angle);
         float x=point.x,y=point.y,z=point.z;
-        sens=Normalize(sens);
+        sens=Normalize3D(sens);
         float scalaire=prodscal3D(point,sens);
-        sf::Vector3f cross=prodvect(sens,point);
+        sf::Vector3f cross=prodvect3D(sens,point);
         point.x=x*c+(1-c)*scalaire*sens.x+s*cross.x;
         point.y=y*c+(1-c)*scalaire*sens.y+s*cross.y;
         point.z=z*c+(1-c)*scalaire*sens.z+s*cross.z;
+        return point;
 }
 sf::Vector3f getcenter(sf::Vector3f v1,sf::Vector3f v2) //basgauchedevant et hautdroitederrière
 {
     
     return sf::Vector3f((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
+}
+
+void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget& target)
+{
+    sf::VertexArray line(sf::PrimitiveType::Lines,2);
+    
+    line[0].position=p1;
+    line[1].position=p2;
+    line[0].color=sf::Color::Green;
+    line[1].color=sf::Color::Green;  
+    target.draw(line);
+}
+
+float getangle(sf::Vector2f v1,sf::Vector2f v2)
+{
+    v1=Normalize2D(v1);
+    v2=Normalize2D(v2);
+    float dot=prodscal2D(v1,v2);
+    float cross=prodvect2D(v1,v2);
+    return atan2(cross,dot);
+}
+
+bool isint(std::string str)
+{
+    if (str.empty())
+    {
+        return false;
+    }
+
+    for(char c : str)
+    {
+        if (!isdigit(c))
+        {
+           return false;
+        }
+        
+    }
+    return true;
+    
 }
