@@ -5,11 +5,8 @@ Camera::Camera(/* args */)
     position={0,0,0};
     offsetX=0;
     offsetY=0;
-    fov=1;
+    fov=0.2;
     speed=5;
-    velocity={0,0,0};
-    in_air=false;
-    mode_survie=false;
 }
 
 sf::Vector3f Camera::switch_base(sf::Vector3f P)
@@ -31,27 +28,6 @@ sf::Vector2f Camera::Projection(sf::Vector3f P)
     Proj.x=fov*P.x/P.z;
     Proj.y=fov*P.y/P.z;
     return Proj;
-}
-
-void Camera::move()
-{
-    position+=velocity;
-}
-
-void Camera::apply_forces()
-{
-    if (mode_survie)
-        velocity+={0,-0.5,0};
-}
-
-void Camera::Check_collisions()
-{
-    if (mode_survie and position.y<0)
-    {
-        position.y=0;
-        in_air=false;
-    }
-    
 }
 
 

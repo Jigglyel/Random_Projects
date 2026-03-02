@@ -10,87 +10,42 @@
 void input(Camera & camera)
 {
     float angleXz;
-    sf::Keyboard::Key Forward,Backward,Left,Right,NormalAttack,UP,Down,SwitchMode;
+    sf::Keyboard::Key Forward,Backward,Left,Right,NormalAttack,UP,Down;
             Forward=sf::Keyboard::Z;
             Backward=sf::Keyboard::S;
             Left=sf::Keyboard::Q;
             Right=sf::Keyboard::D;
             UP=sf::Keyboard::Space;
             Down=sf::Keyboard::LControl;
-            SwitchMode=sf::Keyboard::R;
 
-    if(sf::Keyboard::isKeyPressed(SwitchMode))
-        camera.mode_survie=!camera.mode_survie;
-
-    if (!camera.mode_survie)
+    if(sf::Keyboard::isKeyPressed(Forward))
     {
-
-        camera.velocity={0,0,0};
-        if(sf::Keyboard::isKeyPressed(Forward))
-        {
-            angleXz=(camera.offsetX*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Backward))
-        {
-            angleXz=((camera.offsetX+180)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Right))
-        {
-            angleXz=((camera.offsetX+90)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Left))
-        {
-            angleXz=((camera.offsetX-90)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(UP))
-        {
-            camera.velocity+=sf::Vector3f(0,camera.speed,0);
-        }
-            if(sf::Keyboard::isKeyPressed(Down))
-        {
-            camera.velocity+=sf::Vector3f(0,-camera.speed,0);
-        }
+        angleXz=(camera.offsetX*2*M_PI/360);
+        camera.position+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
     }
-    else
+    if(sf::Keyboard::isKeyPressed(Backward))
     {
-        camera.velocity.x=0;
-        camera.velocity.z=0;
-        if(sf::Keyboard::isKeyPressed(Forward))
-        {
-            angleXz=(camera.offsetX*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Backward))
-        {
-            angleXz=((camera.offsetX+180)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Right))
-        {
-            angleXz=((camera.offsetX+90)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(Left))
-        {
-            angleXz=((camera.offsetX-90)*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
-        }
-        if(sf::Keyboard::isKeyPressed(UP) and !camera.in_air)
-        {
-            camera.velocity=sf::Vector3f(0,7,0);
-            camera.in_air=true;
-        }
+        angleXz=((camera.offsetX+180)*2*M_PI/360);
+        camera.position+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
     }
-    
-   
-    // if(sf::Keyboard::isKeyPressed(Down))
-    // {
-    //     camera.velocity=sf::Vector3f(0,-camera.speed,0);
-    // }
+    if(sf::Keyboard::isKeyPressed(Right))
+    {
+        angleXz=((camera.offsetX+90)*2*M_PI/360);
+        camera.position+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+    }
+    if(sf::Keyboard::isKeyPressed(Left))
+    {
+        angleXz=((camera.offsetX-90)*2*M_PI/360);
+        camera.position+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+    }
+    if(sf::Keyboard::isKeyPressed(UP))
+    {
+        camera.position+=sf::Vector3f(0,camera.speed,0);
+    }
+    if(sf::Keyboard::isKeyPressed(Down))
+    {
+        camera.position+=sf::Vector3f(0,-camera.speed,0);
+    }
 }
 
 
@@ -436,7 +391,7 @@ std::vector<sf::Vector3f> points{
 
 Pinguin.points=points;
 
-std::vector<std::vector<IndexFace>> connexions{
+std::vector<std::vector<int>> connexions{
     {22, 2, 10},
     {21, 1, 24},
     {7, 23, 14},
@@ -1069,30 +1024,21 @@ std::vector<std::vector<IndexFace>> connexions{
 
 
 
-    // Objet3D Tournevis("../tournevis.obj");
-    // Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
-    // Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
-    Objet3D Jigglypuff("../Assets/Model3D/Jigglypuff2");
-    // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
-    // Bastion.position={50,32,60};
-    Jigglypuff.position={-60,0,0};
-    // escalier.position={20,50,62};
-    // Objet3D sonique("../Assets/Model3D/sonique.obj");
-    // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
-    // Objet3D pichu("../Assets/Model3D/Pichu.obj");
-    // Objet3D gardien("../Assets/Model3D/Guardian.obj");
-    // Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
-
-    // Objet3D Monkey("../Assets/Model3D/Monkey.obj");
-    // Objet3D Mario("../Assets/Model3D/Mario.obj");
-    // Objet3D scary_face("../Assets/Model3D/scary-face.obj");
-    // Jiggliano.position={0,0,0};
-    // Evoli.position={-100,40,25};
-    // pichu.position={-150,40,25};
-    // gardien.position={0,0,0};
-    // Jigglypuff.size=0.05;
-    // Mario.position={12,45,78};
-    // scary_face.position={-50,0,43};
+    Objet3D Tournevis("../tournevis.obj");
+    Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
+    Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
+    Objet3D Jigglypuff("../Assets/Model3D/Jigglypuff.obj");
+    Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
+    Bastion.position={50,32,60};
+    Jigglypuff.position={-60,40,-45};
+    escalier.position={20,50,62};
+    Objet3D sonique("../Assets/Model3D/sonique.obj");
+    Objet3D Evoli("../Assets/Model3D/Evoli.obj");
+    Objet3D pichu("../Assets/Model3D/Pichu.obj");
+    Objet3D gardien("../Assets/Model3D/Guardian.obj");
+    Evoli.position={-100,40,25};
+    pichu.position={-150,40,25};
+    gardien.position={0,0,0};
 
 
 
@@ -1135,7 +1081,7 @@ std::vector<std::vector<IndexFace>> connexions{
                 case sf::Event::KeyPressed:
                     switch (event.key.code)
                     {
-                    case sf::Keyboard::P:
+                    case sf::Keyboard::Escape:
                         pause=!pause;
                         break;
                     case sf::Keyboard::Add:
@@ -1185,19 +1131,19 @@ std::vector<std::vector<IndexFace>> connexions{
 
 
         input(camera);
-        camera.apply_forces();
-        camera.move();
-        camera.Check_collisions();
         double dt=Time.getElapsedTime().asSeconds();
         angle=2 * M_PI*dt;
         Time.restart();
 
         window.clear(sf::Color::Black);
-        camera.speed=0.5;
+
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
+        sonique.size=4;
         Jigglypuff.draw(window,camera);
+        Evoli.draw(window,camera);
+        pichu.draw(window,camera);
         window.display();
 
     }

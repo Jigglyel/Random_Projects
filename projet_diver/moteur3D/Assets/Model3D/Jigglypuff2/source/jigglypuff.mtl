@@ -1,0 +1,20 @@
+# Material file for jigglypuff.obj
+
+newmtl 48_1_34_115
+	Ns 10
+	d 1
+	illum 2
+	Kd 0.588 0.588 0.588
+	Ks 0.0 0.0 0.0
+	Ka 0.588 0.588 0.588
+	map_Kd PM_Purin8819.png
+
+newmtl 48_1_34_114
+	Ns 10
+	d 1
+	illum 2
+	Kd 0.588 0.588 0.588
+	Ks 0.0 0.0 0.0
+	Ka 0.588 0.588 0.588
+	map_Kd PM_Purin8818.png
+

@@ -109,7 +109,7 @@ bool isint(std::string str)
     return true;
     
 }
-std::vector<std::string> split(std::string s, const std::string& delimiter) {
+std::vector<std::string> split(std::string& s, const std::string& delimiter) {
     std::vector<std::string> tokens;
     size_t pos = 0;
     std::string token;

@@ -9,13 +9,7 @@ public:
     double offsetY;
     float fov;
     float speed;
-    sf::Vector3f velocity;
-    bool in_air;
-    bool mode_survie;
     Camera(/* args */);
     sf::Vector2f Projection(sf::Vector3f P);
     sf::Vector3f switch_base(sf::Vector3f P);
-    void move();
-    void apply_forces();
-    void Check_collisions();
 };

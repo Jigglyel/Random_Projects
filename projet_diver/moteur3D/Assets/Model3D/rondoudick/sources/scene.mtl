@@ -1,0 +1,13 @@
+# Exported from Nomad Sculpt
+
+newmtl Scene_-_Root
+
+newmtl Scene_-_Root_1
+
+newmtl Mouth
+ map_Kd scene_gltf_3.png
+
+newmtl LEye
+ map_Kd scene_gltf_3_1.png
+
+newmtl Body

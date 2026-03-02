@@ -14,4 +14,4 @@ sf::Vector3f getcenter(sf::Vector3f v1,sf::Vector3f v2); //basgauchedevant et ha
 void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget & window);
 float getangle(sf::Vector2f v1,sf::Vector2f v2);
 bool isint(std::string str);
-std::vector<std::string> split( std::string s, const std::string& delimiter) ;
+std::vector<std::string> split( std::string& s, const std::string& delimiter) ;

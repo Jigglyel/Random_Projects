@@ -3,58 +3,120 @@
 #include"Camera.hpp"
 #include<fstream>
 #include<iostream>
+#include <filesystem>
+struct IndexFace
+{
+    int ipos;
+    int ivt;
+    int itex;
+
+    IndexFace(){}
+
+    IndexFace(int iposs){
+        ipos=iposs;
+    }
+    IndexFace(int iposs,int ivtt,int itexx){
+        ipos=iposs;
+        ivt=ivtt;
+        itex=itex;
+    }
+};
+
 class Objet3D { 
      public:
-    std::vector<std::vector<int>>faces;
-    std::vector<sf::Vector3f> points; 
+    std::vector<std::vector<IndexFace>>faces;
+    std::vector<sf::Vector3f> points;
+    std::vector<sf::Vector2f> vts;
     sf::Vector3f position;
     sf::Vector3f speed;
+    std::vector<sf::Texture> Textures;
     float size;
     float RotationAngle;
     Objet3D()
     {
 
     }
-    Objet3D(std::string filename)
+    Objet3D(std::string dirname)
     {
-        
+        int indiceTexture=-1;
         std::ifstream fic;
-        fic.open(filename);
+        std::string mtlname;
+        std::string Texturename;
+        std::string filename=split(dirname,"/")[3]+".obj";
+        std::cout<<dirname+"/sources/"+filename<<std::endl;
+        fic.open(dirname+"/source/"+filename);
         if (!fic.is_open())
         {
-            std::cout<<"erreur d'ouverture de : "<<filename<<std::endl;
+            std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+filename<<std::endl;
         }
         
 
         std::string donnee;
-        sf::Vector3f vertex;
-        std::vector<int> face;
+        
         while (fic>>donnee)
-        {   
+        {   if (donnee=="mtllib")
+            {
+                fic>>mtlname;
+            }
+
+            if (donnee=="usemtl")
+            {
+                fic>>donnee;
+                std::string donneemtl;
+                std::ifstream ficmtl;
+                std::cout<<dirname+"/source/"+mtlname<<std::endl;
+                ficmtl.open(dirname+"/source/"+mtlname);
+                if (!ficmtl.is_open())
+                {
+                    std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
+                }
+                //cherche le nom de la section mtl
+                while (ficmtl>>donneemtl and donneemtl!=donnee) 
+                {   
+                }
+                //cherche la section map_kd qui correspond à la texture
+                while (ficmtl>>donneemtl and donneemtl!="map_Kd") 
+                {  
+                }
+
+                //récupère la texture, la charge et la met dans l'objet;
+                ficmtl>>Texturename;
+                sf::Texture Tex;
+                Tex.loadFromFile(dirname+"/textures/"+ Texturename);
+                Textures.push_back(Tex);
+                indiceTexture++;
+                ficmtl.close();
+                
+            }
+             
             if (donnee=="v")  
             {
-                fic>>vertex.x;
-                fic>>vertex.y;
-                fic>>vertex.z;
-                points.push_back(vertex);
+                float x,y,z;
+                fic>>x;
+                fic>>y;
+                fic>>z;
+                points.push_back({x,y,z});
+            }
+
+            if (donnee=="vt")  
+            {   float x,y;
+                fic>>x;
+                fic>>y;
+                vts.push_back({x,y});
             }
             if (donnee=="f")
             {   
-                
+                std::vector<IndexFace> face;
                 getline(fic,donnee);
                 std::vector<std::string> ligne=split(donnee," ");
                 for (std::string &indice: ligne)
                 {
-                    {
                     if (indice!="" and indice!="\\")
                     {
-                        indice= indice.substr(0,indice.find('/'));
-                        face.push_back(stoi(indice)-1);
+                        std::vector<std::string> vertex=split(indice,"/");
+                        face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
                     }
                     
-                    
-
-                    }
                 }
                 
                 
@@ -84,90 +146,169 @@ class Objet3D {
     
     void draw(sf::RenderTarget& target,Camera &camera) 
     {
-
-        sf::VertexArray lines(sf::Lines);
-        for(std::vector<int> const &face : faces)
+        int indiceText=0;
+        sf::VertexArray triangles(sf::Triangles);
+        for(std::vector<IndexFace> const &face : faces)
         {
-            for (int i = 0; i < face.size(); i++)
-            {
-                sf::Vector3f  p1=points[face[i]]  ;
-                sf::Vector3f  p2=points[face[(i+1)%face.size()]] ;
+
+                sf::Vector3f  p1=points[face[0].ipos] ;
+                sf::Vector3f  p2=points[face[1].ipos] ;
+                sf::Vector3f  p3=points[face[2].ipos] ;
                 p1*=size;
                 p2*=size;
+                p3*=size;
                 
                 p1+=position;
                 p2+=position;
+                p3+=position;
                 
                 p1=camera.switch_base(p1);
                 p2=camera.switch_base(p2);
-                if (p1.z>0 and p2.z>0)
+                p3=camera.switch_base(p3);
+                if (p1.z>0 and p2.z>0 and p3.z>0)
                 {
-                    sf::Vector2f pr1=camera.Projection(p1);
-                    sf::Vector2f pr2=camera.Projection(p2);
-                    pr1=SFMLScale(pr1,target);
-                    pr2=SFMLScale(pr2,target);
-                    if (p1.z>255)
-                    {
-                        p1.z=255;
-                    }
-                    if (p2.z>255)
-                    {
-                        p2.z=255;
-                    }
-                    
-                    sf::Color c1={255-p1.z,255-p1.z,255-p1.z};
-                    sf::Color c2={255-p2.z,255-p2.z,255-p2.z};
-                    lines.append(sf::Vertex(pr1,c1));
-                    lines.append(sf::Vertex(pr2,c2));
-                    
+                    sf::Vertex pr1=camera.Projection(p1);
+                    sf::Vertex pr2=camera.Projection(p2);
+                    sf::Vertex pr3=camera.Projection(p3);
+                    pr1=SFMLScale(pr1.position,target);
+                    pr2=SFMLScale(pr2.position,target);
+                    pr3=SFMLScale(pr3.position,target);
+                    sf::Vector2u size=Textures[0].getSize();
+                    pr1.texCoords={vts[face[0].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
+                    pr2.texCoords={vts[face[1].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
+                    pr3.texCoords={vts[face[2].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
+                    triangles.append(pr1);
+                    triangles.append(pr2);
+                    triangles.append(pr3);
                 }
-            }
+                if (face[0].itex!=indiceText or face[1].itex!=indiceText or face[2].itex!=indiceText)
+                {
+                    target.draw(triangles,&Textures[indiceText]);
+                    indiceText++;
+                }
+                
         }
-        target.draw(lines);
+        std::cout<<indiceText<<std::endl;
+        target.draw(triangles,&Textures[indiceText]);
     }
 
 
 
-        void load(std::string filename)
+        void load(std::string dirname)
         {
-            std::ifstream fic;
-            fic.open(filename);
-            if (fic.is_open())
-            {
-                std::cout<<"fichier ouvert"<<std::endl;
-            }
-            
-
-            std::string donnee;
-            sf::Vector3f vertex;
-            std::vector<int> face;
-            while (fic>>donnee)
-            {   
-                if (donnee=="v")  
-                {
-                    fic>>vertex.x;
-                    fic>>vertex.y;
-                    fic>>vertex.z;
-                    points.push_back(vertex);
-                }
-                if (donnee=="f")
-                {   
-                    
-                    
-                    while (fic.peek()!='\n')
-                    {
-                        fic>>donnee;
-                        donnee= donnee.substr(0,donnee.find('/'));
-                        face.push_back(stoi(donnee)-1);
-                        
-                    }
-                    faces.push_back(face);
-                    face.clear();
-                }
-            }
-            fic.close();
-            
+            int indiceTexture=-1;
+        std::ifstream fic;
+        std::string mtlname;
+        std::string Texturename;
+        std::string filename=split(dirname,"/")[3]+".obj";
+        std::cout<<dirname+"/sources/"+filename<<std::endl;
+        fic.open(dirname+"/sources/"+filename);
+        if (!fic.is_open())
+        {
+            std::cout<<"erreur d'ouverture de : "<<dirname<<std::endl;
         }
+        
+
+        std::string donnee;
+        
+        while (fic>>donnee)
+        {   if (donnee=="mtllib")
+            {
+                fic>>mtlname;
+            }
+
+            if (donnee=="usemtl")
+            {
+                fic>>donnee;
+                std::string donneemtl;
+                std::ifstream ficmtl;
+                ficmtl.open(dirname+"/sources/"+mtlname);
+                //cherche le nom de la section mtl
+                while (ficmtl>>donneemtl and donneemtl!=donnee) 
+                {   
+                }
+                //cherche la section map_kd qui correspond à la texture
+                while (ficmtl>>donneemtl and donneemtl!="map_kd") 
+                {  
+                }
+
+                //récupère la texture, la charge et la met dans l'objet;
+                ficmtl>>Texturename;
+                sf::Texture Tex;
+                Tex.loadFromFile(Texturename);
+                Textures.push_back(Tex);
+                indiceTexture++;
+                ficmtl.close();
+                
+            }
+             
+            if (donnee=="v")  
+            {
+                float x,y,z;
+                fic>>x;
+                fic>>y;
+                fic>>z;
+                points.push_back({x,y,z});
+            }
+
+            if (donnee=="vt")  
+            {   float x,y;
+                fic>>x;
+                fic>>y;
+                vts.push_back({x,y});
+            }
+            if (donnee=="f")
+            {   
+                std::vector<IndexFace> face;
+                getline(fic,donnee);
+                std::vector<std::string> ligne=split(donnee," ");
+                for (std::string &indice: ligne)
+                {
+                    if (indice!="" and indice!="\\")
+                    {
+                        std::vector<std::string> vertex=split(indice,"/");
+                        face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
+                    }
+                    
+                }
+                
+                
+                faces.push_back(face);
+                face.clear();
+            }
+        }
+        fic.close();
+        }
+
+        private :
+            std::vector<sf::Texture> loadTexturesFromFolder(const std::string& folderPath)
+            {
+                std::vector<sf::Texture> textures;
+
+                for (const auto& entry : std::filesystem::directory_iterator(folderPath))
+                {
+                    if (entry.is_regular_file())
+                    {
+                        std::string path = entry.path().string();
+
+                        // Filtrer les extensions image
+                        if (entry.path().extension() == ".png" ||
+                            entry.path().extension() == ".jpg" ||
+                            entry.path().extension() == ".jpeg")
+                        {
+                            sf::Texture texture;
+                            if (texture.loadFromFile(path))
+                            {
+                                textures.push_back(std::move(texture));
+                            }
+                            else
+                                std::cout<<"erreur chargement texture"<<std::endl;
+                        }
+                    }
+                }
+
+                return textures;
+            }
 
 };
 
