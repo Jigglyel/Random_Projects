@@ -115,10 +115,9 @@ class Objet3D {
                         p2.z=255;
                     }
                     
-                    sf::Color c1={255-p1.z,255-p1.z,255-p1.z};
-                    sf::Color c2={255-p2.z,255-p2.z,255-p2.z};
+                    sf::Color c1={255,255,255};
                     lines.append(sf::Vertex(pr1,c1));
-                    lines.append(sf::Vertex(pr2,c2));
+                    lines.append(sf::Vertex(pr2,c1));
                     
                 }
             }

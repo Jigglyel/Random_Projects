@@ -1021,24 +1021,10 @@ std::vector<std::vector<int>> connexions{
     Pinguin.faces=connexions;
     Pinguin.position={64,36,-78};
     Pinguin.size=5;
-
-
-
-    Objet3D Tournevis("../tournevis.obj");
-    Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
-    Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
-    Objet3D Jigglypuff("../Assets/Model3D/Jigglypuff.obj");
-    Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
-    Bastion.position={50,32,60};
-    Jigglypuff.position={-60,40,-45};
-    escalier.position={20,50,62};
-    Objet3D sonique("../Assets/Model3D/sonique.obj");
-    Objet3D Evoli("../Assets/Model3D/Evoli.obj");
-    Objet3D pichu("../Assets/Model3D/Pichu.obj");
-    Objet3D gardien("../Assets/Model3D/Guardian.obj");
-    Evoli.position={-100,40,25};
-    pichu.position={-150,40,25};
-    gardien.position={0,0,0};
+    Objet3D voiture("../Assets/Model3D/FINAL_MODEL_B.obj");
+    Objet3D dracolosse("../Assets/Model3D/Dragonite.obj");
+    dracolosse.position={15,0,0};
+    
 
 
 
@@ -1105,7 +1091,7 @@ std::vector<std::vector<int>> connexions{
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
                     
                     sf::Mouse souris;
-                    souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                    //souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
 
                     if (camera.offsetX>=360 or camera.offsetX<=-360)
                     {
@@ -1131,6 +1117,7 @@ std::vector<std::vector<int>> connexions{
 
 
         input(camera);
+        camera.speed=2;
         double dt=Time.getElapsedTime().asSeconds();
         angle=2 * M_PI*dt;
         Time.restart();
@@ -1140,10 +1127,7 @@ std::vector<std::vector<int>> connexions{
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
-        sonique.size=4;
-        Jigglypuff.draw(window,camera);
-        Evoli.draw(window,camera);
-        pichu.draw(window,camera);
+        dracolosse.draw(window,camera);
         window.display();
 
     }

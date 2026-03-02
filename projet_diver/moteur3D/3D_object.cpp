@@ -18,7 +18,7 @@ struct IndexFace
     IndexFace(int iposs,int ivtt,int itexx){
         ipos=iposs;
         ivt=ivtt;
-        itex=itex;
+        itex=itexx;
     }
 };
 
@@ -43,7 +43,7 @@ class Objet3D {
         std::string mtlname;
         std::string Texturename;
         std::string filename=split(dirname,"/")[3]+".obj";
-        std::cout<<dirname+"/sources/"+filename<<std::endl;
+        std::cout<<dirname+"/source/"+filename<<std::endl;
         fic.open(dirname+"/source/"+filename);
         if (!fic.is_open())
         {
@@ -64,7 +64,7 @@ class Objet3D {
                 fic>>donnee;
                 std::string donneemtl;
                 std::ifstream ficmtl;
-                std::cout<<dirname+"/source/"+mtlname<<std::endl;
+                std::cout<<"ouverture de "+dirname+"/source/"+mtlname + "pour chercher" +donnee <<std::endl;
                 ficmtl.open(dirname+"/source/"+mtlname);
                 if (!ficmtl.is_open())
                 {
@@ -109,11 +109,14 @@ class Objet3D {
                 std::vector<IndexFace> face;
                 getline(fic,donnee);
                 std::vector<std::string> ligne=split(donnee," ");
-                for (std::string &indice: ligne)
+                for (std::string &indices: ligne)
                 {
-                    if (indice!="" and indice!="\\")
+                    if (indices!="" and indices!="\\")
                     {
-                        std::vector<std::string> vertex=split(indice,"/");
+                        std::vector<std::string> vertex=split(indices,"/");
+                        if(vertex[0]=="")vertex[0]="1";
+                        if(vertex[1]=="")vertex[1]="1";
+                        std::cout<<indiceTexture<<std::endl;
                         face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
                     }
                     
@@ -181,14 +184,16 @@ class Objet3D {
                     triangles.append(pr2);
                     triangles.append(pr3);
                 }
-                if (face[0].itex!=indiceText or face[1].itex!=indiceText or face[2].itex!=indiceText)
+                std::cout<<face[0].itex<<std::endl;
+                if (face[0].itex!=indiceText)
                 {
+                    
                     target.draw(triangles,&Textures[indiceText]);
                     indiceText++;
                 }
                 
         }
-        std::cout<<indiceText<<std::endl;
+
         target.draw(triangles,&Textures[indiceText]);
     }
 
@@ -236,6 +241,7 @@ class Objet3D {
                 ficmtl>>Texturename;
                 sf::Texture Tex;
                 Tex.loadFromFile(Texturename);
+                std::cout<<Texturename<<std::endl;
                 Textures.push_back(Tex);
                 indiceTexture++;
                 ficmtl.close();
@@ -267,6 +273,7 @@ class Objet3D {
                     if (indice!="" and indice!="\\")
                     {
                         std::vector<std::string> vertex=split(indice,"/");
+                        std::cout<<indiceTexture<<std::endl;
                         face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
                     }
                     

@@ -1,6 +1,6 @@
 #include<iostream>
 #include<vector>
-#include "cube.cpp"
+#include "Cube.cpp"
 #include<queue>
 #include<cstdlib>
 #include <SFML/Graphics.hpp>
@@ -1072,17 +1072,16 @@ std::vector<std::vector<IndexFace>> connexions{
     // Objet3D Tournevis("../tournevis.obj");
     // Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
     // Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
-    Objet3D Jigglypuff("../Assets/Model3D/Jigglypuff2");
+    Objet3D zelda("../Assets/Model3D/links_awakening_64");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
-    Jigglypuff.position={-60,0,0};
     // escalier.position={20,50,62};
     // Objet3D sonique("../Assets/Model3D/sonique.obj");
     // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
     // Objet3D pichu("../Assets/Model3D/Pichu.obj");
     // Objet3D gardien("../Assets/Model3D/Guardian.obj");
     // Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
-
+    
     // Objet3D Monkey("../Assets/Model3D/Monkey.obj");
     // Objet3D Mario("../Assets/Model3D/Mario.obj");
     // Objet3D scary_face("../Assets/Model3D/scary-face.obj");
@@ -1159,7 +1158,7 @@ std::vector<std::vector<IndexFace>> connexions{
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
                     
                     sf::Mouse souris;
-                    souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                    //souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
 
                     if (camera.offsetX>=360 or camera.offsetX<=-360)
                     {
@@ -1193,11 +1192,11 @@ std::vector<std::vector<IndexFace>> connexions{
         Time.restart();
 
         window.clear(sf::Color::Black);
-        camera.speed=0.5;
+        camera.speed=0.01;
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
-        Jigglypuff.draw(window,camera);
+        zelda.draw(window,camera);
         window.display();
 
     }

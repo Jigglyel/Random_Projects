@@ -5,7 +5,7 @@ Camera::Camera(/* args */)
     position={0,0,0};
     offsetX=0;
     offsetY=0;
-    fov=0.2;
+    fov=1;
     speed=5;
 }
 

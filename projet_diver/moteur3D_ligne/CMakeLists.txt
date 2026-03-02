@@ -21,7 +21,7 @@ add_executable(3D
     ./3D_object.cpp
     ./Calcules.cpp
     ./3D_Rectangle.cpp
-    ./Cube.cpp
+    ./cube.cpp
     ./Camera.cpp
 )
 
