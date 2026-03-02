@@ -43,7 +43,7 @@ class Objet3D {
         std::string mtlname;
         std::string Texturename;
         std::string filename=split(dirname,"/")[3]+".obj";
-        std::cout<<dirname+"/source/"+filename<<std::endl;
+        std::cout<<dirname+"/sources/"+filename<<std::endl;
         fic.open(dirname+"/source/"+filename);
         if (!fic.is_open())
         {
@@ -64,7 +64,7 @@ class Objet3D {
                 fic>>donnee;
                 std::string donneemtl;
                 std::ifstream ficmtl;
-                std::cout<<"ouverture de "+dirname+"/source/"+mtlname + "pour chercher" +donnee <<std::endl;
+                std::cout<<dirname+"/source/"+mtlname<<std::endl;
                 ficmtl.open(dirname+"/source/"+mtlname);
                 if (!ficmtl.is_open())
                 {
@@ -83,6 +83,7 @@ class Objet3D {
                 ficmtl>>Texturename;
                 sf::Texture Tex;
                 Tex.loadFromFile(dirname+"/textures/"+ Texturename);
+                std::cout<<" loading : "+dirname+"/textures/"+ Texturename<<std::endl;
                 Textures.push_back(Tex);
                 indiceTexture++;
                 ficmtl.close();
@@ -109,14 +110,11 @@ class Objet3D {
                 std::vector<IndexFace> face;
                 getline(fic,donnee);
                 std::vector<std::string> ligne=split(donnee," ");
-                for (std::string &indices: ligne)
+                for (std::string &indice: ligne)
                 {
-                    if (indices!="" and indices!="\\")
+                    if (indice!="" and indice!="\\")
                     {
-                        std::vector<std::string> vertex=split(indices,"/");
-                        if(vertex[0]=="")vertex[0]="1";
-                        if(vertex[1]=="")vertex[1]="1";
-                        std::cout<<indiceTexture<<std::endl;
+                        std::vector<std::string> vertex=split(indice,"/");
                         face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
                     }
                     
@@ -128,7 +126,7 @@ class Objet3D {
             }
         }
         fic.close();
-
+        std::cout<<"Nombre de textures chargées : "<<Textures.size()<<std::endl;
         size=1;
         position={0,0,0};
         RotationAngle=0;
@@ -149,52 +147,51 @@ class Objet3D {
     
     void draw(sf::RenderTarget& target,Camera &camera) 
     {
-        int indiceText=0;
+        int newtex=0;
         sf::VertexArray triangles(sf::Triangles);
         for(std::vector<IndexFace> const &face : faces)
         {
 
-                sf::Vector3f  p1=points[face[0].ipos] ;
-                sf::Vector3f  p2=points[face[1].ipos] ;
-                sf::Vector3f  p3=points[face[2].ipos] ;
-                p1*=size;
-                p2*=size;
-                p3*=size;
+            sf::Vector3f  p1=points[face[0].ipos] ;
+            sf::Vector3f  p2=points[face[1].ipos] ;
+            sf::Vector3f  p3=points[face[2].ipos] ;
+            p1*=size;
+            p2*=size;
+            p3*=size;
+            
+            p1+=position;
+            p2+=position;
+            p3+=position;
+            
+            p1=camera.switch_base(p1);
+            p2=camera.switch_base(p2);
+            p3=camera.switch_base(p3);
+            if (p1.z>0 and p2.z>0 and p3.z>0)
+            {
+                sf::Vertex pr1=camera.Projection(p1);
+                sf::Vertex pr2=camera.Projection(p2);
+                sf::Vertex pr3=camera.Projection(p3);
+                pr1=SFMLScale(pr1.position,target);
+                pr2=SFMLScale(pr2.position,target);
+                pr3=SFMLScale(pr3.position,target);
+                sf::Vector2u size=Textures[face[0].itex].getSize();
+                pr1.texCoords={vts[face[0].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
+                pr2.texCoords={vts[face[1].ivt].x*size.x,(1-vts[face[1].ivt].y)*size.y};
+                pr3.texCoords={vts[face[2].ivt].x*size.x,(1-vts[face[2].ivt].y)*size.y};
+                triangles.append(pr1);
+                triangles.append(pr2);
+                triangles.append(pr3);
+            }
+           if (newtex!=face[0].itex)
+           {
                 
-                p1+=position;
-                p2+=position;
-                p3+=position;
-                
-                p1=camera.switch_base(p1);
-                p2=camera.switch_base(p2);
-                p3=camera.switch_base(p3);
-                if (p1.z>0 and p2.z>0 and p3.z>0)
-                {
-                    sf::Vertex pr1=camera.Projection(p1);
-                    sf::Vertex pr2=camera.Projection(p2);
-                    sf::Vertex pr3=camera.Projection(p3);
-                    pr1=SFMLScale(pr1.position,target);
-                    pr2=SFMLScale(pr2.position,target);
-                    pr3=SFMLScale(pr3.position,target);
-                    sf::Vector2u size=Textures[0].getSize();
-                    pr1.texCoords={vts[face[0].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
-                    pr2.texCoords={vts[face[1].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
-                    pr3.texCoords={vts[face[2].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
-                    triangles.append(pr1);
-                    triangles.append(pr2);
-                    triangles.append(pr3);
-                }
-                std::cout<<face[0].itex<<std::endl;
-                if (face[0].itex!=indiceText)
-                {
-                    
-                    target.draw(triangles,&Textures[indiceText]);
-                    indiceText++;
-                }
-                
+                target.draw(triangles,&Textures[newtex]);
+                newtex=face[0].itex;
+                triangles.clear();
+           }
         }
-
-        target.draw(triangles,&Textures[indiceText]);
+        target.draw(triangles,&Textures[newtex+1]);
+        triangles.clear();
     }
 
 
@@ -241,7 +238,6 @@ class Objet3D {
                 ficmtl>>Texturename;
                 sf::Texture Tex;
                 Tex.loadFromFile(Texturename);
-                std::cout<<Texturename<<std::endl;
                 Textures.push_back(Tex);
                 indiceTexture++;
                 ficmtl.close();
@@ -273,7 +269,6 @@ class Objet3D {
                     if (indice!="" and indice!="\\")
                     {
                         std::vector<std::string> vertex=split(indice,"/");
-                        std::cout<<indiceTexture<<std::endl;
                         face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),indiceTexture});
                     }
                     

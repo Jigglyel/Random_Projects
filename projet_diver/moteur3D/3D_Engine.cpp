@@ -1158,7 +1158,7 @@ std::vector<std::vector<IndexFace>> connexions{
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
                     
                     sf::Mouse souris;
-                    //souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                    souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
 
                     if (camera.offsetX>=360 or camera.offsetX<=-360)
                     {
