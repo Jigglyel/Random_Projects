@@ -1197,8 +1197,15 @@ std::vector<std::vector<IndexFace>> connexions{
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
-        //zelda.draw(window,camera);
-        turevoi.draw(window,camera);
+        zelda.size=3;
+        zelda.position={0,0 ,0};
+        zelda.draw(window,camera);
+        zelda.size=2;
+        zelda.position={1,2 ,5};
+        zelda.draw(window,camera);
+        zelda.size=3;
+        zelda.position={10,25 ,50};
+        zelda.draw(window,camera);
         window.display();
 
     }
