@@ -1,0 +1,5 @@
+newmtl Material1
+map_Kd Bastion.jpg
+
+newmtl Material2
+map_Kd Glow.jpg

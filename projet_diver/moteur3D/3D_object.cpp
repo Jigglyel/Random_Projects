@@ -34,6 +34,7 @@ struct IndexPoint
         this->mat=mat;
     }
 };
+
 struct triangle
 {
     IndexPoint p1;
@@ -41,6 +42,7 @@ struct triangle
     IndexPoint p3;
     matérieau mat;
 };
+
 class Objet3D { 
      public:
     std::vector<std::vector<IndexPoint>>faces;
@@ -171,7 +173,7 @@ class Objet3D {
                         std::cout<<nommat<<std::endl;
                     }
                         
-                    if(donneemtl=="map_Kd" or donneemtl=="map_Ke" )
+                    if(donneemtl=="map_Kd" or (donneemtl=="map_Ke") )
                     {
                         ficmtl>>nomtext;
                         sf::Texture Tex;
@@ -209,20 +211,29 @@ class Objet3D {
             }
             if (donnee=="f")
             {   
+                bool again; //au cas où la suite est sur la ligne d'après (backslash)
                 std::vector<IndexPoint> face;
-                getline(fic,donnee);
-                std::vector<std::string> ligne=split(donnee," ");
-                for (std::string &indice: ligne)
+                
+                do
                 {
-                    if (indice!="" and indice!="\\")
+                    again=false;
+                    getline(fic,donnee);
+                    std::vector<std::string> ligne=split(donnee," ");
+                    for (std::string &vertex: ligne)
                     {
-                        std::vector<std::string> vertex=split(indice,"/");
-                        if(vertex[0]=="")vertex[0]="1";
-                        if(vertex[1]=="")vertex[1]="1";
-                        face.push_back({(stoi(vertex[0])-1),(stoi(vertex[1])-1),currentmat});
+                        if (vertex!="" and vertex!="\\" and vertex!="\\\r") 
+                        {
+                            std::vector<std::string> index=split(vertex,"/");
+                            if(index[0]=="")index[0]="1";
+                            if(index[1]=="")index[1]="1";
+                            
+                            face.push_back({(stoi(index[0])-1),(stoi(index[1])-1),currentmat});
+                        }
+                        if(vertex=="\\\r")
+                            again=true;
+                        
                     }
-                    
-                }
+                }while(again);
                 
                 
                 faces.push_back(face);
@@ -277,12 +288,27 @@ class Objet3D {
                 
                 for (std::vector<IndexPoint> const &face : faces)
                 {
+                    if(face.size()==4)
+                    {
+                        triangle tri;
+                        tri.p1=face[0];
+                        tri.p2=face[1];
+                        tri.p3=face[2];
+                        tri.mat.nom=face[0].mat;
+                        tri.p1=face[0];
+                        tri.p2=face[2];
+                        tri.p3=face[3];
+                        tri.mat.nom=face[0].mat;
+                    }
+                    else
+                    {
                     triangle tri;
                     tri.p1=face[0];
                     tri.p2=face[1];
                     tri.p3=face[2];
                     tri.mat.nom=face[0].mat;
                     triangles3D.push_back(tri);
+                    }
                     
                 }
             }

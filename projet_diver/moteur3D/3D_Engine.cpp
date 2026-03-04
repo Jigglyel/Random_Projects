@@ -1070,9 +1070,9 @@ std::vector<std::vector<IndexPoint>> connexions{
 
 
     // Objet3D Tournevis("../tournevis.obj");
-    // Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
-    // Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
-    // Objet3D zelda("../Assets/Model3D/links_awakening_64");
+    Objet3D Bastion("../Assets/Model3D/Bastion");
+    Objet3D Castle("../Assets/Model3D/Peach_Castle");
+    Objet3D zelda("../Assets/Model3D/links_awakening_64");
     Objet3D turevoi("../Assets/Model3D/Voiture");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
@@ -1153,13 +1153,22 @@ std::vector<std::vector<IndexPoint>> connexions{
                     
                     
                 case sf::Event::MouseMoved:
-                if (!pause)
-                {
+                if (!pause)         
+                {   
+                    sf::Mouse souris;
+                    
+                    
                     camera.offsetX+= (sf::Mouse::getPosition(window).x-oldPos.x)*MouseSensivity;
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
+
+                    if(Time.getElapsedTime().asSeconds()>0.05)
+                    {
+                        std::cout<<Time.getElapsedTime().asSeconds()<<std::endl;
+                        souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                        Time.restart();
+                    }
                     
-                    sf::Mouse souris;
-                    souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                    oldPos=sf::Mouse::getPosition(window);
 
                     if (camera.offsetX>=360 or camera.offsetX<=-360)
                     {
@@ -1174,8 +1183,9 @@ std::vector<std::vector<IndexPoint>> connexions{
                     {
                         camera.offsetY=-90;
                     }
+
                     
-                    oldPos=sf::Mouse::getPosition(window);
+                        
                     break; 
                 }
                     
@@ -1188,16 +1198,13 @@ std::vector<std::vector<IndexPoint>> connexions{
         camera.apply_forces();
         camera.move();
         camera.Check_collisions();
-        double dt=Time.getElapsedTime().asSeconds();
-        angle=2 * M_PI*dt;
-        Time.restart();
 
         window.clear(sf::Color::Black);
-        camera.speed=0.01;
+        camera.speed=10;
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
-        turevoi.draw(window,camera);
+        Castle.draw(window,camera);
         window.display();
 
     }
