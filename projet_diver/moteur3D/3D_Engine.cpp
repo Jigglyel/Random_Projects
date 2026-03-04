@@ -436,7 +436,7 @@ std::vector<sf::Vector3f> points{
 
 Pinguin.points=points;
 
-std::vector<std::vector<IndexFace>> connexions{
+std::vector<std::vector<IndexPoint>> connexions{
     {22, 2, 10},
     {21, 1, 24},
     {7, 23, 14},
@@ -1072,7 +1072,7 @@ std::vector<std::vector<IndexFace>> connexions{
     // Objet3D Tournevis("../tournevis.obj");
     // Objet3D Bastion("../Assets/Model3D/Bastion_Final.obj");
     // Objet3D Castle("../Assets/Model3D/Peach_Castle.obj");
-    Objet3D zelda("../Assets/Model3D/links_awakening_64");
+    // Objet3D zelda("../Assets/Model3D/links_awakening_64");
     Objet3D turevoi("../Assets/Model3D/Voiture");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
@@ -1159,7 +1159,7 @@ std::vector<std::vector<IndexFace>> connexions{
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
                     
                     sf::Mouse souris;
-                    //souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                    souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
 
                     if (camera.offsetX>=360 or camera.offsetX<=-360)
                     {
@@ -1197,15 +1197,7 @@ std::vector<std::vector<IndexFace>> connexions{
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
-        zelda.size=3;
-        zelda.position={0,0 ,0};
-        zelda.draw(window,camera);
-        zelda.size=2;
-        zelda.position={1,2 ,5};
-        zelda.draw(window,camera);
-        zelda.size=3;
-        zelda.position={10,25 ,50};
-        zelda.draw(window,camera);
+        turevoi.draw(window,camera);
         window.display();
 
     }

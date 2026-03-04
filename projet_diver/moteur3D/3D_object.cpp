@@ -5,27 +5,45 @@
 #include<iostream>
 #include <filesystem>
 #include<map>
-struct IndexFace
+#include <algorithm>
+#include <array>
+#include <functional>
+#include <iostream>
+#include <string_view>
+struct matérieau
+{
+    std::string nom;
+    sf::Texture tex;
+
+};
+
+struct IndexPoint
 {
     int ipos;
     int ivt;
-    std::string mat;
+    std::string mat; 
 
-    IndexFace(){}
+    IndexPoint(){}
 
-    IndexFace(int ipos){
+    IndexPoint(int ipos){
         this->ipos=ipos;
     }
-    IndexFace(int ipos,int ivt,std::string mat){
+    IndexPoint(int ipos,int ivt,std::string mat){
         this->ipos=ipos;
         this->ivt=ivt;
         this->mat=mat;
     }
 };
-
+struct triangle
+{
+    IndexPoint p1;
+    IndexPoint p2;
+    IndexPoint p3;
+    matérieau mat;
+};
 class Objet3D { 
      public:
-    std::vector<std::vector<IndexFace>>faces;
+    std::vector<std::vector<IndexPoint>>faces;
     std::vector<sf::Vector3f> points;
     std::vector<sf::Vector2f> vts;
     sf::Vector3f position;
@@ -35,7 +53,10 @@ class Objet3D {
     float RotationAngle;
     Objet3D()
     {
-
+        size=1;
+        position={0,0,0};
+        RotationAngle=0;
+        speed={0,0,0};
     }
     Objet3D(std::string dirname)
     {
@@ -51,35 +72,38 @@ class Objet3D {
         position+=speed;
     }
 
-    void drawPoints(sf::RenderWindow & window,double dt,Camera & camera)
-    {
-        for(sf::Vector3f & point :points)
-        {
-            drawRectangle(SFMLScale(camera.Projection(point),window),window);
-        }
-    }
+    
     
     void draw(sf::RenderTarget& target,Camera &camera) 
     {
         std::string newtex="";
         sf::VertexArray triangles(sf::Triangles);
-        for(std::vector<IndexFace> const &face : faces)
+        
+        
+        
+        for(const sf::Vector3f & point : points)
+            pointscam.push_back(camera.switch_base((point+position)*size));
+            
+        std::sort(triangles3D.begin(),triangles3D.end(),[this](const triangle & a,const triangle & b)
+                                                            {
+                                                                return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
+                                                            });
+        for (const triangle &triangle : triangles3D)
         {
+            sf::Vector3f p1=pointscam[triangle.p1.ipos];
+            sf::Vector3f p2=pointscam[triangle.p2.ipos];
+            sf::Vector3f p3=pointscam[triangle.p3.ipos];
 
-            sf::Vector3f  p1=points[face[0].ipos] ;
-            sf::Vector3f  p2=points[face[1].ipos] ;
-            sf::Vector3f  p3=points[face[2].ipos] ;
-            p1*=size;
-            p2*=size;
-            p3*=size;
-            
-            p1+=position;
-            p2+=position;
-            p3+=position;
-            
-            p1=camera.switch_base(p1);
-            p2=camera.switch_base(p2);
-            p3=camera.switch_base(p3);
+            if (newtex!=triangle.mat.nom)
+           {
+                if(newtex!="")
+                {
+                    target.draw(triangles,&Textures[newtex]);
+                    triangles.clear();
+                }
+                newtex=triangle.mat.nom;
+                
+           }
             if (p1.z>0 and p2.z>0 and p3.z>0)
             {
                 sf::Vertex pr1=camera.Projection(p1);
@@ -88,53 +112,20 @@ class Objet3D {
                 pr1=SFMLScale(pr1.position,target);
                 pr2=SFMLScale(pr2.position,target);
                 pr3=SFMLScale(pr3.position,target);
-                sf::Vector2u size=Textures[face[0].mat].getSize();
-                pr1.texCoords={vts[face[0].ivt].x*size.x,(1-vts[face[0].ivt].y)*size.y};
-                pr2.texCoords={vts[face[1].ivt].x*size.x,(1-vts[face[1].ivt].y)*size.y};
-                pr3.texCoords={vts[face[2].ivt].x*size.x,(1-vts[face[2].ivt].y)*size.y};
+                sf::Vector2u size=Textures[triangle.mat.nom].getSize();
+                pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
+                pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
+                pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
                 triangles.append(pr1);
                 triangles.append(pr2);
                 triangles.append(pr3);
             }
             // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
-           if (newtex!=face[0].mat)
-           {
-            std::cout<<0<<std::endl;
-                if(newtex!="")
-                {
-                    target.draw(triangles,&Textures[newtex]);
-                    triangles.clear();
-                }
-                newtex=face[0].mat;
-                
-           }
-           else
-           if (newtex!=face[1].mat)
-           {
-            std::cout<<1<<std::endl;
-                if(newtex!="")
-                {
-                    target.draw(triangles,&Textures[newtex]);
-                    triangles.clear();
-                }
-                newtex=face[1].mat;
-                
-           }
-           else
-           if (newtex!=face[2].mat)
-           {
-            std::cout<<2<<std::endl;
-                if(newtex!="")
-                {
-                    target.draw(triangles,&Textures[newtex]);
-                    triangles.clear();
-                }
-                newtex=face[2].mat;
-                
-           }
         }
         target.draw(triangles,&Textures[newtex]);
         triangles.clear();
+        pointscam.clear();
+        
     }
 
 
@@ -160,6 +151,7 @@ class Objet3D {
                 std::string donneemtl;
                 std::string nommat;
                 std::string nomtext;
+                bool kd;
                 std::string mtlname;
                 fic>>mtlname;
                 std::cout<<dirname+"/source/"+mtlname<<std::endl;
@@ -170,23 +162,26 @@ class Objet3D {
                     std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
                 }
                 while(ficmtl>>donneemtl)
+                {
                     if(donneemtl=="newmtl") 
                     {   
                         ficmtl>>donneemtl;
                         nommat=donneemtl;
+                        kd=false;
                         std::cout<<nommat<<std::endl;
-                        while(donneemtl!="map_Kd" and donneemtl!="map_Ke" and donneemtl!="newmtl" and ficmtl>>donneemtl)
-                        {
-                            if(donneemtl=="map_Kd" or donneemtl=="map_Ke")
-                            {
-                                ficmtl>>nomtext;
-                                sf::Texture Tex;
-                                Tex.loadFromFile(dirname+"/textures/"+ nomtext);
-                                std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
-                                Textures[nommat]=Tex;
-                            }
-                        }
                     }
+                        
+                    if(donneemtl=="map_Kd" or donneemtl=="map_Ke" )
+                    {
+                        ficmtl>>nomtext;
+                        sf::Texture Tex;
+                        Tex.loadFromFile(dirname+"/textures/"+ nomtext);
+                        std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                        Textures[nommat]=Tex;
+                        kd=true;
+                    }
+                        
+                }
                 ficmtl.close();
                 
                 
@@ -214,7 +209,7 @@ class Objet3D {
             }
             if (donnee=="f")
             {   
-                std::vector<IndexFace> face;
+                std::vector<IndexPoint> face;
                 getline(fic,donnee);
                 std::vector<std::string> ligne=split(donnee," ");
                 for (std::string &indice: ligne)
@@ -235,9 +230,19 @@ class Objet3D {
             }
         }
         fic.close();
+        create_triangles();
         }
 
         private :
+        void drawPoints(sf::RenderWindow & window,double dt,Camera & camera)
+        {
+        for(sf::Vector3f & point :points)
+        {
+            drawRectangle(SFMLScale(camera.Projection(point),window),window);
+        }
+        }
+        std::vector<triangle> triangles3D;
+        std::vector<sf::Vector3f> pointscam;
             std::vector<sf::Texture> loadTexturesFromFolder(const std::string& folderPath)
             {
                 std::vector<sf::Texture> textures;
@@ -266,6 +271,22 @@ class Objet3D {
 
                 return textures;
             }
+
+            void create_triangles()
+            {
+                
+                for (std::vector<IndexPoint> const &face : faces)
+                {
+                    triangle tri;
+                    tri.p1=face[0];
+                    tri.p2=face[1];
+                    tri.p3=face[2];
+                    tri.mat.nom=face[0].mat;
+                    triangles3D.push_back(tri);
+                    
+                }
+            }
+           
 
 };
 
