@@ -221,7 +221,7 @@ class Objet3D {
                     std::vector<std::string> ligne=split(donnee," ");
                     for (std::string &vertex: ligne)
                     {
-                        if (vertex!="" and vertex!="\\" and vertex!="\\\r") 
+                        if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
                         {
                             std::vector<std::string> index=split(vertex,"/");
                             if(index[0]=="")index[0]="1";
@@ -229,8 +229,11 @@ class Objet3D {
                             
                             face.push_back({(stoi(index[0])-1),(stoi(index[1])-1),currentmat});
                         }
-                        if(vertex=="\\\r")
+                        if(vertex=="\\\r" or vertex=="\\\n" or vertex=="\\")
+                        {
+                            std::cout<<"again"<<std::endl;
                             again=true;
+                        }
                         
                     }
                 }while(again);
@@ -288,27 +291,16 @@ class Objet3D {
                 
                 for (std::vector<IndexPoint> const &face : faces)
                 {
-                    if(face.size()==4)
+                    for (size_t i = 1; i < face.size()-1; i++)
                     {
                         triangle tri;
                         tri.p1=face[0];
-                        tri.p2=face[1];
-                        tri.p3=face[2];
+                        tri.p2=face[i];
+                        tri.p3=face[i+1];
                         tri.mat.nom=face[0].mat;
-                        tri.p1=face[0];
-                        tri.p2=face[2];
-                        tri.p3=face[3];
-                        tri.mat.nom=face[0].mat;
+                        triangles3D.push_back(tri);
                     }
-                    else
-                    {
-                    triangle tri;
-                    tri.p1=face[0];
-                    tri.p2=face[1];
-                    tri.p3=face[2];
-                    tri.mat.nom=face[0].mat;
-                    triangles3D.push_back(tri);
-                    }
+                    
                     
                 }
             }

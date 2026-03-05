@@ -1163,7 +1163,6 @@ std::vector<std::vector<IndexPoint>> connexions{
 
                     if(Time.getElapsedTime().asSeconds()>0.05)
                     {
-                        std::cout<<Time.getElapsedTime().asSeconds()<<std::endl;
                         souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
                         Time.restart();
                     }
