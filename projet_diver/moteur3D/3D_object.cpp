@@ -12,8 +12,10 @@
 #include <string_view>
 struct matérieau
 {
-    std::string nom;
-    sf::Texture tex;
+    sf::Vector3f kd,ke;
+    float d;
+    sf::Texture map_Kd;
+    sf::Texture map_Ke;
 
 };
 
@@ -21,17 +23,15 @@ struct IndexPoint
 {
     int ipos;
     int ivt;
-    std::string mat; 
 
     IndexPoint(){}
 
     IndexPoint(int ipos){
         this->ipos=ipos;
     }
-    IndexPoint(int ipos,int ivt,std::string mat){
+    IndexPoint(int ipos,int ivt){
         this->ipos=ipos;
         this->ivt=ivt;
-        this->mat=mat;
     }
 };
 
@@ -40,7 +40,7 @@ struct triangle
     IndexPoint p1;
     IndexPoint p2;
     IndexPoint p3;
-    matérieau mat;
+    std::string mat;
 };
 
 class Objet3D { 
@@ -50,7 +50,7 @@ class Objet3D {
     std::vector<sf::Vector2f> vts;
     sf::Vector3f position;
     sf::Vector3f speed;
-    std::map<std::string,sf::Texture> Textures;
+    std::map<std::string,matérieau> Materieaux;
     float size;
     float RotationAngle;
     Objet3D()
@@ -63,7 +63,7 @@ class Objet3D {
     Objet3D(std::string dirname)
     {
         load(dirname);
-        std::cout<<"Nombre de textures chargées : "<<Textures.size()<<std::endl;
+        std::cout<<"Nombre de matérieaux chargées : "<<Materieaux.size()<<std::endl;
         size=1;
         position={0,0,0};
         RotationAngle=0;
@@ -78,7 +78,7 @@ class Objet3D {
     
     void draw(sf::RenderTarget& target,Camera &camera) 
     {
-        std::string newtex="";
+        std::string newmat="";
         sf::VertexArray triangles(sf::Triangles);
         
         
@@ -96,14 +96,15 @@ class Objet3D {
             sf::Vector3f p2=pointscam[triangle.p2.ipos];
             sf::Vector3f p3=pointscam[triangle.p3.ipos];
 
-            if (newtex!=triangle.mat.nom)
+            if (newmat!=triangle.mat)
            {
-                if(newtex!="")
+                if(newmat!="")
                 {
-                    target.draw(triangles,&Textures[newtex]);
+                    std::cout<<newmat<<std::endl;
+                    target.draw(triangles,&Materieaux[newmat].map_Kd);
                     triangles.clear();
                 }
-                newtex=triangle.mat.nom;
+                newmat=triangle.mat;
                 
            }
             if (p1.z>0 and p2.z>0 and p3.z>0)
@@ -114,7 +115,7 @@ class Objet3D {
                 pr1=SFMLScale(pr1.position,target);
                 pr2=SFMLScale(pr2.position,target);
                 pr3=SFMLScale(pr3.position,target);
-                sf::Vector2u size=Textures[triangle.mat.nom].getSize();
+                sf::Vector2u size=Materieaux[triangle.mat].map_Kd.getSize();
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
@@ -124,7 +125,8 @@ class Objet3D {
             }
             // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
         }
-        target.draw(triangles,&Textures[newtex]);
+        std::cout<<newmat<<std::endl;
+        target.draw(triangles,&Materieaux[newmat].map_Kd);
         triangles.clear();
         pointscam.clear();
         
@@ -134,117 +136,145 @@ class Objet3D {
 
         void load(std::string dirname)
         {
-        std::ifstream fic;
-        std::string currentmat;
-        std::string filename=split(dirname,"/")[3]+".obj";
-        std::cout<<"ouverture de "+dirname+"/source/"+filename<<std::endl;
-        fic.open(dirname+"/source/"+filename);
-        if (!fic.is_open())
-        {
-            std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+filename<<std::endl;
-        }
-        
-
-        std::string donnee;
-        
-        while (fic>>donnee)
-        {   if (donnee=="mtllib")
+            std::ifstream fic;
+            std::string currentmat="";
+            std::string filename=split(dirname,"/")[3]+".obj";
+            std::cout<<"ouverture de "+dirname+"/source/"+filename<<std::endl;
+            fic.open(dirname+"/source/"+filename);
+            if (!fic.is_open())
             {
-                std::string donneemtl;
-                std::string nommat;
-                std::string nomtext;
-                bool kd;
-                std::string mtlname;
-                fic>>mtlname;
-                std::cout<<dirname+"/source/"+mtlname<<std::endl;
-                std::ifstream ficmtl;
-                ficmtl.open(dirname+"/source/"+mtlname);
-                if (!ficmtl.is_open())
+                std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+filename<<std::endl;
+            }
+            
+
+            std::string donnee;
+            
+            while (fic>>donnee)
+            {   if (donnee=="mtllib")
                 {
-                    std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
-                }
-                while(ficmtl>>donneemtl)
-                {
-                    if(donneemtl=="newmtl") 
-                    {   
-                        ficmtl>>donneemtl;
-                        nommat=donneemtl;
-                        kd=false;
-                        std::cout<<nommat<<std::endl;
-                    }
-                        
-                    if(donneemtl=="map_Kd" or (donneemtl=="map_Ke") )
+                    std::string donneemtl;
+                    std::string nommat;
+                    std::string nomtext;
+                    std::string mtlname;
+                    fic>>mtlname;
+                    std::cout<<dirname+"/source/"+mtlname<<std::endl;
+                    std::ifstream ficmtl;
+                    ficmtl.open(dirname+"/source/"+mtlname);
+                    if (!ficmtl.is_open())
                     {
-                        ficmtl>>nomtext;
-                        sf::Texture Tex;
-                        Tex.loadFromFile(dirname+"/textures/"+ nomtext);
-                        std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
-                        Textures[nommat]=Tex;
-                        kd=true;
+                        std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
                     }
-                        
-                }
-                ficmtl.close();
-                
-                
-            }
-
-            if (donnee=="usemtl")
-            {
-                fic>>currentmat;
-            }
-             
-            if (donnee=="v")  
-            {
-                float x,y,z;
-                fic>>x;
-                fic>>y;
-                fic>>z;
-                points.push_back({x,y,z});
-            }
-
-            if (donnee=="vt")  
-            {   float x,y;
-                fic>>x;
-                fic>>y;
-                vts.push_back({x,y});
-            }
-            if (donnee=="f")
-            {   
-                bool again; //au cas où la suite est sur la ligne d'après (backslash)
-                std::vector<IndexPoint> face;
-                
-                do
-                {
-                    again=false;
-                    getline(fic,donnee);
-                    std::vector<std::string> ligne=split(donnee," ");
-                    for (std::string &vertex: ligne)
+                    while(ficmtl>>donneemtl)
                     {
-                        if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
+                        if(donneemtl=="newmtl") 
+                        {   
+                            ficmtl>>donneemtl;
+                            nommat=donneemtl;
+                            std::cout<<nommat<<std::endl;
+                        }
+                        if(donneemtl=="Kd")
                         {
-                            std::vector<std::string> index=split(vertex,"/");
-                            if(index[0]=="")index[0]="1";
-                            if(index[1]=="")index[1]="1";
+                            ficmtl>>Materieaux[nommat].kd.x;
+                            ficmtl>>Materieaux[nommat].kd.y;
+                            ficmtl>>Materieaux[nommat].kd.z;
+                        }
+
+                        if(donneemtl=="Ke")
+                        {
+                            ficmtl>>Materieaux[nommat].ke.x;
+                            ficmtl>>Materieaux[nommat].ke.y;
+                            ficmtl>>Materieaux[nommat].ke.z;
+                        }
+
+                        if(donneemtl=="d")
+                        {
+                            ficmtl>>Materieaux[nommat].d;
+                        }
                             
-                            face.push_back({(stoi(index[0])-1),(stoi(index[1])-1),currentmat});
-                        }
-                        if(vertex=="\\\r" or vertex=="\\\n" or vertex=="\\")
+                        if(donneemtl=="map_Kd")
                         {
-                            std::cout<<"again"<<std::endl;
-                            again=true;
+                            ficmtl>>nomtext;
+                            sf::Texture Tex;
+                            Tex.loadFromFile(dirname+"/textures/"+ nomtext);
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext + "dans : "+ nommat<<std::endl;
+                            Materieaux[nommat].map_Kd=Tex;
                         }
-                        
+                        if(donneemtl=="map_Ke")
+                        {
+                            ficmtl>>nomtext;
+                            sf::Texture Tex;
+                            Tex.loadFromFile(dirname+"/textures/"+ nomtext);
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                            Materieaux[nommat].map_Ke=Tex;
+                        }
+                            
                     }
-                }while(again);
+                    ficmtl.close();
+                    
+                    
+                }
+
+                if (donnee=="usemtl")
+                {
+                    if(currentmat!="")
+                    {
+                        create_triangles(currentmat);
+                        faces.clear();
+                    }
+                    fic>>currentmat;
+                }
                 
-                
-                faces.push_back(face);
-                face.clear();
+                if (donnee=="v")  
+                {
+                    float x,y,z;
+                    fic>>x;
+                    fic>>y;
+                    fic>>z;
+                    points.push_back({x,y,z});
+                }
+
+                if (donnee=="vt")  
+                {   float x,y;
+                    fic>>x;
+                    fic>>y;
+                    vts.push_back({x,y});
+                }
+                if (donnee=="f")
+                {   
+                    bool again; //au cas où la suite est sur la ligne d'après (backslash)
+                    std::vector<IndexPoint> face;
+                    
+                    do
+                    {
+                        again=false;
+                        getline(fic,donnee);
+                        std::vector<std::string> ligne=split(donnee," ");
+                        for (std::string &vertex: ligne)
+                        {
+                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
+                            {
+                                std::vector<std::string> index=split(vertex,"/");
+                                if(index[0]=="")index[0]="1";
+                                if(index[1]=="")index[1]="1";
+                                
+                                face.push_back({(stoi(index[0])-1),(stoi(index[1])-1)});
+                            }
+                            if(vertex=="\\\r" or vertex=="\\\n" or vertex=="\\" or vertex=="\\\r\n")
+                            {
+                                again=true;
+                            }
+                            
+                        }
+                    }while(again);
+                    
+                    
+                    faces.push_back(face);
+                    face.clear();
+                }
             }
-        }
-        fic.close();
-        create_triangles();
+            fic.close();
+            create_triangles(currentmat);
+            faces.clear();
         }
 
         private :
@@ -286,9 +316,9 @@ class Objet3D {
                 return textures;
             }
 
-            void create_triangles()
+            void create_triangles(const std::string &mat)
             {
-                
+                std::cout<<"je cree les triangles de mat : "<<mat<<std::endl;
                 for (std::vector<IndexPoint> const &face : faces)
                 {
                     for (size_t i = 1; i < face.size()-1; i++)
@@ -297,7 +327,7 @@ class Objet3D {
                         tri.p1=face[0];
                         tri.p2=face[i];
                         tri.p3=face[i+1];
-                        tri.mat.nom=face[0].mat;
+                        tri.mat=mat;
                         triangles3D.push_back(tri);
                     }
                     

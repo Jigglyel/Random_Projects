@@ -1072,8 +1072,8 @@ std::vector<std::vector<IndexPoint>> connexions{
     // Objet3D Tournevis("../tournevis.obj");
     Objet3D Bastion("../Assets/Model3D/Bastion");
     Objet3D Castle("../Assets/Model3D/Peach_Castle");
-    Objet3D zelda("../Assets/Model3D/links_awakening_64");
-    Objet3D turevoi("../Assets/Model3D/Voiture");
+    // Objet3D zelda("../Assets/Model3D/links_awakening_64");
+    // Objet3D turevoi("../Assets/Model3D/Voiture");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
     // escalier.position={20,50,62};
