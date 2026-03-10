@@ -21,15 +21,15 @@ struct matérieau
 
 struct IndexPoint
 {
-    unsigned int ipos;
-    unsigned int ivt;
+    long unsigned int ipos;
+    long unsigned int ivt;
 
     IndexPoint(){}
 
-    IndexPoint(unsigned int ipos){
+    IndexPoint(long unsigned int ipos){
         this->ipos=ipos;
     }
-    IndexPoint(unsigned int ipos,unsigned int ivt){
+    IndexPoint(long unsigned int ipos,long unsigned int ivt){
         this->ipos=ipos;
         this->ivt=ivt;
     }
@@ -86,31 +86,33 @@ class Objet3D {
         for(const sf::Vector3f & point : points)
             pointscam.push_back(camera.switch_base((point+position)*size));
         
+        // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
         std::vector<triangle> visibles;
         for (triangle &triangle : triangles3D)
         {
             
+            int count=count_hiden(triangle);
             sf::Vector3f p1=pointscam[triangle.p1.ipos];
             sf::Vector3f p2=pointscam[triangle.p2.ipos];
             sf::Vector3f p3=pointscam[triangle.p3.ipos];
-            int count=count_hiden(triangle);
+            plan P;
+            P.N={0,0,1};
+            P.D=1;
             if (count==0)
             {
                 visibles.push_back(triangle);
             }
-            if (count==1)
+            if (count==1 )
             {
-                std::cout<<p1.z<<std::endl;
-                pointscam.push_back(near_projection(p2,p1,0.1));
-                pointscam.push_back(near_projection(p3,p1,0.1));
+                pointscam.push_back(near_projection(p2,p1,P));
+                pointscam.push_back(near_projection(p3,p1,P));
                 visibles.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
                 visibles.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
             }
-            if (count==2)
+            if (count==2 )
             {
-                std::cout<<p1.z<<std::endl;
-                pointscam.push_back(near_projection(p3,p1,0.1));
-                pointscam.push_back(near_projection(p3,p2,0.1));
+                pointscam.push_back(near_projection(p3,p1,P));
+                pointscam.push_back(near_projection(p3,p2,P));
                 visibles.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p2.ivt},triangle.mat});
                 
             }
@@ -118,9 +120,9 @@ class Objet3D {
             
         }
         std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
-                                                            {
-                                                                return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
-                                                            });
+                                                        {
+                                                            return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
+                                                        });
         for (const triangle &triangle : visibles)
         {
             sf::Vector3f p1=pointscam[triangle.p1.ipos];
@@ -159,6 +161,7 @@ class Objet3D {
         target.draw(triangles,&Materieaux[newmat].map_Kd);
         triangles.clear();
         pointscam.clear();
+        visibles.clear();
         
     }
 
@@ -182,65 +185,9 @@ class Objet3D {
             while (fic>>donnee)
             {   if (donnee=="mtllib")
                 {
-                    std::string donneemtl;
-                    std::string nommat;
-                    std::string nomtext;
                     std::string mtlname;
                     fic>>mtlname;
-                    std::cout<<dirname+"/source/"+mtlname<<std::endl;
-                    std::ifstream ficmtl;
-                    ficmtl.open(dirname+"/source/"+mtlname);
-                    if (!ficmtl.is_open())
-                    {
-                        std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
-                    }
-                    while(ficmtl>>donneemtl)
-                    {
-                        if(donneemtl=="newmtl") 
-                        {   
-                            ficmtl>>donneemtl;
-                            nommat=donneemtl;
-                            std::cout<<nommat<<std::endl;
-                        }
-                        if(donneemtl=="Kd")
-                        {
-                            ficmtl>>Materieaux[nommat].kd.x;
-                            ficmtl>>Materieaux[nommat].kd.y;
-                            ficmtl>>Materieaux[nommat].kd.z;
-                        }
-
-                        if(donneemtl=="Ke")
-                        {
-                            ficmtl>>Materieaux[nommat].ke.x;
-                            ficmtl>>Materieaux[nommat].ke.y;
-                            ficmtl>>Materieaux[nommat].ke.z;
-                        }
-
-                        if(donneemtl=="d")
-                        {
-                            ficmtl>>Materieaux[nommat].d;
-                        }
-                            
-                        if(donneemtl=="map_Kd")
-                        {
-                            ficmtl>>nomtext;
-                            sf::Texture Tex;
-                            Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
-                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
-                        }
-                        if(donneemtl=="map_Ke")
-                        {
-                            ficmtl>>nomtext;
-                            sf::Texture Tex;
-                            
-                            Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
-                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
-                        }
-                            
-                    }
-                    ficmtl.close();
-                    
-                    
+                    parsemtl(mtlname,dirname);
                 }
 
                 if (donnee=="usemtl")
@@ -366,25 +313,26 @@ class Objet3D {
             int count_hiden(triangle &tri)
             {
                 IndexPoint aux;
-                sf::Vector3f p1 =pointscam[tri.p1.ipos],p2=pointscam[tri.p2.ipos],p3=pointscam[tri.p3.ipos];
-                if (p1.z>p2.z)
+                
+                if (pointscam[tri.p1.ipos].z>pointscam[tri.p2.ipos].z)
                 {
                     aux=tri.p1;
                     tri.p1=tri.p2;
                     tri.p2=aux;
                 }
-                if (p1.z>p3.z)
+                if (pointscam[tri.p1.ipos].z>pointscam[tri.p3.ipos].z)
                 {
                     aux=tri.p1;
                     tri.p1=tri.p3;
                     tri.p3=aux;
                 }
-                if (p2.z>p3.z)
+                if (pointscam[tri.p2.ipos].z>pointscam[tri.p3.ipos].z)
                 {
                     aux=tri.p2;
                     tri.p2=tri.p3;
                     tri.p3=aux;
                 }
+                sf::Vector3f p1 =pointscam[tri.p1.ipos],p2=pointscam[tri.p2.ipos],p3=pointscam[tri.p3.ipos];
                 if (p3.z<=1)
                 {
                     return 3;
@@ -398,10 +346,66 @@ class Objet3D {
                     return 1;
                 }
                 return 0;
-                
-                
-                
-                
+            }
+
+            void parsemtl(const std::string &mtlname,const std::string &dirname)
+            {
+                std::string donneemtl;
+                    std::string nommat;
+                    std::string nomtext;
+                    
+                    std::cout<<dirname+"/source/"+mtlname<<std::endl;
+                    std::ifstream ficmtl;
+                    ficmtl.open(dirname+"/source/"+mtlname);
+                    if (!ficmtl.is_open())
+                    {
+                        std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
+                    }
+                    while(ficmtl>>donneemtl)
+                    {
+                        if(donneemtl=="newmtl") 
+                        {   
+                            ficmtl>>donneemtl;
+                            nommat=donneemtl;
+                            std::cout<<nommat<<std::endl;
+                        }
+                        if(donneemtl=="Kd")
+                        {
+                            ficmtl>>Materieaux[nommat].kd.x;
+                            ficmtl>>Materieaux[nommat].kd.y;
+                            ficmtl>>Materieaux[nommat].kd.z;
+                        }
+
+                        if(donneemtl=="Ke")
+                        {
+                            ficmtl>>Materieaux[nommat].ke.x;
+                            ficmtl>>Materieaux[nommat].ke.y;
+                            ficmtl>>Materieaux[nommat].ke.z;
+                        }
+
+                        if(donneemtl=="d")
+                        {
+                            ficmtl>>Materieaux[nommat].d;
+                        }
+                            
+                        if(donneemtl=="map_Kd")
+                        {
+                            ficmtl>>nomtext;
+                            sf::Texture Tex;
+                            Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                        }
+                        if(donneemtl=="map_Ke")
+                        {
+                            ficmtl>>nomtext;
+                            sf::Texture Tex;
+                            
+                            Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                        }
+                            
+                    }
+                    ficmtl.close();
             }
            
 

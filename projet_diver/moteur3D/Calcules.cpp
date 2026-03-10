@@ -123,9 +123,9 @@ std::vector<std::string> split(std::string s, const std::string& delimiter) {
     return tokens;
 }
 
-sf::Vector3f near_projection(const sf::Vector3f &A,sf::Vector3f B,float near)
+sf::Vector3f near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P)
 {
-    float t = (near - A.z) / (B.z - A.z);
+    float t=(-P.D-prodscal3D(P.N,A))/prodscal3D(P.N,B-A);
     return A + t * (B - A);
 }
 
