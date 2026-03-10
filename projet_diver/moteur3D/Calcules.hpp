@@ -15,3 +15,4 @@ void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget & window);
 float getangle(sf::Vector2f v1,sf::Vector2f v2);
 bool isint(std::string str);
 std::vector<std::string> split( std::string s, const std::string& delimiter) ;
+sf::Vector3f near_projection(const sf::Vector3f &A,sf::Vector3f B,float near);

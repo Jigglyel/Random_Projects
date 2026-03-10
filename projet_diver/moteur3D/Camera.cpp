@@ -27,9 +27,15 @@ sf::Vector3f Camera::switch_base(sf::Vector3f P)
 sf::Vector2f Camera::Projection(sf::Vector3f P)
 {
     sf::Vector2f Proj;
+    if (P.z!=0)
+    {
+        Proj.x=fov*P.x/P.z;
+        Proj.y=fov*P.y/P.z;
+    }
     
-    Proj.x=fov*P.x/P.z;
-    Proj.y=fov*P.y/P.z;
+    
+    
+    
     return Proj;
 }
 

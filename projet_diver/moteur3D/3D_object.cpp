@@ -21,15 +21,15 @@ struct matérieau
 
 struct IndexPoint
 {
-    int ipos;
-    int ivt;
+    unsigned int ipos;
+    unsigned int ivt;
 
     IndexPoint(){}
 
-    IndexPoint(int ipos){
+    IndexPoint(unsigned int ipos){
         this->ipos=ipos;
     }
-    IndexPoint(int ipos,int ivt){
+    IndexPoint(unsigned int ipos,unsigned int ivt){
         this->ipos=ipos;
         this->ivt=ivt;
     }
@@ -85,12 +85,43 @@ class Objet3D {
         
         for(const sf::Vector3f & point : points)
             pointscam.push_back(camera.switch_base((point+position)*size));
+        
+        std::vector<triangle> visibles;
+        for (triangle &triangle : triangles3D)
+        {
             
-        std::sort(triangles3D.begin(),triangles3D.end(),[this](const triangle & a,const triangle & b)
+            sf::Vector3f p1=pointscam[triangle.p1.ipos];
+            sf::Vector3f p2=pointscam[triangle.p2.ipos];
+            sf::Vector3f p3=pointscam[triangle.p3.ipos];
+            int count=count_hiden(triangle);
+            if (count==0)
+            {
+                visibles.push_back(triangle);
+            }
+            if (count==1)
+            {
+                std::cout<<p1.z<<std::endl;
+                pointscam.push_back(near_projection(p2,p1,0.1));
+                pointscam.push_back(near_projection(p3,p1,0.1));
+                visibles.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
+                visibles.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
+            }
+            if (count==2)
+            {
+                std::cout<<p1.z<<std::endl;
+                pointscam.push_back(near_projection(p3,p1,0.1));
+                pointscam.push_back(near_projection(p3,p2,0.1));
+                visibles.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p2.ivt},triangle.mat});
+                
+            }
+            
+            
+        }
+        std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
                                                             {
                                                                 return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
                                                             });
-        for (const triangle &triangle : triangles3D)
+        for (const triangle &triangle : visibles)
         {
             sf::Vector3f p1=pointscam[triangle.p1.ipos];
             sf::Vector3f p2=pointscam[triangle.p2.ipos];
@@ -100,15 +131,13 @@ class Objet3D {
            {
                 if(newmat!="")
                 {
-                    std::cout<<newmat<<std::endl;
                     target.draw(triangles,&Materieaux[newmat].map_Kd);
                     triangles.clear();
                 }
                 newmat=triangle.mat;
                 
            }
-            if (p1.z>0 and p2.z>0 and p3.z>0)
-            {
+            
                 sf::Vertex pr1=camera.Projection(p1);
                 sf::Vertex pr2=camera.Projection(p2);
                 sf::Vertex pr3=camera.Projection(p3);
@@ -122,10 +151,11 @@ class Objet3D {
                 triangles.append(pr1);
                 triangles.append(pr2);
                 triangles.append(pr3);
-            }
+            
+
+           
             // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
         }
-        std::cout<<newmat<<std::endl;
         target.draw(triangles,&Materieaux[newmat].map_Kd);
         triangles.clear();
         pointscam.clear();
@@ -195,17 +225,16 @@ class Objet3D {
                         {
                             ficmtl>>nomtext;
                             sf::Texture Tex;
-                            Tex.loadFromFile(dirname+"/textures/"+ nomtext);
-                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext + "dans : "+ nommat<<std::endl;
-                            Materieaux[nommat].map_Kd=Tex;
+                            Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
                         }
                         if(donneemtl=="map_Ke")
                         {
                             ficmtl>>nomtext;
                             sf::Texture Tex;
-                            Tex.loadFromFile(dirname+"/textures/"+ nomtext);
+                            
+                            Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
                             std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
-                            Materieaux[nommat].map_Ke=Tex;
                         }
                             
                     }
@@ -240,7 +269,7 @@ class Objet3D {
                     vts.push_back({x,y});
                 }
                 if (donnee=="f")
-                {   
+                {  
                     bool again; //au cas où la suite est sur la ligne d'après (backslash)
                     std::vector<IndexPoint> face;
                     
@@ -251,13 +280,13 @@ class Objet3D {
                         std::vector<std::string> ligne=split(donnee," ");
                         for (std::string &vertex: ligne)
                         {
-                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
+                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n" and vertex!="f") 
                             {
                                 std::vector<std::string> index=split(vertex,"/");
                                 if(index[0]=="")index[0]="1";
                                 if(index[1]=="")index[1]="1";
                                 
-                                face.push_back({(stoi(index[0])-1),(stoi(index[1])-1)});
+                                face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1)});
                             }
                             if(vertex=="\\\r" or vertex=="\\\n" or vertex=="\\" or vertex=="\\\r\n")
                             {
@@ -278,15 +307,16 @@ class Objet3D {
         }
 
         private :
-        void drawPoints(sf::RenderWindow & window,double dt,Camera & camera)
-        {
-        for(sf::Vector3f & point :points)
-        {
-            drawRectangle(SFMLScale(camera.Projection(point),window),window);
-        }
-        }
-        std::vector<triangle> triangles3D;
-        std::vector<sf::Vector3f> pointscam;
+            void drawPoints(sf::RenderWindow & window,double dt,Camera & camera)
+            {
+                for(sf::Vector3f & point :points)
+                {
+                    drawRectangle(SFMLScale(camera.Projection(point),window),window);
+                }
+            }
+            
+            std::vector<triangle> triangles3D;
+            std::vector<sf::Vector3f> pointscam;
             std::vector<sf::Texture> loadTexturesFromFolder(const std::string& folderPath)
             {
                 std::vector<sf::Texture> textures;
@@ -330,9 +360,48 @@ class Objet3D {
                         tri.mat=mat;
                         triangles3D.push_back(tri);
                     }
-                    
-                    
                 }
+            }
+
+            int count_hiden(triangle &tri)
+            {
+                IndexPoint aux;
+                sf::Vector3f p1 =pointscam[tri.p1.ipos],p2=pointscam[tri.p2.ipos],p3=pointscam[tri.p3.ipos];
+                if (p1.z>p2.z)
+                {
+                    aux=tri.p1;
+                    tri.p1=tri.p2;
+                    tri.p2=aux;
+                }
+                if (p1.z>p3.z)
+                {
+                    aux=tri.p1;
+                    tri.p1=tri.p3;
+                    tri.p3=aux;
+                }
+                if (p2.z>p3.z)
+                {
+                    aux=tri.p2;
+                    tri.p2=tri.p3;
+                    tri.p3=aux;
+                }
+                if (p3.z<=1)
+                {
+                    return 3;
+                }
+                if (p2.z<=1)
+                {
+                    return 2;
+                }
+                if (p1.z<=1)
+                {
+                    return 1;
+                }
+                return 0;
+                
+                
+                
+                
             }
            
 
