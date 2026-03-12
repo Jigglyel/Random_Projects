@@ -97,7 +97,7 @@ class Objet3D {
             sf::Vector3f p3=pointscam[triangle.p3.ipos];
             plan P;
             P.N={0,0,1};
-            P.D=1;
+            P.D=-1;
             if (count==0)
             {
                 visibles.push_back(triangle);
@@ -391,16 +391,15 @@ class Objet3D {
                         if(donneemtl=="map_Kd")
                         {
                             ficmtl>>nomtext;
-                            sf::Texture Tex;
                             Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
+                            Materieaux[nommat].map_Kd.setRepeated(true);
                             std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
                         }
                         if(donneemtl=="map_Ke")
                         {
                             ficmtl>>nomtext;
-                            sf::Texture Tex;
-                            
                             Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
+                            Materieaux[nommat].map_Kd.setRepeated(true);
                             std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
                         }
                             

@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include<cmath>
+#include<iostream>
 #pragma once
 struct plan{
     sf::Vector3f N;
