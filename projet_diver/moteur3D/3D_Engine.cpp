@@ -1075,6 +1075,9 @@ std::vector<std::vector<IndexPoint>> connexions{
      Objet3D zelda("../Assets/Model3D/links_awakening_64");
      Objet3D turevoi("../Assets/Model3D/Voiture");
     Objet3D road("../Assets/Model3D/RR64");
+    Objet3D link("../Assets/Model3D/Link Adult");
+    Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
+    Objet3D mcplains("../Assets/Model3D/mcPlains");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
     // escalier.position={20,50,62};
@@ -1205,7 +1208,7 @@ std::vector<std::vector<IndexPoint>> connexions{
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
         zelda.size=5;
-        road.draw(window,camera);
+        Minecastle.draw(window,camera);
         window.display();
 
     }

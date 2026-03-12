@@ -110,6 +110,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 19CF4260_c.png #damier
 
 newmtl Material__975
 Ns 10.000005
@@ -120,6 +121,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 448F972_c.png #route
 
 newmtl Material__981
 Ns 10.000005
@@ -130,6 +132,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 2232FE1E_c.png #poteaux
 
 newmtl Material__983
 Ns 10.000005
@@ -140,6 +143,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 47256124_c.png #banière
 
 newmtl Material__985
 Ns 0.000000
@@ -170,6 +174,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 194AAE5E_c.png #étoile face
 
 newmtl Material__994
 Ns 10.000005
@@ -180,3 +185,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
+map_Kd 7FE61C49_c.png #étoile back and side

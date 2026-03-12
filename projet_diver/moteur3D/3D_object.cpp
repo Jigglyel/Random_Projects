@@ -87,38 +87,28 @@ class Objet3D {
             pointscam.push_back(camera.switch_base((point+position)*size));
         
         // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
-        std::vector<triangle> visibles;
-        for (triangle &triangle : triangles3D)
-        {
-            
-            int count=count_hiden(triangle);
-            sf::Vector3f p1=pointscam[triangle.p1.ipos];
-            sf::Vector3f p2=pointscam[triangle.p2.ipos];
-            sf::Vector3f p3=pointscam[triangle.p3.ipos];
-            plan P;
-            P.N={0,0,1};
-            P.D=-1;
-            if (count==0)
-            {
-                visibles.push_back(triangle);
-            }
-            if (count==1 )
-            {
-                pointscam.push_back(near_projection(p2,p1,P));
-                pointscam.push_back(near_projection(p3,p1,P));
-                visibles.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
-                visibles.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
-            }
-            if (count==2 )
-            {
-                pointscam.push_back(near_projection(p3,p1,P));
-                pointscam.push_back(near_projection(p3,p2,P));
-                visibles.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p2.ivt},triangle.mat});
-                
-            }
-            
-            
-        }
+        std::vector<triangle> visibles=triangles3D;
+        float M_1_sqrt2=1/sqrt(2);
+        plan P;
+
+
+        P.N={0,0,1};
+        P.D=1;
+        clip(P,visibles);//plan sur l'axe de la cam
+
+        // P.D=0;
+        // P.N={M_1_sqrt2,0,M_1_sqrt2};
+        // clip(P,visibles);//plan sur l'axe gauche
+
+        // P.N={-1*M_1_sqrt2,0,M_1_sqrt2};
+        // clip(P,visibles);//plan sur l'axe droit
+
+        // P.N={0,M_1_sqrt2,M_1_sqrt2};
+        // clip(P,visibles);//plan sur l'axe bas
+
+        // P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
+        // clip(P,visibles);//plan sur l'axe haut
+
         std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
                                                         {
                                                             return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
@@ -310,23 +300,35 @@ class Objet3D {
                 }
             }
 
-            int count_hiden(triangle &tri)
+            int count_hiden(triangle &tri,const plan &P)
             {
                 IndexPoint aux;
-                
-                if (pointscam[tri.p1.ipos].z>pointscam[tri.p2.ipos].z)
+                int count=0;
+                if(prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)<0)
+                {
+                    count++;
+                }
+                if(prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N)<0)
+                {
+                    count++;
+                }
+                if(prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N)<0)
+                {
+                    count++;
+                }
+                if (prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N))
                 {
                     aux=tri.p1;
                     tri.p1=tri.p2;
                     tri.p2=aux;
                 }
-                if (pointscam[tri.p1.ipos].z>pointscam[tri.p3.ipos].z)
+                if (prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N))
                 {
                     aux=tri.p1;
                     tri.p1=tri.p3;
                     tri.p3=aux;
                 }
-                if (pointscam[tri.p2.ipos].z>pointscam[tri.p3.ipos].z)
+                if (prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N))
                 {
                     aux=tri.p2;
                     tri.p2=tri.p3;
@@ -405,6 +407,37 @@ class Objet3D {
                             
                     }
                     ficmtl.close();
+            }
+
+            void clip( plan &P,std::vector<triangle> &visibles)
+            {
+                std::vector<triangle>aux;
+                for (triangle &triangle : visibles)
+                {
+                    int count=count_hiden(triangle,P);
+                    sf::Vector3f p1=pointscam[triangle.p1.ipos];
+                    sf::Vector3f p2=pointscam[triangle.p2.ipos];
+                    sf::Vector3f p3=pointscam[triangle.p3.ipos];
+                    
+                    if (count==0)
+                    {
+                        aux.push_back(triangle);
+                    }
+                    if (count==1 )
+                    {
+                        pointscam.push_back(near_projection(p2,p1,P));
+                        pointscam.push_back(near_projection(p3,p1,P));
+                        aux.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
+                        aux.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
+                    }
+                    if (count==2 )
+                    {
+                        pointscam.push_back(near_projection(p3,p1,P));
+                        pointscam.push_back(near_projection(p3,p2,P));
+                        aux.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p2.ivt},triangle.mat});
+                    }
+                }
+                visibles=aux;
             }
            
 
