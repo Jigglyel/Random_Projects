@@ -12,10 +12,11 @@
 #include <string_view>
 struct matérieau
 {
-    sf::Vector3f kd,ke;
+    sf::Color kd,ke;
     float d;
     sf::Texture map_Kd;
     sf::Texture map_Ke;
+    bool check_map_Kd=false,check_map_Ke=false;
 
 };
 
@@ -52,12 +53,14 @@ class Objet3D {
     sf::Vector3f speed;
     std::map<std::string,matérieau> Materieaux;
     float size;
-    float RotationAngle;
+    float RotationAngleX;
+    float RotationAngleY;
     Objet3D()
     {
         size=1;
         position={0,0,0};
-        RotationAngle=0;
+        RotationAngleX=0;
+        RotationAngleY=0;
         speed={0,0,0};
     }
     Objet3D(std::string dirname)
@@ -66,7 +69,8 @@ class Objet3D {
         std::cout<<"Nombre de matérieaux chargées : "<<Materieaux.size()<<std::endl;
         size=1;
         position={0,0,0};
-        RotationAngle=0;
+        RotationAngleX=0;
+        RotationAngleY=0;
     }
 
     void move()
@@ -84,7 +88,7 @@ class Objet3D {
         
         
         for(const sf::Vector3f & point : points)
-            pointscam.push_back(camera.switch_base((point+position)*size));
+            pointscam.push_back(camera.switch_base((rotate_point(rotate_point(point,RotationAngleX,{0,1,0}),RotationAngleY,{1,0,0})+position)*size));
         
         // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
         std::vector<triangle> visibles=triangles3D;
@@ -93,21 +97,21 @@ class Objet3D {
 
 
         P.N={0,0,1};
-        P.D=1;
+        P.D=-1;
         clip(P,visibles);//plan sur l'axe de la cam
 
-        // P.D=0;
-        // P.N={M_1_sqrt2,0,M_1_sqrt2};
-        // clip(P,visibles);//plan sur l'axe gauche
+        P.D=0;
+        P.N={M_1_sqrt2,0,M_1_sqrt2};
+        clip(P,visibles);//plan sur l'axe gauche
 
-        // P.N={-1*M_1_sqrt2,0,M_1_sqrt2};
-        // clip(P,visibles);//plan sur l'axe droit
+        P.N={-1*M_1_sqrt2,0,M_1_sqrt2};
+        clip(P,visibles);//plan sur l'axe droit
 
-        // P.N={0,M_1_sqrt2,M_1_sqrt2};
-        // clip(P,visibles);//plan sur l'axe bas
+        P.N={0,M_1_sqrt2,M_1_sqrt2};
+        clip(P,visibles);//plan sur l'axe bas
 
-        // P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
-        // clip(P,visibles);//plan sur l'axe haut
+        P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
+        clip(P,visibles);//plan sur l'axe haut
 
         std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
                                                         {
@@ -123,7 +127,14 @@ class Objet3D {
            {
                 if(newmat!="")
                 {
-                    target.draw(triangles,&Materieaux[newmat].map_Kd);
+                    if(Materieaux[newmat].check_map_Kd)
+                        target.draw(triangles,&Materieaux[newmat].map_Kd);
+                    else if(Materieaux[newmat].check_map_Ke)
+                            target.draw(triangles,&Materieaux[newmat].map_Ke);
+                    else
+                    {
+                        target.draw(triangles);
+                    }
                     triangles.clear();
                 }
                 newmat=triangle.mat;
@@ -140,6 +151,9 @@ class Objet3D {
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
+                pr1.color=Materieaux[triangle.mat].kd;
+                pr2.color=Materieaux[triangle.mat].kd;
+                pr3.color=Materieaux[triangle.mat].kd;
                 triangles.append(pr1);
                 triangles.append(pr2);
                 triangles.append(pr3);
@@ -148,7 +162,14 @@ class Objet3D {
            
             // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
         }
-        target.draw(triangles,&Materieaux[newmat].map_Kd);
+        if(Materieaux[newmat].check_map_Kd)
+            target.draw(triangles,&Materieaux[newmat].map_Kd);
+        else if(Materieaux[newmat].check_map_Ke)
+                target.draw(triangles,&Materieaux[newmat].map_Ke);
+        else
+        {
+            target.draw(triangles);
+        }
         triangles.clear();
         pointscam.clear();
         visibles.clear();
@@ -335,19 +356,9 @@ class Objet3D {
                     tri.p3=aux;
                 }
                 sf::Vector3f p1 =pointscam[tri.p1.ipos],p2=pointscam[tri.p2.ipos],p3=pointscam[tri.p3.ipos];
-                if (p3.z<=1)
-                {
-                    return 3;
-                }
-                if (p2.z<=1)
-                {
-                    return 2;
-                }
-                if (p1.z<=1)
-                {
-                    return 1;
-                }
-                return 0;
+
+
+                return count;
             }
 
             void parsemtl(const std::string &mtlname,const std::string &dirname)
@@ -373,21 +384,32 @@ class Objet3D {
                         }
                         if(donneemtl=="Kd")
                         {
-                            ficmtl>>Materieaux[nommat].kd.x;
-                            ficmtl>>Materieaux[nommat].kd.y;
-                            ficmtl>>Materieaux[nommat].kd.z;
+                            float r,g,b;
+                            ficmtl>>r;
+                            ficmtl>>g;
+                            ficmtl>>b;
+                            Materieaux[nommat].kd.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].kd.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].kd.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
                         }
 
                         if(donneemtl=="Ke")
                         {
-                            ficmtl>>Materieaux[nommat].ke.x;
-                            ficmtl>>Materieaux[nommat].ke.y;
-                            ficmtl>>Materieaux[nommat].ke.z;
+                            float r,g,b;
+                            ficmtl>>r;
+                            ficmtl>>g;
+                            ficmtl>>b;
+                            Materieaux[nommat].ke.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ke.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ke.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
                         }
 
                         if(donneemtl=="d")
                         {
-                            ficmtl>>Materieaux[nommat].d;
+                            float d;
+                            ficmtl>>d;
+                            Materieaux[nommat].kd.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ke.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
                         }
                             
                         if(donneemtl=="map_Kd")
@@ -395,6 +417,7 @@ class Objet3D {
                             ficmtl>>nomtext;
                             Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
                             Materieaux[nommat].map_Kd.setRepeated(true);
+                            Materieaux[nommat].check_map_Kd=true;
                             std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
                         }
                         if(donneemtl=="map_Ke")
@@ -402,6 +425,7 @@ class Objet3D {
                             ficmtl>>nomtext;
                             Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
                             Materieaux[nommat].map_Kd.setRepeated(true);
+                            Materieaux[nommat].check_map_Ke=true;
                             std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
                         }
                             

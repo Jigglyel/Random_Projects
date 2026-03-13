@@ -10,6 +10,7 @@
 void input(Camera & camera)
 {
     float angleXz;
+    float angleYz;
     sf::Keyboard::Key Forward,Backward,Left,Right,NormalAttack,UP,Down,SwitchMode;
             Forward=sf::Keyboard::Z;
             Backward=sf::Keyboard::S;
@@ -29,7 +30,8 @@ void input(Camera & camera)
         if(sf::Keyboard::isKeyPressed(Forward))
         {
             angleXz=(camera.offsetX*2*M_PI/360);
-            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            angleYz=(camera.offsetY*2*M_PI/360);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*cos(angleYz)*camera.speed,-sin(angleYz),cos(angleXz)*cos(angleYz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Backward))
         {
@@ -1076,8 +1078,10 @@ std::vector<std::vector<IndexPoint>> connexions{
      Objet3D turevoi("../Assets/Model3D/Voiture");
     Objet3D road("../Assets/Model3D/RR64");
     Objet3D link("../Assets/Model3D/Link Adult");
-    Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
+    // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
     Objet3D mcplains("../Assets/Model3D/mcPlains");
+
+    Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
     // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // Bastion.position={50,32,60};
     // escalier.position={20,50,62};
@@ -1203,12 +1207,14 @@ std::vector<std::vector<IndexPoint>> connexions{
         camera.Check_collisions();
 
         window.clear(sf::Color::Black);
-        camera.speed=1;
+        camera.speed=20;
         Cube cube1(5,{10,5,8});
         Cube cube2(3,{8,7,3});
         Cube cube3(6,{9,12,2});
         zelda.size=5;
-        Minecastle.draw(window,camera);
+        turevoi.position={10,20,0};
+        Castle.RotationAngleY=-90;
+        Castle.draw(window,camera);
         window.display();
 
     }
