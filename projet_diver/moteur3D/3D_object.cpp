@@ -10,9 +10,11 @@
 #include <functional>
 #include <iostream>
 #include <string_view>
+#include "Light.hpp"
+
 struct matérieau
 {
-    sf::Color kd,ke;
+    sf::Color kd,ke,ka;
     float d;
     sf::Texture map_Kd;
     sf::Texture map_Ke;
@@ -24,6 +26,7 @@ struct IndexPoint
 {
     long unsigned int ipos;
     long unsigned int ivt;
+    long unsigned int ivn;
 
     IndexPoint(){}
 
@@ -49,6 +52,7 @@ class Objet3D {
     std::vector<std::vector<IndexPoint>>faces;
     std::vector<sf::Vector3f> points;
     std::vector<sf::Vector2f> vts;
+    std::vector<sf::Vector3f> vns;
     sf::Vector3f position;
     sf::Vector3f speed;
     std::map<std::string,matérieau> Materieaux;
@@ -80,18 +84,28 @@ class Objet3D {
 
     
     
-    void draw(sf::RenderTarget& target,Camera &camera) 
+    void draw(sf::RenderTarget& target,Camera &camera,std::vector<Light>lights)
     {
         std::string newmat="";
         sf::VertexArray triangles(sf::Triangles);
-        
-        
+        std::vector<Light> lightCam;
+        for(const Light & light : lights)
+            lightCam.push_back({light.type,camera.switch_base(light.position),light.direction,light.intensity});
         
         for(const sf::Vector3f & point : points)
             pointscam.push_back(camera.switch_base((rotate_point(rotate_point(point,RotationAngleX,{0,1,0}),RotationAngleY,{1,0,0})+position)*size));
         
         // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
-        std::vector<triangle> visibles=triangles3D;
+        std::vector<triangle> visibles;
+        // std::cout<<"nb triangle après Création : "<<triangles3D.size()<<std::endl;;
+        visibles.clear();
+        for(const triangle & tri : triangles3D)
+            if (prodscal3D(pointscam[tri.p1.ipos],prodvect3D(pointscam[tri.p3.ipos]-pointscam[tri.p1.ipos],pointscam[tri.p2.ipos]-pointscam[tri.p1.ipos]))>=0)
+            {
+                visibles.push_back(tri);
+            }
+        // visibles.insert(visibles.end(),triangles3D.begin(),triangles3D.end());
+        // std::cout<<"nb triangle après back culling : "<<visibles.size()<<std::endl;
         float M_1_sqrt2=1/sqrt(2);
         plan P;
 
@@ -113,6 +127,7 @@ class Objet3D {
         P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
         clip(P,visibles);//plan sur l'axe haut
 
+        // std::cout<<"nb triangle après  clipping : "<<visibles.size()<<std::endl;
         std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
                                                         {
                                                             return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
@@ -151,9 +166,41 @@ class Objet3D {
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
-                pr1.color=Materieaux[triangle.mat].kd;
-                pr2.color=Materieaux[triangle.mat].kd;
-                pr3.color=Materieaux[triangle.mat].kd;
+
+                
+                
+                
+               
+                pr1.color={0,0,0};
+                pr2.color={0,0,0};
+                pr3.color={0,0,0};
+                sf::Color ambiantLight={20,20,20};
+                for (const Light &light :lightCam)
+                {
+                    sf::Color diffuse1;
+                    sf::Color diffuse2;
+                    sf::Color diffuse3;
+                    if (light.type==LightType::Point)
+                    {
+                        diffuse1=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p1.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255);
+                        diffuse2=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p2.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255);
+                        diffuse3=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p3.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255); 
+                    }
+                    if (light.type==LightType::Point)
+                    {
+                        diffuse1=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p1.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
+                        diffuse2=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p2.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
+                        diffuse3=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p3.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
+                    }
+                    pr1.color+=Materieaux[triangle.mat].kd*diffuse1;
+                    pr2.color+=Materieaux[triangle.mat].kd*diffuse2;
+                    pr3.color+=Materieaux[triangle.mat].kd*diffuse3;
+                }
+                
+
+                pr1.color+=Materieaux[triangle.mat].ka*ambiantLight;
+                pr2.color+=Materieaux[triangle.mat].ka*ambiantLight;
+                pr3.color+=Materieaux[triangle.mat].ka*ambiantLight; 
                 triangles.append(pr1);
                 triangles.append(pr2);
                 triangles.append(pr3);
@@ -226,6 +273,7 @@ class Objet3D {
                     fic>>y;
                     vts.push_back({x,y});
                 }
+                
                 if (donnee=="f")
                 {  
                     bool again; //au cas où la suite est sur la ligne d'après (backslash)
@@ -402,6 +450,16 @@ class Objet3D {
                             Materieaux[nommat].ke.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
                             Materieaux[nommat].ke.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
                             Materieaux[nommat].ke.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                        }
+                        if(donneemtl=="Ka")
+                        {
+                            float r,g,b;
+                            ficmtl>>r;
+                            ficmtl>>g;
+                            ficmtl>>b;
+                            Materieaux[nommat].ka.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ka.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ka.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
                         }
 
                         if(donneemtl=="d")

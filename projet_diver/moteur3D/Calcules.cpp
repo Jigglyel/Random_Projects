@@ -54,6 +54,7 @@ sf::Vector2f Normalize2D(sf::Vector2f v)
 }
 sf::Vector3f rotate_point(sf::Vector3f point,float angle,sf::Vector3f sens)
 {
+        angle=angle*M_PI*2/360;
         float c=cos(angle);
         float s=sin(angle);
         float x=point.x,y=point.y,z=point.z;

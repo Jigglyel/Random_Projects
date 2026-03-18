@@ -15,12 +15,10 @@ Camera::Camera(/* args */)
 sf::Vector3f Camera::switch_base(sf::Vector3f P)
 {
     
-    float angleX=offsetX*2*M_PI/360;
-    float angleY=offsetY*2*M_PI/360;
     P=P-position; 
     
     
-    P=rotate_point( rotate_point(P,-angleX,{0,1,0}),-angleY,{1,0,0});
+    P=rotate_point( rotate_point(P,-offsetX,{0,1,0}),-offsetY,{1,0,0});
 
     return P;
 }   
