@@ -1,5 +1,11 @@
 newmtl Material1
 map_Kd Bastion.jpg
+Kd 1 1 1
+ka 0.3 0.3 0.3
 
 newmtl Material2
 map_Kd Glow.jpg
+
+Kd 1 1 1
+Ka 0.2 0.2 0.2
+Ke 0.7 0.7 0.7

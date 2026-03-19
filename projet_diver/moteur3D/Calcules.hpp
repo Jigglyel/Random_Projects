@@ -22,3 +22,4 @@ float getangle(sf::Vector2f v1,sf::Vector2f v2);
 bool isint(std::string str);
 std::vector<std::string> split( std::string s, const std::string& delimiter) ;
 sf::Vector3f near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P);
+void affiche_couleur(sf::Color couleur);

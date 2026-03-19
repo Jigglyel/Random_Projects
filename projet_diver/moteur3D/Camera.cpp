@@ -10,6 +10,7 @@ Camera::Camera(/* args */)
     velocity={0,0,0};
     in_air=false;
     mode_survie=false;
+    lights=true;
 }
 
 sf::Vector3f Camera::switch_base(sf::Vector3f P)

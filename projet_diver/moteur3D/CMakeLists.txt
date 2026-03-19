@@ -23,7 +23,6 @@ add_executable(3D
     ./3D_Rectangle.cpp
     ./Cube.cpp
     ./Camera.cpp
-    ./Light.cpp
 )
 
 target_link_libraries(3D PRIVATE sfml-graphics sfml-window sfml-system)

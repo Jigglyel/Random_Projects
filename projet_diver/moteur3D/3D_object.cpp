@@ -11,11 +11,10 @@
 #include <iostream>
 #include <string_view>
 #include "Light.hpp"
-
 struct matérieau
 {
-    sf::Color kd,ke,ka;
-    float d;
+    sf::Color kd={0,0,0},ke={0,0,0},ka={0,0,0};
+    float d=1;
     sf::Texture map_Kd;
     sf::Texture map_Ke;
     bool check_map_Kd=false,check_map_Ke=false;
@@ -37,6 +36,11 @@ struct IndexPoint
         this->ipos=ipos;
         this->ivt=ivt;
     }
+    IndexPoint(long unsigned int ipos,long unsigned int ivt,long unsigned int ivn){
+        this->ipos=ipos;
+        this->ivt=ivt;
+        this->ivn=ivn;
+    }
 };
 
 struct triangle
@@ -51,14 +55,16 @@ class Objet3D {
      public:
     std::vector<std::vector<IndexPoint>>faces;
     std::vector<sf::Vector3f> points;
-    std::vector<sf::Vector2f> vts;
     std::vector<sf::Vector3f> vns;
+    std::vector<sf::Vector2f> vts;
     sf::Vector3f position;
     sf::Vector3f speed;
     std::map<std::string,matérieau> Materieaux;
     float size;
     float RotationAngleX;
     float RotationAngleY;
+    
+    
     Objet3D()
     {
         size=1;
@@ -84,28 +90,24 @@ class Objet3D {
 
     
     
-    void draw(sf::RenderTarget& target,Camera &camera,std::vector<Light>lights)
+    void draw(sf::RenderTarget& target,Camera &camera) 
     {
         std::string newmat="";
         sf::VertexArray triangles(sf::Triangles);
-        std::vector<Light> lightCam;
-        for(const Light & light : lights)
-            lightCam.push_back({light.type,camera.switch_base(light.position),light.direction,light.intensity});
+        
+        
         
         for(const sf::Vector3f & point : points)
             pointscam.push_back(camera.switch_base((rotate_point(rotate_point(point,RotationAngleX,{0,1,0}),RotationAngleY,{1,0,0})+position)*size));
         
         // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
         std::vector<triangle> visibles;
-        // std::cout<<"nb triangle après Création : "<<triangles3D.size()<<std::endl;;
-        visibles.clear();
-        for(const triangle & tri : triangles3D)
-            if (prodscal3D(pointscam[tri.p1.ipos],prodvect3D(pointscam[tri.p3.ipos]-pointscam[tri.p1.ipos],pointscam[tri.p2.ipos]-pointscam[tri.p1.ipos]))>=0)
-            {
-                visibles.push_back(tri);
-            }
-        // visibles.insert(visibles.end(),triangles3D.begin(),triangles3D.end());
-        // std::cout<<"nb triangle après back culling : "<<visibles.size()<<std::endl;
+        
+        for(const  triangle &tri:triangles3D)
+        {
+            if(prodscal3D(pointscam[tri.p1.ipos],prodvect3D(pointscam[tri.p2.ipos]-pointscam[tri.p1.ipos],pointscam[tri.p3.ipos]-pointscam[tri.p1.ipos]))<=0)
+            visibles.push_back(tri);
+        }
         float M_1_sqrt2=1/sqrt(2);
         plan P;
 
@@ -127,7 +129,6 @@ class Objet3D {
         P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
         clip(P,visibles);//plan sur l'axe haut
 
-        // std::cout<<"nb triangle après  clipping : "<<visibles.size()<<std::endl;
         std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
                                                         {
                                                             return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
@@ -166,41 +167,56 @@ class Objet3D {
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
-
-                
-                
-                
-               
-                pr1.color={0,0,0};
-                pr2.color={0,0,0};
-                pr3.color={0,0,0};
-                sf::Color ambiantLight={20,20,20};
-                for (const Light &light :lightCam)
+                if (camera.lights)
                 {
-                    sf::Color diffuse1;
-                    sf::Color diffuse2;
-                    sf::Color diffuse3;
-                    if (light.type==LightType::Point)
+                    sf::Color diffuse1={0,0,0};
+                    sf::Color diffuse2={0,0,0};
+                    sf::Color diffuse3={0,0,0};
+                    std::vector<Light*> globalLights;
+                    sf::Color ambiantLight={50,50,50};
+                    globalLights.push_back(new Directional{{0,0,1},{120,120,120}});
+                    for(Light* &light  :globalLights)
                     {
-                        diffuse1=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p1.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255);
-                        diffuse2=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p2.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255);
-                        diffuse3=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p3.ivn],Normalize3D(pointscam[triangle.p1.ipos]-camera.switch_base(light.position))),0.f,1.f)*255); 
+                        float dot;
+                        if(light->getType()==LightType::Directional)
+                        {
+                            
+                            dot=prodscal3D(Normalize3D(vns[triangle.p1.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            if(dot>0)
+                            {
+                                diffuse1+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                            }
+                            dot=prodscal3D(Normalize3D(vns[triangle.p2.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            if(dot>0)
+                            {
+                                diffuse2+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                            }
+                            dot=prodscal3D(Normalize3D(vns[triangle.p3.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            if(dot>0)
+                            {
+                                diffuse3+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                            }
+                        }
+                            
                     }
-                    if (light.type==LightType::Point)
+                    for (Light* &light  :globalLights)
                     {
-                        diffuse1=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p1.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
-                        diffuse2=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p2.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
-                        diffuse3=sf::Color(std::clamp(prodscal3D(pointscam[triangle.p3.ivn],Normalize3D(light.direction)),0.f,1.f)*255);
+                        delete light;
                     }
-                    pr1.color+=Materieaux[triangle.mat].kd*diffuse1;
-                    pr2.color+=Materieaux[triangle.mat].kd*diffuse2;
-                    pr3.color+=Materieaux[triangle.mat].kd*diffuse3;
+                    
+                    globalLights.clear();
+                    
+                    pr1.color=Materieaux[triangle.mat].kd*diffuse1+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                    pr2.color=Materieaux[triangle.mat].kd*diffuse2+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                    pr3.color=Materieaux[triangle.mat].kd*diffuse3+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                }
+                else
+                {
+                    pr1.color={255,255,255};
+                    pr2.color={255,255,255};
+                    pr3.color={255,255,255};
                 }
                 
-
-                pr1.color+=Materieaux[triangle.mat].ka*ambiantLight;
-                pr2.color+=Materieaux[triangle.mat].ka*ambiantLight;
-                pr3.color+=Materieaux[triangle.mat].ka*ambiantLight; 
                 triangles.append(pr1);
                 triangles.append(pr2);
                 triangles.append(pr3);
@@ -273,7 +289,13 @@ class Objet3D {
                     fic>>y;
                     vts.push_back({x,y});
                 }
-                
+                if (donnee=="vn")  
+                {   float x,y,z;
+                    fic>>x;
+                    fic>>y;
+                    fic>>z;
+                    vns.push_back({x,y,z});
+                }
                 if (donnee=="f")
                 {  
                     bool again; //au cas où la suite est sur la ligne d'après (backslash)
@@ -289,10 +311,17 @@ class Objet3D {
                             if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n" and vertex!="f") 
                             {
                                 std::vector<std::string> index=split(vertex,"/");
-                                if(index[0]=="")index[0]="1";
                                 if(index[1]=="")index[1]="1";
+                                if (index.size()!=2)
+                                {
                                 
-                                face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1)});
+                                    face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1),unsigned(stoi(index[2])-1)});
+                                }
+                                else
+                                    face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1)});
+                                
+                                
+                               
                             }
                             if(vertex=="\\\r" or vertex=="\\\n" or vertex=="\\" or vertex=="\\\r\n")
                             {
@@ -367,6 +396,20 @@ class Objet3D {
                         triangles3D.push_back(tri);
                     }
                 }
+                if (vns.size()==0)
+                {
+                    std::cout<<"créations des normales"<<std::endl;
+                    int index=0;
+                    for (triangle &tri : triangles3D)
+                    {
+                        vns.push_back(prodvect3D(Normalize3D(points[tri.p1.ipos]-points[tri.p2.ipos]),Normalize3D(points[tri.p1.ipos]-points[tri.p3.ipos])));
+                        tri.p1.ivt=index;
+                        tri.p2.ivt=index;
+                        tri.p3.ivt=index;
+                        index++;
+                    }
+                }
+                
             }
 
             int count_hiden(triangle &tri,const plan &P)
@@ -509,14 +552,14 @@ class Objet3D {
                     {
                         pointscam.push_back(near_projection(p2,p1,P));
                         pointscam.push_back(near_projection(p3,p1,P));
-                        aux.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
-                        aux.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt},triangle.mat});
+                        aux.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt,triangle.p1.ivn},{pointscam.size()-1,triangle.p1.ivt,triangle.p1.ivn},triangle.mat});
+                        aux.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt,triangle.p1.ivn},triangle.mat});
                     }
                     if (count==2 )
                     {
                         pointscam.push_back(near_projection(p3,p1,P));
                         pointscam.push_back(near_projection(p3,p2,P));
-                        aux.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt},{pointscam.size()-1,triangle.p2.ivt},triangle.mat});
+                        aux.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt,triangle.p1.ivn},{pointscam.size()-1,triangle.p2.ivt,triangle.p1.ivn},triangle.mat});
                     }
                 }
                 visibles=aux;

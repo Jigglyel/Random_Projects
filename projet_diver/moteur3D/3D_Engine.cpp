@@ -1,5 +1,9 @@
 #include"3D_Engine.hpp"
 
+//Main of my 3D self Made Engine, with the only help of the SFML library
+
+
+//first there is the input for the camera movements that require multiple buttons pressed at the same time
 void input(Camera & camera)
 {
     float angleXz;
@@ -15,7 +19,7 @@ void input(Camera & camera)
 
     if(sf::Keyboard::isKeyPressed(SwitchMode))
         camera.mode_survie=!camera.mode_survie;
-
+    // flying camera
     if (!camera.mode_survie)
     {
 
@@ -51,6 +55,7 @@ void input(Camera & camera)
         }
     }
     else
+    //grounded camera
     {
         camera.velocity.x=0;
         camera.velocity.z=0;
@@ -80,12 +85,6 @@ void input(Camera & camera)
             camera.in_air=true;
         }
     }
-    
-   
-    // if(sf::Keyboard::isKeyPressed(Down))
-    // {
-    //     camera.velocity=sf::Vector3f(0,-camera.speed,0);
-    // }
 }
 
 
@@ -94,17 +93,17 @@ int main()
 {
 
 
-
+    //where all my 3Dobjects are loaded 
 
     // Objet3D Tournevis("../tournevis.obj");
     Objet3D Bastion("../Assets/Model3D/Bastion");
-    Objet3D Castle("../Assets/Model3D/Peach_Castle");
-      Objet3D zelda("../Assets/Model3D/links_awakening_64");
-      Objet3D turevoi("../Assets/Model3D/Voiture");
-    Objet3D road("../Assets/Model3D/RR64");
-     Objet3D link("../Assets/Model3D/Link Adult");
-    // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
-    // Objet3D mcplains("../Assets/Model3D/mcPlains");
+    // Objet3D Castle("../Assets/Model3D/Peach_Castle");
+    //   Objet3D zelda("../Assets/Model3D/links_awakening_64");
+     Objet3D turevoi("../Assets/Model3D/Voiture");
+    // Objet3D road("../Assets/Model3D/RR64");
+    //  Objet3D link("../Assets/Model3D/Link Adult");
+    // // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
+    // // Objet3D mcplains("../Assets/Model3D/mcPlains");
 
     Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
 
@@ -116,9 +115,9 @@ int main()
     // Objet3D sonique("../Assets/Model3D/sonique.obj");
     // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
     // Objet3D pichu("../Assets/Model3D/Pichu.obj");
-    // Objet3D gardien("../Assets/Model3D/Guardian.obj");
-     Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
-    
+    Objet3D gardien("../Assets/Model3D/Guardian");
+    Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
+    Objet3D OOTZ("../Assets/Model3D/OOTzelda");
     // Objet3D Monkey("../Assets/Model3D/Monkey.obj");
     // Objet3D Mario("../Assets/Model3D/Mario.obj");
     // Objet3D scary_face("../Assets/Model3D/scary-face.obj");
@@ -137,29 +136,27 @@ int main()
 
 
 
+    //adjusting position, size and rotation of models
 
 
+    amelie.size=0.005;
+    amelie.position={100,0,60};
 
 
-
-
-    float angle=0;
     sf::Clock Time;
-
+    //setting window and variables
     sf::RenderWindow window(sf::VideoMode(950, 950), "SFML window");
     
     float MouseSensivity=0.25;
 
 
     Camera camera;
-    std::vector<Light>lights;
-    lights.push_back({LightType::Directional,{0,0,1},255});
-    camera.speed=1;
-    turevoi.position={200,20,10};
-    cassidy.position={2,0,1};
+    camera.speed=0.2;
     bool pause=false;
     window.setFramerateLimit(60);
     sf::Vector2i oldPos=sf::Mouse::getPosition(window);
+
+    // Poll event of miscellanios which doesn't require multiple button pressed at the same time
     while (window.isOpen())
     {
         sf::Event event;
@@ -179,6 +176,9 @@ int main()
                     case sf::Keyboard::P:
                         pause=!pause;
                         break;
+                    case sf::Keyboard::C:
+                        camera.lights=!camera.lights;
+                        break;
                     case sf::Keyboard::Add:
                         camera.fov+=0.01;
                         break;
@@ -191,10 +191,8 @@ int main()
                         
                         break;
                     case sf::Keyboard::Left:
-                        cassidy.RotationAngleX-=5;
                         break;
                     case sf::Keyboard::Right:
-                        cassidy.RotationAngleX+=5;
                         break;
                     case sf::Keyboard::M:
                         std::cout<<"indiquez la vitesse de la caméra : "<<std::endl;
@@ -202,7 +200,7 @@ int main()
                         break;
                     }
                     
-                    
+                // calculate the parcoured distance between two frame and then replace the mouse cursor at the center of the window
                 case sf::Event::MouseMoved:
                 if (!pause)         
                 {   
@@ -243,25 +241,16 @@ int main()
             }
         }
 
-
+        //self explanatory
         input(camera);
         camera.apply_forces();
         camera.move();
         camera.Check_collisions();
 
         window.clear(sf::Color::Black);
+              
         
-        Cube cube1(5,{10,5,8});
-        Cube cube2(3,{8,7,3});
-        Cube cube3(6,{9,12,2});       
-        amelie.size=0.005;
-        amelie.position={100,0,60};
-        amelie.RotationAngleX=-70;
-        Castle.RotationAngleY=-90;
-        Jiggliano.size=3;
-        TPZ.RotationAngleX+=30;
-        TPZ.RotationAngleY+=2;
-        Jiggliano.draw(window, camera,lights);
+        amelie.draw(window, camera);
         window.display();
 
     }

@@ -54,7 +54,7 @@ sf::Vector2f Normalize2D(sf::Vector2f v)
 }
 sf::Vector3f rotate_point(sf::Vector3f point,float angle,sf::Vector3f sens)
 {
-        angle=angle*M_PI*2/360;
+    angle=(angle*M_PI*2)/360;
         float c=cos(angle);
         float s=sin(angle);
         float x=point.x,y=point.y,z=point.z;
@@ -128,5 +128,10 @@ sf::Vector3f near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P
 {
     float t=(P.D-prodscal3D(P.N,A))/prodscal3D(P.N,B-A);
     return A + t * (B - A);
+}
+
+void affiche_couleur(sf::Color couleur)
+{
+    std::cout<<int(couleur.r)<<" "<<int(couleur.g)<<" "<<int(couleur.b)<<std::endl;
 }
 
