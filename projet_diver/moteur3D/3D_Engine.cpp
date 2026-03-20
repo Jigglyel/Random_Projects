@@ -97,27 +97,27 @@ int main()
 
     // Objet3D Tournevis("../tournevis.obj");
     Objet3D Bastion("../Assets/Model3D/Bastion");
-    // Objet3D Castle("../Assets/Model3D/Peach_Castle");
+     Objet3D Castle("../Assets/Model3D/Peach_Castle");
     //   Objet3D zelda("../Assets/Model3D/links_awakening_64");
-     Objet3D turevoi("../Assets/Model3D/Voiture");
-    // Objet3D road("../Assets/Model3D/RR64");
-    //  Objet3D link("../Assets/Model3D/Link Adult");
-    // // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
-    // // Objet3D mcplains("../Assets/Model3D/mcPlains");
+    //  Objet3D turevoi("../Assets/Model3D/Voiture");
+    // // Objet3D road("../Assets/Model3D/RR64");
+    // //  Objet3D link("../Assets/Model3D/Link Adult");
+    // // // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
+    // // // Objet3D mcplains("../Assets/Model3D/mcPlains");
 
-    Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
+    // Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
 
-    Objet3D amelie("../Assets/Model3D/amelie");
-    Objet3D TPZ("../Assets/Model3D/TPzelda");
-    // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
-    // Bastion.position={50,32,60};
-    // escalier.position={20,50,62};
-    // Objet3D sonique("../Assets/Model3D/sonique.obj");
-    // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
-    // Objet3D pichu("../Assets/Model3D/Pichu.obj");
-    Objet3D gardien("../Assets/Model3D/Guardian");
-    Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
-    Objet3D OOTZ("../Assets/Model3D/OOTzelda");
+    // Objet3D amelie("../Assets/Model3D/amelie");
+    // Objet3D TPZ("../Assets/Model3D/TPzelda");
+    // // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
+    // // Bastion.position={50,32,60};
+    // // escalier.position={20,50,62};
+    // // Objet3D sonique("../Assets/Model3D/sonique.obj");
+    // // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
+    // // Objet3D pichu("../Assets/Model3D/Pichu.obj");
+    // Objet3D gardien("../Assets/Model3D/Guardian");
+    // Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
+    // Objet3D OOTZ("../Assets/Model3D/OOTzelda");
     // Objet3D Monkey("../Assets/Model3D/Monkey.obj");
     // Objet3D Mario("../Assets/Model3D/Mario.obj");
     // Objet3D scary_face("../Assets/Model3D/scary-face.obj");
@@ -139,8 +139,6 @@ int main()
     //adjusting position, size and rotation of models
 
 
-    amelie.size=0.005;
-    amelie.position={100,0,60};
 
 
     sf::Clock Time;
@@ -154,8 +152,9 @@ int main()
     camera.speed=0.2;
     bool pause=false;
     window.setFramerateLimit(60);
+    sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
     sf::Vector2i oldPos=sf::Mouse::getPosition(window);
-
+    
     // Poll event of miscellanios which doesn't require multiple button pressed at the same time
     while (window.isOpen())
     {
@@ -204,15 +203,15 @@ int main()
                 case sf::Event::MouseMoved:
                 if (!pause)         
                 {   
-                    sf::Mouse souris;
+                    
                     
                     
                     camera.offsetX+= (sf::Mouse::getPosition(window).x-oldPos.x)*MouseSensivity;
                     camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
-
-                    if(Time.getElapsedTime().asSeconds()>0.05)
+                    
+                    if(Time.getElapsedTime().asSeconds()>0.05 and sf::Mouse::getPosition().x-window.getPosition().x>0 and sf::Mouse::getPosition().x-window.getPosition().x<window.getSize().x )
                     {
-                        souris.setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                        sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
                         Time.restart();
                     }
                     
@@ -248,9 +247,34 @@ int main()
         camera.Check_collisions();
 
         window.clear(sf::Color::Black);
-              
+        sf::Vector3f o= camera.switch_base({0,0,0});
+        sf::Vector3f x= camera.switch_base({1,0,0});
+        sf::Vector3f y= camera.switch_base({0,1,0});
+        sf::Vector3f z= camera.switch_base({0,0,1});
         
-        amelie.draw(window, camera);
+        sf::VertexArray repère(sf::Lines,6);
+        sf::Vertex ocam;
+        ocam.position=SFMLScale(camera.Projection(o),window);
+        ocam.color=sf::Color::White;
+        sf::Vertex xcam;
+        xcam.position=SFMLScale(camera.Projection(x),window);
+        xcam.color=sf::Color::Red;
+        sf::Vertex ycam;
+        ycam.position=SFMLScale(camera.Projection(y),window);
+        ycam.color=sf::Color::Blue;
+        sf::Vertex zcam;
+        zcam.position=SFMLScale(camera.Projection(z),window);
+        zcam.color=sf::Color::Green;
+        int i=0;
+        repère[0]=ocam;
+        repère[1]=xcam;
+        repère[2]=ocam;
+        repère[3]=ycam;
+        repère[4]=ocam;
+        repère[5]=zcam;
+        Castle.RotationAngleX=-90;
+        Castle.draw(window, camera);
+        window.draw(repère);
         window.display();
 
     }

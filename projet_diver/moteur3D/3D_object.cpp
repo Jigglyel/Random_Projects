@@ -5,11 +5,8 @@
 #include<iostream>
 #include <filesystem>
 #include<map>
-#include <algorithm>
 #include <array>
-#include <functional>
 #include <iostream>
-#include <string_view>
 #include "Light.hpp"
 struct matérieau
 {
@@ -20,7 +17,6 @@ struct matérieau
     bool check_map_Kd=false,check_map_Ke=false;
 
 };
-
 struct IndexPoint
 {
     long unsigned int ipos;
@@ -174,24 +170,25 @@ class Objet3D {
                     sf::Color diffuse3={0,0,0};
                     std::vector<Light*> globalLights;
                     sf::Color ambiantLight={50,50,50};
-                    globalLights.push_back(new Directional{{0,0,1},{120,120,120}});
+                    globalLights.push_back(new Directional{{0,-1,0.1},{255,0,255}});
+                    globalLights.push_back(new Directional{{0,-1,-0.1},{0,255,255}});
                     for(Light* &light  :globalLights)
                     {
                         float dot;
                         if(light->getType()==LightType::Directional)
                         {
                             
-                            dot=prodscal3D(Normalize3D(vns[triangle.p1.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            dot=prodscal3D(-Normalize3D(vns[triangle.p1.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
                             if(dot>0)
                             {
                                 diffuse1+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
                             }
-                            dot=prodscal3D(Normalize3D(vns[triangle.p2.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            dot=prodscal3D(-Normalize3D(vns[triangle.p2.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
                             if(dot>0)
                             {
                                 diffuse2+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
                             }
-                            dot=prodscal3D(Normalize3D(vns[triangle.p3.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
+                            dot=prodscal3D(-Normalize3D(vns[triangle.p3.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
                             if(dot>0)
                             {
                                 diffuse3+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
@@ -236,6 +233,7 @@ class Objet3D {
         triangles.clear();
         pointscam.clear();
         visibles.clear();
+        
         
     }
 
@@ -339,6 +337,19 @@ class Objet3D {
             fic.close();
             create_triangles(currentmat);
             faces.clear();
+            if (vns.size()==0)
+                {
+                    std::cout<<"créations des normales"<<std::endl;
+                    int index=0;
+                    for (triangle &tri : triangles3D)
+                    {
+                        vns.push_back(prodvect3D(Normalize3D(points[tri.p1.ipos]-points[tri.p2.ipos]),Normalize3D(points[tri.p1.ipos]-points[tri.p3.ipos])));
+                        tri.p1.ivn=index;
+                        tri.p2.ivn=index;
+                        tri.p3.ivn=index;
+                        index++;
+                    }
+                }
         }
 
         private :
@@ -396,19 +407,7 @@ class Objet3D {
                         triangles3D.push_back(tri);
                     }
                 }
-                if (vns.size()==0)
-                {
-                    std::cout<<"créations des normales"<<std::endl;
-                    int index=0;
-                    for (triangle &tri : triangles3D)
-                    {
-                        vns.push_back(prodvect3D(Normalize3D(points[tri.p1.ipos]-points[tri.p2.ipos]),Normalize3D(points[tri.p1.ipos]-points[tri.p3.ipos])));
-                        tri.p1.ivt=index;
-                        tri.p2.ivt=index;
-                        tri.p3.ivt=index;
-                        index++;
-                    }
-                }
+                
                 
             }
 

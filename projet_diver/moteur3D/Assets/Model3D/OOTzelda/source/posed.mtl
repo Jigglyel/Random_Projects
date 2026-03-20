@@ -12,8 +12,8 @@ newmtl Material__28
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ootzeldatex_A.png
-	map_Kd ootzeldatex_A.png
+	map_Ka EyeR.png
+	map_Kd EyeR.png
 
 newmtl Material__27
 	Ns 10.0000
@@ -26,8 +26,8 @@ newmtl Material__27
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ootzeldatex_A.png
-	map_Kd ootzeldatex_A.png
+	map_Ka eyeL.png
+	map_Kd eyeL.png
 
 newmtl eyeR
 	Ns 43.2193
@@ -124,8 +124,8 @@ newmtl Specular
 	Kd 0.8000 0.8000 0.8000
 	Ks 0.2000 0.2000 0.2000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka ootzeldatex_ASpecular.png
-	map_Kd ootzeldatex_ASpecular.png
+	map_Ka ootzeldatex_ASpec.png
+	map_Kd ootzeldatex_ASpec.png
 
 newmtl Triforce
 	Ns 43.2193

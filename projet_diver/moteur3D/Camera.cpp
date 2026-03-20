@@ -2,7 +2,7 @@
 
 Camera::Camera(/* args */)
 {
-    position={0,0,0};
+    position={0.4,0.1,-1};
     offsetX=0;
     offsetY=0;
     fov=1;
@@ -26,13 +26,13 @@ sf::Vector3f Camera::switch_base(sf::Vector3f P)
 sf::Vector2f Camera::Projection(sf::Vector3f P)
 {
     sf::Vector2f Proj;
-    if (P.z!=0)
+    if (P.z==0)
     {
-        Proj.x=fov*P.x/P.z;
-        Proj.y=fov*P.y/P.z;
+        P.z=0.0001;
     }
     
-    
+    Proj.x=fov*P.x/P.z;
+    Proj.y=fov*P.y/P.z;
     
     
     return Proj;
