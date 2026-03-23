@@ -10,8 +10,9 @@
 #include "Light.hpp"
 struct matérieau
 {
-    sf::Color kd={0,0,0},ke={0,0,0},ka={0,0,0};
+    sf::Color kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
     float d=1;
+    float Ns=-1;
     sf::Texture map_Kd;
     sf::Texture map_Ke;
     bool check_map_Kd=false,check_map_Ke=false;
@@ -131,6 +132,8 @@ class Objet3D {
                                                         });
         for (const triangle &triangle : visibles)
         {
+            matérieau mat=Materieaux[triangle.mat];
+
             sf::Vector3f p1=pointscam[triangle.p1.ipos];
             sf::Vector3f p2=pointscam[triangle.p2.ipos];
             sf::Vector3f p3=pointscam[triangle.p3.ipos];
@@ -152,14 +155,14 @@ class Objet3D {
                 newmat=triangle.mat;
                 
            }
-            
+                
                 sf::Vertex pr1=camera.Projection(p1);
                 sf::Vertex pr2=camera.Projection(p2);
                 sf::Vertex pr3=camera.Projection(p3);
                 pr1=SFMLScale(pr1.position,target);
                 pr2=SFMLScale(pr2.position,target);
                 pr3=SFMLScale(pr3.position,target);
-                sf::Vector2u size=Materieaux[triangle.mat].map_Kd.getSize();
+                sf::Vector2u size=mat.map_Kd.getSize();
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
@@ -172,30 +175,63 @@ class Objet3D {
                     sf::Color ambiantLight={50,50,50};
                     globalLights.push_back(new Directional{{0,-1,0.1},{255,0,255}});
                     globalLights.push_back(new Directional{{0,-1,-0.1},{0,255,255}});
+                    globalLights.push_back(new Directional{{0,-1,-0.1},{255,255,255}});
                     for(Light* &light  :globalLights)
                     {
-                        float dot;
+                        float dot1;
+                        float dot2;
+                        float dot3;
                         if(light->getType()==LightType::Directional)
                         {
-                            
-                            dot=prodscal3D(-Normalize3D(vns[triangle.p1.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
-                            if(dot>0)
+                            sf::Vector3f L=-Normalize3D(static_cast<Directional*>(light)->direction);
+                            sf::Vector3f N1=Normalize3D(vns[triangle.p1.ivn]);
+                            sf::Vector3f N2=Normalize3D(vns[triangle.p2.ivn]);
+                            sf::Vector3f N3=Normalize3D(vns[triangle.p3.ivn]);
+                            dot1=prodscal3D(N1,L);
+                            if(dot1>0)
                             {
-                                diffuse1+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                                diffuse1+=sf::Color(dot1*255,dot1*255,dot1*255)*light->couleur*mat.kd;
                             }
-                            dot=prodscal3D(-Normalize3D(vns[triangle.p2.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
-                            if(dot>0)
+                            dot2=prodscal3D(N2,L);
+                            if(dot2>0)
                             {
-                                diffuse2+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                                diffuse2+=sf::Color(dot2*255,dot2*255,dot2*255)*light->couleur*mat.kd;
                             }
-                            dot=prodscal3D(-Normalize3D(vns[triangle.p3.ivn]),Normalize3D(static_cast<Directional*>(light)->direction));
-                            if(dot>0)
+                            dot3=prodscal3D(N3,L);
+                            if(dot3>0)
                             {
-                                diffuse3+=sf::Color(dot*255,dot*255,dot*255)*light->couleur;
+                                diffuse3+=sf::Color(dot3*255,dot3*255,dot3*255)*light->couleur*mat.kd;
                             }
+
+                            if (mat.Ns=-1)
+                            {
+                                sf::Vector3f R1=2.f*N1*dot1-L;
+                                sf::Vector3f R2=2.f*N2*dot2-L;
+                                sf::Vector3f R3=2.f*N3*dot3-L;
+                                float dotr1=prodscal3D(Normalize3D(R1),Normalize3D(-p1));
+                                double pow1=pow(dot1, mat.Ns);
+                                if (dotr1>0)  {
+                                    diffuse1 += light->couleur * sf::Color(pow1*255,pow1*255,pow1*255) *mat.ks;
+                                }
+                                float dotr2=prodscal3D(Normalize3D(R2),Normalize3D(-p2));
+                                double pow2=pow(dot2, mat.Ns);
+                                if (dotr2>0)  {
+                                    diffuse2 += light->couleur * sf::Color(pow2*255,pow2*255,pow2*255) *mat.ks;
+                                }
+                                float dotr3=prodscal3D(Normalize3D(R3),Normalize3D(-p3));
+                                double pow3=pow(dot3, mat.Ns);
+                                if (dotr3>0)  {
+                                    diffuse3 += light->couleur * sf::Color(pow3*255,pow3*255,pow3*255) *mat.ks;
+                                }
+                                
+                            }
+
                         }
                             
                     }
+                    
+                    
+
                     for (Light* &light  :globalLights)
                     {
                         delete light;
@@ -203,9 +239,9 @@ class Objet3D {
                     
                     globalLights.clear();
                     
-                    pr1.color=Materieaux[triangle.mat].kd*diffuse1+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
-                    pr2.color=Materieaux[triangle.mat].kd*diffuse2+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
-                    pr3.color=Materieaux[triangle.mat].kd*diffuse3+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                    pr1.color=diffuse1+mat.ka*ambiantLight+mat.ke;
+                    pr2.color=diffuse2+mat.ka*ambiantLight+mat.ke;
+                    pr3.color=diffuse3+mat.ka*ambiantLight+mat.ke;
                 }
                 else
                 {
@@ -255,7 +291,8 @@ class Objet3D {
             std::string donnee;
             
             while (fic>>donnee)
-            {   if (donnee=="mtllib")
+            {   
+                if (donnee=="mtllib")
                 {
                     std::string mtlname;
                     fic>>mtlname;
@@ -264,8 +301,10 @@ class Objet3D {
 
                 if (donnee=="usemtl")
                 {
+                     
                     if(currentmat!="")
                     {
+
                         create_triangles(currentmat);
                         faces.clear();
                     }
@@ -287,8 +326,9 @@ class Objet3D {
                     fic>>y;
                     vts.push_back({x,y});
                 }
-                if (donnee=="vn")  
-                {   float x,y,z;
+                if (donnee=="vn")
+                {   
+                    float x,y,z;
                     fic>>x;
                     fic>>y;
                     fic>>z;
@@ -296,6 +336,7 @@ class Objet3D {
                 }
                 if (donnee=="f")
                 {  
+                    
                     bool again; //au cas où la suite est sur la ligne d'après (backslash)
                     std::vector<IndexPoint> face;
                     
@@ -306,7 +347,7 @@ class Objet3D {
                         std::vector<std::string> ligne=split(donnee," ");
                         for (std::string &vertex: ligne)
                         {
-                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n" and vertex!="f") 
+                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
                             {
                                 std::vector<std::string> index=split(vertex,"/");
                                 if(index[1]=="")index[1]="1";
@@ -316,7 +357,9 @@ class Objet3D {
                                     face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1),unsigned(stoi(index[2])-1)});
                                 }
                                 else
+                                {
                                     face.push_back({unsigned(stoi(index[0])-1),unsigned(stoi(index[1])-1)});
+                                }
                                 
                                 
                                
@@ -336,6 +379,9 @@ class Objet3D {
             }
             fic.close();
             create_triangles(currentmat);
+
+            std::cout<<triangles3D.size()<<" triangles ont été créés"<<std::endl;
+            std::cout<<points.size()<<" points ont été créés"<<std::endl;
             faces.clear();
             if (vns.size()==0)
                 {
@@ -395,6 +441,7 @@ class Objet3D {
             void create_triangles(const std::string &mat)
             {
                 std::cout<<"je cree les triangles de mat : "<<mat<<std::endl;
+                std::cout<<faces.size()<<std::endl;
                 for (std::vector<IndexPoint> const &face : faces)
                 {
                     for (size_t i = 1; i < face.size()-1; i++)
@@ -503,7 +550,16 @@ class Objet3D {
                             Materieaux[nommat].ka.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
                             Materieaux[nommat].ka.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
                         }
-
+                        if(donneemtl=="Ks")
+                        {
+                            float r,g,b;
+                            ficmtl>>r;
+                            ficmtl>>g;
+                            ficmtl>>b;
+                            Materieaux[nommat].ks.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ks.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
+                            Materieaux[nommat].ks.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                        }
                         if(donneemtl=="d")
                         {
                             float d;
