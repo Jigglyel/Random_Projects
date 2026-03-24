@@ -8,6 +8,7 @@
 #include <array>
 #include <iostream>
 #include "Light.hpp"
+#include<cstdlib>
 struct matérieau
 {
     sf::Color kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
@@ -87,7 +88,7 @@ class Objet3D {
 
     
     
-    void draw(sf::RenderTarget& target,Camera &camera) 
+    void draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> globalLights) 
     {
         std::string newmat="";
         sf::VertexArray triangles(sf::Triangles);
@@ -132,7 +133,6 @@ class Objet3D {
                                                         });
         for (const triangle &triangle : visibles)
         {
-            matérieau mat=Materieaux[triangle.mat];
 
             sf::Vector3f p1=pointscam[triangle.p1.ipos];
             sf::Vector3f p2=pointscam[triangle.p2.ipos];
@@ -162,7 +162,7 @@ class Objet3D {
                 pr1=SFMLScale(pr1.position,target);
                 pr2=SFMLScale(pr2.position,target);
                 pr3=SFMLScale(pr3.position,target);
-                sf::Vector2u size=mat.map_Kd.getSize();
+                sf::Vector2u size=Materieaux[triangle.mat].map_Kd.getSize();
                 pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
                 pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
                 pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
@@ -171,11 +171,8 @@ class Objet3D {
                     sf::Color diffuse1={0,0,0};
                     sf::Color diffuse2={0,0,0};
                     sf::Color diffuse3={0,0,0};
-                    std::vector<Light*> globalLights;
                     sf::Color ambiantLight={50,50,50};
-                    globalLights.push_back(new Directional{{0,-1,0.1},{255,0,255}});
-                    globalLights.push_back(new Directional{{0,-1,-0.1},{0,255,255}});
-                    globalLights.push_back(new Directional{{0,-1,-0.1},{255,255,255}});
+
                     for(Light* &light  :globalLights)
                     {
                         float dot1;
@@ -190,38 +187,37 @@ class Objet3D {
                             dot1=prodscal3D(N1,L);
                             if(dot1>0)
                             {
-                                diffuse1+=sf::Color(dot1*255,dot1*255,dot1*255)*light->couleur*mat.kd;
+                                diffuse1+=sf::Color(dot1*255,dot1*255,dot1*255)*light->couleur*Materieaux[triangle.mat].kd;
                             }
                             dot2=prodscal3D(N2,L);
                             if(dot2>0)
                             {
-                                diffuse2+=sf::Color(dot2*255,dot2*255,dot2*255)*light->couleur*mat.kd;
+                                diffuse2+=sf::Color(dot2*255,dot2*255,dot2*255)*light->couleur*Materieaux[triangle.mat].kd;
                             }
                             dot3=prodscal3D(N3,L);
                             if(dot3>0)
                             {
-                                diffuse3+=sf::Color(dot3*255,dot3*255,dot3*255)*light->couleur*mat.kd;
+                                diffuse3+=sf::Color(dot3*255,dot3*255,dot3*255)*light->couleur*Materieaux[triangle.mat].kd;
                             }
-
-                            if (mat.Ns=-1)
+                            if (Materieaux[triangle.mat].Ns!=-1)
                             {
                                 sf::Vector3f R1=2.f*N1*dot1-L;
                                 sf::Vector3f R2=2.f*N2*dot2-L;
                                 sf::Vector3f R3=2.f*N3*dot3-L;
-                                float dotr1=prodscal3D(Normalize3D(R1),Normalize3D(-p1));
-                                double pow1=pow(dot1, mat.Ns);
+                                float dotr1=prodscal3D(Normalize3D(R1),-Normalize3D(p1));
+                                double pow1=pow(dotr1, Materieaux[triangle.mat].Ns);
                                 if (dotr1>0)  {
-                                    diffuse1 += light->couleur * sf::Color(pow1*255,pow1*255,pow1*255) *mat.ks;
+                                    diffuse1 += light->couleur * sf::Color(pow1*255,pow1*255,pow1*255) *Materieaux[triangle.mat].ks;
                                 }
-                                float dotr2=prodscal3D(Normalize3D(R2),Normalize3D(-p2));
-                                double pow2=pow(dot2, mat.Ns);
+                                float dotr2=prodscal3D(Normalize3D(R2),-Normalize3D(p2));
+                                double pow2=pow(dotr2, Materieaux[triangle.mat].Ns);
                                 if (dotr2>0)  {
-                                    diffuse2 += light->couleur * sf::Color(pow2*255,pow2*255,pow2*255) *mat.ks;
+                                    diffuse2 += light->couleur * sf::Color(pow2*255,pow2*255,pow2*255) *Materieaux[triangle.mat].ks;
                                 }
-                                float dotr3=prodscal3D(Normalize3D(R3),Normalize3D(-p3));
-                                double pow3=pow(dot3, mat.Ns);
+                                float dotr3=prodscal3D(Normalize3D(R3),-Normalize3D(p3));
+                                double pow3=pow(dotr3, Materieaux[triangle.mat].Ns);
                                 if (dotr3>0)  {
-                                    diffuse3 += light->couleur * sf::Color(pow3*255,pow3*255,pow3*255) *mat.ks;
+                                    diffuse3 += light->couleur * sf::Color(pow3*255,pow3*255,pow3*255) *Materieaux[triangle.mat].ks;
                                 }
                                 
                             }
@@ -229,19 +225,9 @@ class Objet3D {
                         }
                             
                     }
-                    
-                    
-
-                    for (Light* &light  :globalLights)
-                    {
-                        delete light;
-                    }
-                    
-                    globalLights.clear();
-                    
-                    pr1.color=diffuse1+mat.ka*ambiantLight+mat.ke;
-                    pr2.color=diffuse2+mat.ka*ambiantLight+mat.ke;
-                    pr3.color=diffuse3+mat.ka*ambiantLight+mat.ke;
+                    pr1.color=diffuse1+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                    pr2.color=diffuse2+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
+                    pr3.color=diffuse3+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
                 }
                 else
                 {
@@ -347,7 +333,7 @@ class Objet3D {
                         std::vector<std::string> ligne=split(donnee," ");
                         for (std::string &vertex: ligne)
                         {
-                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n") 
+                            if (vertex!="" and vertex!="\\" and vertex!="\\\r" and vertex!="\\\n" and vertex!="\\\r\n" ) 
                             {
                                 std::vector<std::string> index=split(vertex,"/");
                                 if(index[1]=="")index[1]="1";
@@ -441,7 +427,6 @@ class Objet3D {
             void create_triangles(const std::string &mat)
             {
                 std::cout<<"je cree les triangles de mat : "<<mat<<std::endl;
-                std::cout<<faces.size()<<std::endl;
                 for (std::vector<IndexPoint> const &face : faces)
                 {
                     for (size_t i = 1; i < face.size()-1; i++)
