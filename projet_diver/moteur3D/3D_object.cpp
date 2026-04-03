@@ -171,7 +171,7 @@ class Objet3D {
                     sf::Color diffuse1={0,0,0};
                     sf::Color diffuse2={0,0,0};
                     sf::Color diffuse3={0,0,0};
-                    sf::Color ambiantLight={50,50,50};
+                    sf::Color ambiantLight={150,150,150};
 
                     for(Light* &light  :globalLights)
                     {
@@ -199,13 +199,14 @@ class Objet3D {
                             {
                                 diffuse3+=sf::Color(dot3*255,dot3*255,dot3*255)*light->couleur*Materieaux[triangle.mat].kd;
                             }
-                            if (Materieaux[triangle.mat].Ns!=-1)
+                            if (Materieaux[triangle.mat].Ns>0)
                             {
                                 sf::Vector3f R1=2.f*N1*dot1-L;
                                 sf::Vector3f R2=2.f*N2*dot2-L;
                                 sf::Vector3f R3=2.f*N3*dot3-L;
                                 float dotr1=prodscal3D(Normalize3D(R1),-Normalize3D(p1));
                                 double pow1=pow(dotr1, Materieaux[triangle.mat].Ns);
+                                std::cout<<pow1<<std::endl;
                                 if (dotr1>0)  {
                                     diffuse1 += light->couleur * sf::Color(pow1*255,pow1*255,pow1*255) *Materieaux[triangle.mat].ks;
                                 }
@@ -552,7 +553,10 @@ class Objet3D {
                             Materieaux[nommat].kd.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
                             Materieaux[nommat].ke.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
                         }
-                            
+                        if(donneemtl=="Ns")
+                        {
+                            ficmtl>> Materieaux[nommat].Ns;
+                        }
                         if(donneemtl=="map_Kd")
                         {
                             ficmtl>>nomtext;

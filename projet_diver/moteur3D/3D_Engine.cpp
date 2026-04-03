@@ -107,7 +107,7 @@ int main()
 
     // Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
 
-    // Objet3D amelie("../Assets/Model3D/amelie");
+     Objet3D amelie("../Assets/Model3D/amelie");
     // Objet3D TPZ("../Assets/Model3D/TPzelda");
     // // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
     // // Bastion.position={50,32,60};
@@ -178,9 +178,7 @@ int main()
     sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
     sf::Vector2i oldPos=sf::Mouse::getPosition(window);
     std::vector<Light*>globalLights;
-    globalLights.push_back(new Directional{{0.25,-0.5,0.1},{10,20,30}});
-    globalLights.push_back(new Directional{{0.5,-0.2,0.3},{255,0,60}});
-    globalLights.push_back(new Directional{{0.3,-0.8,0.6},{80,230,230}});
+    globalLights.push_back(new Directional{{0.5,-0.2,0.3},{255,255,255}});
     // Poll event of miscellanios which doesn't require multiple button pressed at the same time
     while (window.isOpen())
     {
@@ -285,7 +283,7 @@ int main()
         camera.move();
         camera.Check_collisions();
         window.clear(sf::Color::Black);
-        turevoi.draw(window, camera,globalLights);
+        bottle.draw(window, camera,globalLights);
 
         window.display();
 
