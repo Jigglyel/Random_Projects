@@ -95,32 +95,27 @@ int main()
 
     //where all my 3Dobjects are loaded 
 
-    // Objet3D Tournevis("../tournevis.obj");
     // Objet3D Bastion("../Assets/Model3D/Bastion");
     //  Objet3D Castle("../Assets/Model3D/Peach_Castle");
     //   Objet3D zelda("../Assets/Model3D/links_awakening_64");
-    Objet3D turevoi("../Assets/Model3D/Voiture");
-    // // Objet3D road("../Assets/Model3D/RR64");
-    // //  Objet3D link("../Assets/Model3D/Link Adult");
-    // // // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
-    // // // Objet3D mcplains("../Assets/Model3D/mcPlains");
+    //  Objet3D turevoi("../Assets/Model3D/Voiture");
+    // Objet3D road("../Assets/Model3D/RR64");
+    Objet3D kiriko("../Assets/Model3D/kiriko");
+    //  Objet3D paint("../Assets/Model3D/peinture");
+    // Objet3D cathédrale("../Assets/Model3D/Cathedrale");
+    Objet3D link("../Assets/Model3D/Link Adult");
+    // // // // // Objet3D Minecastle("../Assets/Model3D/Minecraft_castle");
+    // // // // Objet3D mcplains("../Assets/Model3D/mcPlains");
 
-    // Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
+    //  Objet3D cassidy("../Assets/Model3D/low_poly_mccree");
 
-     Objet3D amelie("../Assets/Model3D/amelie");
+    Objet3D amelie("../Assets/Model3D/amelie");
     // Objet3D TPZ("../Assets/Model3D/TPzelda");
-    // // Objet3D escalier("../Assets/Model3D/escalierColimacon.obj");
-    // // Bastion.position={50,32,60};
-    // // escalier.position={20,50,62};
-    // // Objet3D sonique("../Assets/Model3D/sonique.obj");
-    // // Objet3D Evoli("../Assets/Model3D/Evoli.obj");
-    // // Objet3D pichu("../Assets/Model3D/Pichu.obj");
-    // Objet3D gardien("../Assets/Model3D/Guardian");
-     Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
-    Objet3D bottle("../Assets/Model3D/Bouteille");
-    // Objet3D Monkey("../Assets/Model3D/Monkey.obj");
-    // Objet3D Mario("../Assets/Model3D/Mario.obj");
-    // Objet3D scary_face("../Assets/Model3D/scary-face.obj");
+    // Objet3D boomrang("../Assets/Model3D/Boomrang");
+
+    // // Objet3D gardien("../Assets/Model3D/Guardian");
+   Objet3D Jiggliano("../Assets/Model3D/Jiggliano");
+    // Objet3D bottle("../Assets/Model3D/Bouteille"); 
     // Jiggliano.position={0,0,0};
     // Evoli.position={-100,40,25};
     // pichu.position={-150,40,25};
@@ -178,7 +173,8 @@ int main()
     sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
     sf::Vector2i oldPos=sf::Mouse::getPosition(window);
     std::vector<Light*>globalLights;
-    globalLights.push_back(new Directional{{0.5,-0.2,0.3},{255,255,255}});
+    globalLights.push_back(new Directional{{0.5,-1.3,-0.8},{255,0,0}});
+    globalLights.push_back(new Directional{{-0.5,-1.3,-0.8},{0,0,255}});
     // Poll event of miscellanios which doesn't require multiple button pressed at the same time
     while (window.isOpen())
     {
@@ -212,10 +208,6 @@ int main()
                             camera.fov=0;
                         }
                         
-                        break;
-                    case sf::Keyboard::Left:
-                        break;
-                    case sf::Keyboard::Right:
                         break;
                     case sf::Keyboard::M:
                         std::cout<<"indiquez la vitesse de la caméra : "<<std::endl;
@@ -270,9 +262,9 @@ int main()
 
                     
                         
-                    break; 
-                }
                     
+                }
+                break; 
                 
             }
         }
@@ -283,9 +275,13 @@ int main()
         camera.move();
         camera.Check_collisions();
         window.clear(sf::Color::Black);
-        bottle.draw(window, camera,globalLights);
+        link.size=0.015;
+        link.position={0.5,0,-0.8};
+        link.draw(window, camera,globalLights);
+        
+        
 
-        window.display();
+        window.display(); 
 
     }
 }

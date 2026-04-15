@@ -11,12 +11,13 @@
 #include<cstdlib>
 struct matérieau
 {
-    sf::Color kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
+    sf::Vector3f kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
     float d=1;
     float Ns=-1;
     sf::Texture map_Kd;
     sf::Texture map_Ke;
     bool check_map_Kd=false,check_map_Ke=false;
+    bool first=true;
 
 };
 struct IndexPoint
@@ -48,6 +49,38 @@ struct triangle
     IndexPoint p3;
     std::string mat;
 };
+
+struct Point
+{
+    
+    sf::Vector3f pos;
+    sf::Vector2f uv;
+    sf::Vector3f vn;
+    Point()
+    {}
+    Point(sf::Vector3f pos,sf::Vector2f uv,sf::Vector3f vn)
+    {
+        this->pos=pos;
+        this->uv=uv;
+        this->vn=vn;
+    }
+};
+
+struct Clipped_triangle
+{
+    Point p1;
+    Point p2;
+    Point p3;
+    std::string mat;
+    Clipped_triangle(Point p1,Point p2, Point p3, std::string mat)
+    {
+        this->p1=p1;
+        this->p2=p2;
+        this->p3=p3;
+        this->mat=mat;
+    }
+};
+
 
 class Objet3D { 
      public:
@@ -95,17 +128,26 @@ class Objet3D {
         
         
         
-        for(const sf::Vector3f & point : points)
-            pointscam.push_back(camera.switch_base((rotate_point(rotate_point(point,RotationAngleX,{0,1,0}),RotationAngleY,{1,0,0})+position)*size));
         
         // traite les triangles, dessine ceux visibles, ignores ceux qui sont invisible et projette ceux qui sont entre les deux
-        std::vector<triangle> visibles;
-        
-        for(const  triangle &tri:triangles3D)
+        std::vector<Clipped_triangle> visibles;
+        pointscam.reserve(points.size());
+        int n=0;
+        for(const  sf::Vector3f& point : points)
         {
-            if(prodscal3D(pointscam[tri.p1.ipos],prodvect3D(pointscam[tri.p2.ipos]-pointscam[tri.p1.ipos],pointscam[tri.p3.ipos]-pointscam[tri.p1.ipos]))<=0)
-            visibles.push_back(tri);
+            pointscam[n]=camera.switch_base(rotate_point(rotate_point(point,RotationAngleX,{0,1,0}),RotationAngleY,{1,0,0})*size+position);
+            n++;
         }
+        for(const triangle & tri : triangles3D)
+        {
+                Point P1={pointscam[tri.p1.ipos],vts[tri.p1.ivt],vns[tri.p1.ivn]};
+                Point P2={pointscam[tri.p2.ipos],vts[tri.p2.ivt],vns[tri.p2.ivn]};
+                Point P3={pointscam[tri.p3.ipos],vts[tri.p3.ivt],vns[tri.p3.ivn]};
+            if(prodscal3D(P1.pos,prodvect3D(P2.pos-P1.pos,P3.pos-P1.pos))<=0) //back culling
+                visibles.push_back({P1,P2,P3,tri.mat});
+        }
+
+
         float M_1_sqrt2=1/sqrt(2);
         plan P;
 
@@ -127,151 +169,16 @@ class Objet3D {
         P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
         clip(P,visibles);//plan sur l'axe haut
 
-        std::sort(visibles.begin(),visibles.end(),[this](const triangle & a,const triangle & b)
-                                                        {
-                                                            return (pointscam[a.p1.ipos].z+pointscam[a.p2.ipos].z+pointscam[a.p3.ipos].z)/3>(pointscam[b.p1.ipos].z+pointscam[b.p2.ipos].z+pointscam[b.p3.ipos].z)/3;
-                                                        });
-        for (const triangle &triangle : visibles)
-        {
-
-            sf::Vector3f p1=pointscam[triangle.p1.ipos];
-            sf::Vector3f p2=pointscam[triangle.p2.ipos];
-            sf::Vector3f p3=pointscam[triangle.p3.ipos];
-
-            if (newmat!=triangle.mat)
-           {
-                if(newmat!="")
-                {
-                    if(Materieaux[newmat].check_map_Kd)
-                        target.draw(triangles,&Materieaux[newmat].map_Kd);
-                    else if(Materieaux[newmat].check_map_Ke)
-                            target.draw(triangles,&Materieaux[newmat].map_Ke);
-                    else
-                    {
-                        target.draw(triangles);
-                    }
-                    triangles.clear();
-                }
-                newmat=triangle.mat;
-                
-           }
-                
-                sf::Vertex pr1=camera.Projection(p1);
-                sf::Vertex pr2=camera.Projection(p2);
-                sf::Vertex pr3=camera.Projection(p3);
-                pr1=SFMLScale(pr1.position,target);
-                pr2=SFMLScale(pr2.position,target);
-                pr3=SFMLScale(pr3.position,target);
-                sf::Vector2u size=Materieaux[triangle.mat].map_Kd.getSize();
-                pr1.texCoords={vts[triangle.p1.ivt].x*size.x,(1-vts[triangle.p1.ivt].y)*size.y};
-                pr2.texCoords={vts[triangle.p2.ivt].x*size.x,(1-vts[triangle.p2.ivt].y)*size.y};
-                pr3.texCoords={vts[triangle.p3.ivt].x*size.x,(1-vts[triangle.p3.ivt].y)*size.y};
-                if (camera.lights)
-                {
-                    sf::Color diffuse1={0,0,0};
-                    sf::Color diffuse2={0,0,0};
-                    sf::Color diffuse3={0,0,0};
-                    sf::Color ambiantLight={150,150,150};
-
-                    for(Light* &light  :globalLights)
-                    {
-                        float dot1;
-                        float dot2;
-                        float dot3;
-                        if(light->getType()==LightType::Directional)
-                        {
-                            sf::Vector3f L=-Normalize3D(static_cast<Directional*>(light)->direction);
-                            sf::Vector3f N1=Normalize3D(vns[triangle.p1.ivn]);
-                            sf::Vector3f N2=Normalize3D(vns[triangle.p2.ivn]);
-                            sf::Vector3f N3=Normalize3D(vns[triangle.p3.ivn]);
-                            dot1=prodscal3D(N1,L);
-                            if(dot1>0)
-                            {
-                                diffuse1+=sf::Color(dot1*255,dot1*255,dot1*255)*light->couleur*Materieaux[triangle.mat].kd;
-                            }
-                            dot2=prodscal3D(N2,L);
-                            if(dot2>0)
-                            {
-                                diffuse2+=sf::Color(dot2*255,dot2*255,dot2*255)*light->couleur*Materieaux[triangle.mat].kd;
-                            }
-                            dot3=prodscal3D(N3,L);
-                            if(dot3>0)
-                            {
-                                diffuse3+=sf::Color(dot3*255,dot3*255,dot3*255)*light->couleur*Materieaux[triangle.mat].kd;
-                            }
-                            if (Materieaux[triangle.mat].Ns>0)
-                            {
-                                sf::Vector3f R1=2.f*N1*dot1-L;
-                                sf::Vector3f R2=2.f*N2*dot2-L;
-                                sf::Vector3f R3=2.f*N3*dot3-L;
-                                float dotr1=prodscal3D(Normalize3D(R1),-Normalize3D(p1));
-                                double pow1=pow(dotr1, Materieaux[triangle.mat].Ns);
-                                std::cout<<pow1<<std::endl;
-                                if (dotr1>0)  {
-                                    diffuse1 += light->couleur * sf::Color(pow1*255,pow1*255,pow1*255) *Materieaux[triangle.mat].ks;
-                                }
-                                float dotr2=prodscal3D(Normalize3D(R2),-Normalize3D(p2));
-                                double pow2=pow(dotr2, Materieaux[triangle.mat].Ns);
-                                if (dotr2>0)  {
-                                    diffuse2 += light->couleur * sf::Color(pow2*255,pow2*255,pow2*255) *Materieaux[triangle.mat].ks;
-                                }
-                                float dotr3=prodscal3D(Normalize3D(R3),-Normalize3D(p3));
-                                double pow3=pow(dotr3, Materieaux[triangle.mat].Ns);
-                                if (dotr3>0)  {
-                                    diffuse3 += light->couleur * sf::Color(pow3*255,pow3*255,pow3*255) *Materieaux[triangle.mat].ks;
-                                }
-                                
-                            }
-
-                        }
-                            
-                    }
-                    pr1.color=diffuse1+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
-                    pr2.color=diffuse2+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
-                    pr3.color=diffuse3+Materieaux[triangle.mat].ka*ambiantLight+Materieaux[triangle.mat].ke;
-                }
-                else
-                {
-                    pr1.color={255,255,255};
-                    pr2.color={255,255,255};
-                    pr3.color={255,255,255};
-                }
-                
-                triangles.append(pr1);
-                triangles.append(pr2);
-                triangles.append(pr3);
-            
-
-           
-            // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
-        }
-        if(Materieaux[newmat].check_map_Kd)
-            target.draw(triangles,&Materieaux[newmat].map_Kd);
-        else if(Materieaux[newmat].check_map_Ke)
-                target.draw(triangles,&Materieaux[newmat].map_Ke);
-        else
-        {
-            target.draw(triangles);
-        }
-        triangles.clear();
-        pointscam.clear();
-        visibles.clear();
-        
-        
-    }
-
-
-
         void load(std::string dirname)
         {
             std::ifstream fic;
             std::string currentmat="";
             std::string filename=split(dirname,"/")[3]+".obj";
-            std::cout<<"ouverture de "+dirname+"/source/"+filename<<std::endl;
+            std::cout<<"ouverture de "+dirname+"/source/"+filename<<std::endl<<std::endl;
             fic.open(dirname+"/source/"+filename);
             if (!fic.is_open())
             {
-                std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+filename<<std::endl;
+                std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+filename<<std::endl<<std::endl;
             }
             
 
@@ -367,12 +274,12 @@ class Objet3D {
             fic.close();
             create_triangles(currentmat);
 
-            std::cout<<triangles3D.size()<<" triangles ont été créés"<<std::endl;
-            std::cout<<points.size()<<" points ont été créés"<<std::endl;
+            std::cout<<triangles3D.size()<<" triangles ont été fait"<<std::endl;
+            std::cout<<points.size()<<" points ont été comptabilises"<<std::endl<<std::endl;
             faces.clear();
             if (vns.size()==0)
                 {
-                    std::cout<<"créations des normales"<<std::endl;
+                    std::cout<<"creations des normales"<<std::endl;
                     int index=0;
                     for (triangle &tri : triangles3D)
                     {
@@ -395,7 +302,7 @@ class Objet3D {
             }
             
             std::vector<triangle> triangles3D;
-            std::vector<sf::Vector3f> pointscam;
+            std::vector<sf::Vector3f>pointscam;
             std::vector<sf::Texture> loadTexturesFromFolder(const std::string& folderPath)
             {
                 std::vector<sf::Texture> textures;
@@ -417,7 +324,7 @@ class Objet3D {
                                 textures.push_back(std::move(texture));
                             }
                             else
-                                std::cout<<"erreur chargement texture"<<std::endl;
+                                std::cout<<"erreur chargement texture"<<std::endl<<std::endl;
                         }
                     }
                 }
@@ -427,7 +334,7 @@ class Objet3D {
 
             void create_triangles(const std::string &mat)
             {
-                std::cout<<"je cree les triangles de mat : "<<mat<<std::endl;
+                std::cout<<"je cree les triangles du mat : "<<mat<<std::endl<<std::endl;
                 for (std::vector<IndexPoint> const &face : faces)
                 {
                     for (size_t i = 1; i < face.size()-1; i++)
@@ -444,41 +351,40 @@ class Objet3D {
                 
             }
 
-            int count_hiden(triangle &tri,const plan &P)
+            int count_hiden(Clipped_triangle &tri,const plan &P)
             {
-                IndexPoint aux;
+                Point aux;
                 int count=0;
-                if(prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)<0)
+                if(prodscal3D(tri.p1.pos-P.N*P.D,P.N)<0)
                 {
                     count++;
                 }
-                if(prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N)<0)
+                if(prodscal3D(tri.p2.pos-P.N*P.D,P.N)<0)
                 {
                     count++;
                 }
-                if(prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N)<0)
+                if(prodscal3D(tri.p3.pos-P.N*P.D,P.N)<0)
                 {
                     count++;
                 }
-                if (prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N))
+                if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p2.pos-P.N*P.D,P.N))
                 {
                     aux=tri.p1;
                     tri.p1=tri.p2;
                     tri.p2=aux;
                 }
-                if (prodscal3D(pointscam[tri.p1.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N))
+                if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
                 {
                     aux=tri.p1;
                     tri.p1=tri.p3;
                     tri.p3=aux;
                 }
-                if (prodscal3D(pointscam[tri.p2.ipos]-P.N*P.D,P.N)>prodscal3D(pointscam[tri.p3.ipos]-P.N*P.D,P.N))
+                if (prodscal3D(tri.p2.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
                 {
                     aux=tri.p2;
                     tri.p2=tri.p3;
                     tri.p3=aux;
                 }
-                sf::Vector3f p1 =pointscam[tri.p1.ipos],p2=pointscam[tri.p2.ipos],p3=pointscam[tri.p3.ipos];
 
 
                 return count;
@@ -490,12 +396,12 @@ class Objet3D {
                     std::string nommat;
                     std::string nomtext;
                     
-                    std::cout<<dirname+"/source/"+mtlname<<std::endl;
+                    std::cout<<dirname+"/source/"+mtlname<<std::endl<<std::endl;
                     std::ifstream ficmtl;
                     ficmtl.open(dirname+"/source/"+mtlname);
                     if (!ficmtl.is_open())
                     {
-                        std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl;
+                        std::cout<<"erreur d'ouverture de : "<<dirname+"/source/"+mtlname<<std::endl<<std::endl;
                     }
                     while(ficmtl>>donneemtl)
                     {
@@ -503,55 +409,36 @@ class Objet3D {
                         {   
                             ficmtl>>donneemtl;
                             nommat=donneemtl;
-                            std::cout<<nommat<<std::endl;
                         }
                         if(donneemtl=="Kd")
                         {
-                            float r,g,b;
-                            ficmtl>>r;
-                            ficmtl>>g;
-                            ficmtl>>b;
-                            Materieaux[nommat].kd.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].kd.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].kd.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                            ficmtl>>Materieaux[nommat].kd.x;
+                            ficmtl>>Materieaux[nommat].kd.y;
+                            ficmtl>> Materieaux[nommat].kd.z;
                         }
 
                         if(donneemtl=="Ke")
                         {
-                            float r,g,b;
-                            ficmtl>>r;
-                            ficmtl>>g;
-                            ficmtl>>b;
-                            Materieaux[nommat].ke.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ke.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ke.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                            ficmtl>>Materieaux[nommat].ke.x;
+                            ficmtl>>Materieaux[nommat].ke.y;
+                            ficmtl>> Materieaux[nommat].ke.z;
                         }
                         if(donneemtl=="Ka")
                         {
-                            float r,g,b;
-                            ficmtl>>r;
-                            ficmtl>>g;
-                            ficmtl>>b;
-                            Materieaux[nommat].ka.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ka.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ka.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                            ficmtl>>Materieaux[nommat].ka.x;
+                            ficmtl>>Materieaux[nommat].ka.y;
+                            ficmtl>> Materieaux[nommat].ka.z;
                         }
                         if(donneemtl=="Ks")
                         {
-                            float r,g,b;
-                            ficmtl>>r;
-                            ficmtl>>g;
-                            ficmtl>>b;
-                            Materieaux[nommat].ks.r = static_cast<sf::Uint8>(std::clamp(r * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ks.g = static_cast<sf::Uint8>(std::clamp(g * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ks.b = static_cast<sf::Uint8>(std::clamp(b * 255.f, 0.f, 255.f));
+                            ficmtl>>Materieaux[nommat].ks.x;
+                            ficmtl>>Materieaux[nommat].ks.y;
+                            ficmtl>> Materieaux[nommat].ks.z;
                         }
                         if(donneemtl=="d")
                         {
                             float d;
                             ficmtl>>d;
-                            Materieaux[nommat].kd.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
-                            Materieaux[nommat].ke.a = static_cast<sf::Uint8>(std::clamp(d * 255.f, 0.f, 255.f));
                         }
                         if(donneemtl=="Ns")
                         {
@@ -563,7 +450,7 @@ class Objet3D {
                             Materieaux[nommat].map_Kd.loadFromFile(dirname+"/textures/"+ nomtext);
                             Materieaux[nommat].map_Kd.setRepeated(true);
                             Materieaux[nommat].check_map_Kd=true;
-                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl<<std::endl;
                         }
                         if(donneemtl=="map_Ke")
                         {
@@ -571,39 +458,49 @@ class Objet3D {
                             Materieaux[nommat].map_Ke.loadFromFile(dirname+"/textures/"+ nomtext);
                             Materieaux[nommat].map_Kd.setRepeated(true);
                             Materieaux[nommat].check_map_Ke=true;
-                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl;
+                            std::cout<<" loading : "+dirname+"/textures/"+ nomtext<<std::endl<<std::endl;
                         }
                             
                     }
                     ficmtl.close();
             }
 
-            void clip( plan &P,std::vector<triangle> &visibles)
+            void clip( plan &P,std::vector<Clipped_triangle> &visibles)
             {
-                std::vector<triangle>aux;
-                for (triangle &triangle : visibles)
+                std::vector<Clipped_triangle>aux;
+                for (Clipped_triangle &triangle : visibles)
                 {
-                    int count=count_hiden(triangle,P);
-                    sf::Vector3f p1=pointscam[triangle.p1.ipos];
-                    sf::Vector3f p2=pointscam[triangle.p2.ipos];
-                    sf::Vector3f p3=pointscam[triangle.p3.ipos];
-                    
+                    int count=count_hiden(triangle,P);                  
                     if (count==0)
                     {
                         aux.push_back(triangle);
                     }
                     if (count==1 )
                     {
-                        pointscam.push_back(near_projection(p2,p1,P));
-                        pointscam.push_back(near_projection(p3,p1,P));
-                        aux.push_back({triangle.p2,{pointscam.size()-2,triangle.p1.ivt,triangle.p1.ivn},{pointscam.size()-1,triangle.p1.ivt,triangle.p1.ivn},triangle.mat});
-                        aux.push_back({triangle.p3,triangle.p2,{pointscam.size()-1,triangle.p1.ivt,triangle.p1.ivn},triangle.mat});
+                        float t21=near_projection(triangle.p2.pos,triangle.p1.pos,P);
+                        float t31=near_projection(triangle.p3.pos,triangle.p1.pos,P);
+
+                        sf::Vector3f p21=triangle.p2.pos+t21*(triangle.p1.pos-triangle.p2.pos);
+                        sf::Vector3f p31=triangle.p3.pos+t31*(triangle.p1.pos-triangle.p3.pos);
+
+                        sf::Vector2f uv21=triangle.p2.uv+t21*(triangle.p1.uv-triangle.p2.uv);
+                        sf::Vector2f uv31=triangle.p3.uv+t31*(triangle.p1.uv-triangle.p3.uv);
+
+                        aux.push_back({triangle.p2,{p21,uv21,triangle.p1.vn},{p31,uv31,triangle.p1.vn},triangle.mat});
+                        aux.push_back({triangle.p3,triangle.p2,{p31,uv31,triangle.p1.vn},triangle.mat});
                     }
                     if (count==2 )
                     {
-                        pointscam.push_back(near_projection(p3,p1,P));
-                        pointscam.push_back(near_projection(p3,p2,P));
-                        aux.push_back({triangle.p3,{pointscam.size()-2,triangle.p1.ivt,triangle.p1.ivn},{pointscam.size()-1,triangle.p2.ivt,triangle.p1.ivn},triangle.mat});
+                        float t31=near_projection(triangle.p3.pos,triangle.p1.pos,P);
+                        float t32=near_projection(triangle.p3.pos,triangle.p2.pos,P);
+
+                        sf::Vector3f p31=triangle.p3.pos+t31*(triangle.p1.pos-triangle.p3.pos);
+                        sf::Vector3f p32=triangle.p3.pos+t32*(triangle.p2.pos-triangle.p3.pos);
+
+                        sf::Vector2f uv31=triangle.p3.uv+t31*(triangle.p1.uv-triangle.p3.uv);
+                        sf::Vector2f uv32=triangle.p3.uv+t32*(triangle.p2.uv-triangle.p3.uv);
+                        
+                        aux.push_back({triangle.p3,{p31,uv31,triangle.p1.vn},{p32,uv32,triangle.p1.vn},triangle.mat});
                     }
                 }
                 visibles=aux;

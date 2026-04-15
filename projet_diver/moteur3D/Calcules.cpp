@@ -124,14 +124,24 @@ std::vector<std::string> split(std::string s, const std::string& delimiter) {
     return tokens;
 }
 
-sf::Vector3f near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P)
+float near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P)
 {
-    float t=(P.D-prodscal3D(P.N,A))/prodscal3D(P.N,B-A);
-    return A + t * (B - A);
+    return (P.D-prodscal3D(P.N,A))/prodscal3D(P.N,B-A);
 }
 
 void affiche_couleur(sf::Color couleur)
 {
     std::cout<<int(couleur.r)<<" "<<int(couleur.g)<<" "<<int(couleur.b)<<std::endl;
+}
+
+sf::Vector3f multvect(sf::Vector3f v1,sf::Vector3f v2)
+{
+
+    if (v1.x>1 or v1.y>1 or v1.z>1 or v2.x>1 or v2.y>1 or v2.z>1)
+    {
+        std::cout<<"out of range"<<std::endl;
+    }
+    
+    return {v1.x*v2.x,v1.y*v2.y,v1.z*v2.z};
 }
 
