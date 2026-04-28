@@ -1,3 +1,0 @@
-C:\mingw32\bin\cmake.exe -E rm -f CMakeFiles\survie.dir/objects.a
-C:\mingw32\bin\ar.exe qc CMakeFiles\survie.dir/objects.a @CMakeFiles\survie.dir\objects1.rsp
-C:\mingw32\bin\c++.exe -g -Wl,--whole-archive CMakeFiles\survie.dir/objects.a -Wl,--no-whole-archive -o bin\survie.exe -Wl,--out-implib,libsurvie.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\survie.dir\linkLibs.rsp

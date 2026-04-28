@@ -70,7 +70,6 @@ sf::Vector3f getcenter(sf::Vector3f v1,sf::Vector3f v2) //basgauchedevant et hau
     
     return sf::Vector3f((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
 }
-
 void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget& target)
 {
     sf::VertexArray line(sf::PrimitiveType::Lines,2);
