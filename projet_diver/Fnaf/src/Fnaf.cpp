@@ -49,15 +49,18 @@ int main(int argc, char const *argv[])
             if (event.type==sf::Event::MouseMoved)
             {
             for (int i = 0; i < buttons.size(); i++)
-                if (buttons[i].getType()==ButtonType::Hover)
+                if (buttons[i].hitbox.contains(event.mouseMove.x,event.mouseMove.y))
                 {
-                    if (buttons[i].hitbox.contains(event.mouseMove.x,event.mouseMove.y))
+                    if (buttons[i].getType()==ButtonType::Hover)
                     {
                         buttons[i].is_activated=true;
                     }
-                    else
-                        buttons[i].is_activated=false;
+                        
                 }
+                else
+                if (buttons[i].getType()==ButtonType::Hover or buttons[i].getType()==ButtonType::Hold)
+                    buttons[i].is_activated=false;
+                
                 
             }
             
@@ -74,7 +77,7 @@ int main(int argc, char const *argv[])
         for (Button & bouton : buttons)
         {
             sf::RectangleShape box(sf::Vector2f(bouton.hitbox.width,bouton.hitbox.height));
-            box.setPosition(bouton.hitbox.getPosition());
+            box.setPosition(bouton.hitbox.left,bouton.hitbox.top);
             box.setFillColor(sf::Color::Green);
             window.draw(box);
         }
