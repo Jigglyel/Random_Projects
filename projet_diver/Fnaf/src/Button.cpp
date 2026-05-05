@@ -3,11 +3,12 @@
 
 
 
-Button::Button(ButtonType type, sf::FloatRect hitbox,std::function<void()> f)
+Button::Button(ButtonType type, sf::FloatRect hitbox,std::function<void()> f,bool hud)
 {
     this->action=f;
     this->type = type;
     this->hitbox = hitbox;
+    this->Hud=hud;
 }
 ButtonType Button::getType()
 {
@@ -26,4 +27,25 @@ void Button::porte_droite(sf::RenderWindow &window)
     porte_droite.setPosition(700,400);
     porte_droite.setFillColor(sf::Color::Red);
     window.draw(porte_droite);
-}   
+}
+void Button::moveCamLeft(sf::View & camera,sf::RenderWindow & window)
+{
+     
+    if (camera.getCenter().x-camera.getSize().x/2>0)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f(-0.5,0));
+        window.setView(camera);
+    }
+    
+}
+
+void Button::moveCamRight(sf::View & camera,sf::RenderWindow & window)
+{
+    if (camera.getCenter().x+camera.getSize().x/2<window.getSize().x)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f(0.5,0));
+        window.setView(camera);
+    }
+    
+    
+}

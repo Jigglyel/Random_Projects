@@ -2,11 +2,11 @@
 #include<vector>
 #include"Animatronic.hpp"
 
-class Room{
+class Camera{
 
-    static std::unordered_map<Nom nom,int* position>;
+    static std::unordered_map<Nom ,int* > pos;
     public :
     int id;
     sf::Texture* textures;
     
-}
+};

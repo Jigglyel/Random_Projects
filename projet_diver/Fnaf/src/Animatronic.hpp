@@ -1,4 +1,9 @@
-
+#pragma once
+#include<unordered_map>
+#include<vector>
+#include<cstdlib>
+#include<SFML/Graphics.hpp>
+#include<iostream>
 enum Nom{
     Raphael,
     Lucie,
@@ -6,19 +11,24 @@ enum Nom{
     Leonie,
     Baptiste,
     Rondoudou
-}
+};
 
 
 class Animatronic
 {
 private:
-    /* data */
+    void choose_room();
+    
+    sf::Clock moveClock;
+    
 public:
     Nom nom;
     int position;
-    Animatronic(Nom nom);
     std::unordered_map<int,std::vector<int>> deplacements;
-    void (*move)();
+    int lvl;
+    Animatronic(Nom nom);
+    void resetClock();
     
+    void move();
 };
 
