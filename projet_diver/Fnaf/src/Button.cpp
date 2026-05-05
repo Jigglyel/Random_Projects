@@ -49,3 +49,22 @@ void Button::moveCamRight(sf::View & camera,sf::RenderWindow & window)
     
     
 }
+
+void Button::draw(sf::RenderWindow & window)
+{
+    sf::RectangleShape box;
+    box.setPosition(hitbox.left,hitbox.top);
+    box.setSize(sf::Vector2f(hitbox.width,hitbox.height));
+    box.setFillColor(sf::Color::White);
+    box.setOutlineColor(sf::Color::White);
+    if(Hud)
+    {
+        sf::View camera =window.getView();
+        window.setView(window.getDefaultView());
+        window.draw(box);
+        window.setView(camera);
+    }
+    else
+        window.draw(box);
+        
+}

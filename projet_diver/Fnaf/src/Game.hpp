@@ -13,8 +13,10 @@ class Game
 private:
     /* data */
 public:
-    State currentState;
+    State currentState=Idle;
     std::unordered_map<State,std::vector<Button>> activableButtons;
+    CameraSystem cameras;
+    void addButton(State s,Button b);
 };
 
 

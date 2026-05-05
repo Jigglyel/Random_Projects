@@ -20,6 +20,7 @@ add_executable(Fnaf
     ./src/Button.cpp
     ./src/Fnaf.cpp
     ./src/Animatronic.cpp
+    ./src/Game.cpp
 )
 target_link_libraries(Fnaf PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(Fnaf PRIVATE cxx_std_17)

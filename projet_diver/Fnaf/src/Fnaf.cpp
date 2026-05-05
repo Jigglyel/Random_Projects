@@ -13,19 +13,24 @@ int main(int argc, char const *argv[])
     camera.setCenter(windowSize.x/2,windowSize.y/2);
     window.setView(camera);
     
-    std::vector<Button> buttons;
-    buttons.push_back(Button(ButtonType::Switch,sf::FloatRect(50,630,80,120),[]{},false));
-    buttons.push_back(Button(ButtonType::Hover,sf::FloatRect(windowSize.x-150,0,150,windowSize.y),[&camera,&window]{Button::moveCamRight(camera,window);},true));
-    buttons.push_back(Button(ButtonType::Hover,sf::FloatRect(0,0,150,windowSize.y),[&camera,&window]{Button::moveCamLeft(camera,window);},true));
-    sf::Texture base, light, bonnie,jumpscare,longue;
-    base.loadFromFile("../img/BaseOffice.png");
-    light.loadFromFile("../img/OfficeLight.png");
-    bonnie.loadFromFile("../img/OfficeAnimatronic.png");
-    jumpscare.loadFromFile("../img/BonnieJumpscare.png");
+    Game jeu;
+    TextureManager textureManager;
+    sf::Texture base, light, bonnie,jumpscare,longue,monitor;
     longue.loadFromFile("../img/OfficeBaseLong.jpg");
+    TextureManager.setTexture("Idle",longue);
+    monitor.loadFromFile("../img/monitor.webp");
+    TextureManager.setTexture("monitor",monitor);
+    jeu.addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(0,windowSize.y-100,windowSize.x,100) ,[&jeu](){jeu.currentState=State::Camera;
+    std::cout<<"je switch en state camera"<<std::endl;},true));
+    jeu.addButton(State::Camera,Button(ButtonType::Switch, sf::FloatRect(0,0,100,100) ,[&jeu](){jeu.currentState=State::Idle;
+    std::cout<<"je switch en state Idle"<<std::endl;},true));
+    jeu.addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(0,0,100,windowSize.y) ,[&window,&camera](){Button::moveCamLeft(camera,window);},true));
+    jeu.addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(windowSize.x-100,0,100,windowSize.y) ,[&window,&camera](){Button::moveCamRight(camera,window);},true));
+    jeu.addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(90,550,80,105),[]{std::cout<<"lightActivated"<<std::endl;},false));
+    
     sf::RectangleShape fond;
     fond.setSize(sf::Vector2f(window.getSize()));
-    bool* lightOn=&buttons[0].is_activated;
+    fond.setTexture(&longue);
     Animatronic Bonnie(Nom::Raphael);
         Bonnie.deplacements[0]={1};
         Bonnie.deplacements[1]={2,3};
@@ -33,129 +38,92 @@ int main(int argc, char const *argv[])
         Bonnie.deplacements[3]={4,2,1};
         Bonnie.deplacements[4]={5};
         Bonnie.lvl=10;
+
+
+    bool checkMove,checkReleased,checkPressed;
     while (window.isOpen())
     {
+        checkMove=false;
+        checkPressed=false;
+        checkReleased=false;
         sf::Event event;
-        
+        std::vector<Button>currentButtons=jeu.activableButtons[jeu.currentState];
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::MouseButtonPressed and event.mouseButton.button==sf::Mouse::Left)
             {
-                for (int i = 0; i < buttons.size(); i++)
-                {
-                    sf::Vector2f sourisPos;
-                    if (!buttons[i].Hud)
-                    {
-                        sourisPos=window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x,event.mouseButton.y));
-                    }
-                    else
-                        sourisPos=sf::Vector2f(event.mouseButton.x,event.mouseButton.y);
-                    
-                    if (buttons[i].hitbox.contains(sourisPos))
-                    {
-                        if (buttons[i].getType()==ButtonType::Switch)
-                        {
-                            buttons[i].is_activated=!buttons[i].is_activated;
-                        }
-                        else
-                        if (buttons[i].getType()==ButtonType::Hold)
-                        {
-                            buttons[i].is_activated=true;
-                        }
-                    }
-                }
+                checkPressed=true;
             }
             if (event.type == sf::Event::MouseButtonReleased and event.mouseButton.button==sf::Mouse::Left)
             {
-                for (int i = 0; i < buttons.size(); i++)
-                {
-                    if (buttons[i].getType()==ButtonType::Hold)
-                        {
-                            buttons[i].is_activated=false;
-                        }
-                }
+                checkReleased=true;
             }
             if (event.type==sf::Event::MouseMoved)
             {
                 
-                for (int i = 0; i < buttons.size(); i++)
+                checkMove=true;
+            }
+            
+        }
+
+
+
+        for (Button &bouton :currentButtons)
+        {
+            sf::Vector2f sourisPos=sf::Vector2f(sf::Mouse::getPosition());
+            if(!bouton.Hud)
+                sourisPos=window.mapPixelToCoords(sf::Vector2i(sourisPos));
+            if(bouton.hitbox.contains(sourisPos))
+            {
+                if(bouton.getType()==ButtonType::Hover)
                 {
-                    sf::Vector2f sourisPos;
-                    if (!buttons[i].Hud)
-                    {
-                        sourisPos=window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x,event.mouseMove.y));
-                    }
-                    else
-                    {
-                        sourisPos=sf::Vector2f(event.mouseMove.x,event.mouseMove.y);
-                        
-                    }
-
-
-                    if (buttons[i].hitbox.contains(sourisPos))
-                    {
-                        if (buttons[i].getType()==ButtonType::Hover)
-                        {
-                            buttons[i].is_activated=true;
-                        }
-                            
-                    }
-                    else
-                    if (buttons[i].getType()==ButtonType::Hover or buttons[i].getType()==ButtonType::Hold)
-                        buttons[i].is_activated=false;
-                    
+                    bouton.is_activated=true;
+                }
+                else
+                if(bouton.getType()==ButtonType::Switch and checkPressed)
+                {
+                    bouton.is_activated=!bouton.is_activated;
+                }
+                else
+                if(bouton.getType()==ButtonType::Hold and checkPressed)
+                {
+                    bouton.is_activated=true;
+                }
+                else
+                if(bouton.getType()==ButtonType::Hold and checkReleased)
+                {
+                    bouton.is_activated=false;
                 }
             }
-            
-        }
-
-
-
-
-
-
-
-
-        
-        window.clear();
-        for (int i = 0; i < buttons.size(); i++)
-        {
-            if (buttons[i].is_activated)
-            {
-                buttons[i].action();
-            }
-            
-        }
-        Bonnie.move();
-        if (Bonnie.position==5)
-        {
-            fond.setTexture(&jumpscare);
-        }
-        else
-        if (*lightOn)
-        {
-            if (Bonnie.position==4)
-            {
-                fond.setTexture(&bonnie);
-            }
             else
-                fond.setTexture(&light);
+            if(bouton.getType()!=ButtonType::Switch)
+                {
+                    bouton.is_activated=false;
+                }
+        }
+
+
+
+
+        
+        window.clear(sf::Color::Black);
+        for (int i = 0; i < currentButtons.size(); i++)
+        {
+            
+            if (currentButtons[i].is_activated)
+            {
+                currentButtons[i].action();
+            }
+            
             
         }
-        else
-            fond.setTexture(&base);
-        
-        
-        
-        
+
         window.draw(fond);
-        sf::RectangleShape box;
-        box.setPosition(buttons[0].hitbox.getPosition());
-        box.setSize(buttons[0].hitbox.getSize());
-        box.setOutlineColor(sf::Color::Red);
-        window.draw(box);
+        for (Button & bouton : currentButtons)
+            bouton.draw(window);
+
         window.display();
     }
 

@@ -1,3 +1,5 @@
+#pragma once
+
 #include<SFML/Graphics.hpp>
 #include<iostream>
 #include<functional>
@@ -23,6 +25,7 @@ public:
     static void porte_droite(sf::RenderWindow & window);
     static void moveCamRight(sf::View & camera,sf::RenderWindow & window);
     static void moveCamLeft(sf::View & camera,sf::RenderWindow & window);
+    void draw(sf::RenderWindow & window);
 
 };
 
