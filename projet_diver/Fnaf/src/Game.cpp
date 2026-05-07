@@ -11,12 +11,18 @@ Game::Game(sf::RenderWindow &window,sf::View &camera)
     Bonnie.deplacements[1]={0,2};
     Bonnie.deplacements[2]={1};
     Bonnie.lvl=10;
+
+
     Animatronic Chica("Chica");
     Chica.deplacements[0]={1};
     Chica.deplacements[1]={0};
     Chica.lvl=10;
+
+
     animatronics.push_back(Bonnie);
     animatronics.push_back(Chica);
+
+    
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(0,windowSize.y-100,windowSize.x,100) ,[this](){currentState=State::Camera;
     std::cout<<"je switch en state camera"<<std::endl;},true));
     this->addButton(State::Camera,Button(ButtonType::Switch, sf::FloatRect(0,0,100,100) ,[this](){currentState=State::Idle;

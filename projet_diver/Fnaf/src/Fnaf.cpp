@@ -7,7 +7,7 @@ int main(int argc, char const *argv[])
     "Fnaf",
     sf::Style::Fullscreen
 );
-
+    window.setFramerateLimit(60);
     sf::Vector2u windowSize=window.getSize();
     sf::View camera;
     camera.setSize(windowSize.x*2/3,windowSize.y);

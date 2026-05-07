@@ -33,7 +33,7 @@ void Button::moveCamLeft(sf::View & camera,sf::RenderWindow & window)
      
     if (camera.getCenter().x-camera.getSize().x/2>0)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f(-1,0));
+        camera.setCenter(camera.getCenter()+sf::Vector2f(-5,0));
         window.setView(camera);
     }
     
@@ -43,7 +43,7 @@ void Button::moveCamRight(sf::View & camera,sf::RenderWindow & window)
 {
     if (camera.getCenter().x+camera.getSize().x/2<window.getSize().x)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f(1,0));
+        camera.setCenter(camera.getCenter()+sf::Vector2f(5,0));
         window.setView(camera);
     }
     
