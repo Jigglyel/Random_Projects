@@ -1,6 +1,6 @@
 #include "Animatronic.hpp"
 
-Animatronic::Animatronic(Nom  nom)
+Animatronic::Animatronic(std::string  nom)
 {
     this->nom=nom;
     this->lvl=5;

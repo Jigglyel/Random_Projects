@@ -22,11 +22,11 @@ private:
     sf::Clock moveClock;
     
 public:
-    Nom nom;
+    std::string nom;
     int position;
     std::unordered_map<int,std::vector<int>> deplacements;
     int lvl;
-    Animatronic(Nom nom);
+    Animatronic(std::string);
     void resetClock();
     
     void move();
