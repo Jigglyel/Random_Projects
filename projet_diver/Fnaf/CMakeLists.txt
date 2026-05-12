@@ -24,6 +24,8 @@ add_executable(Fnaf
     ./src/TextureManager.cpp
     ./src/CameraSystem.cpp
     ./src/Drawer.cpp
+    ./src/Walker.cpp
+    ./src/Freddy.cpp
 )
 target_link_libraries(Fnaf PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(Fnaf PRIVATE cxx_std_17)

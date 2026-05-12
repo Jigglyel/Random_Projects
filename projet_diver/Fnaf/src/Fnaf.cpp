@@ -1,5 +1,6 @@
 #include"Fnaf.hpp"
 
+
 int main(int argc, char const *argv[])
 {
   sf::RenderWindow window(
@@ -94,9 +95,10 @@ int main(int argc, char const *argv[])
             
             
         }
-        for (Animatronic & animatronic : jeu.animatronics)
+        for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
         {
-            animatronic.move();
+            animatronic->move();
+            std::cout<<animatronic->position<<std::endl;;
         }
         
 

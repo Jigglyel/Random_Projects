@@ -1,7 +1,7 @@
 #include"Drawer.hpp"
 
 
-void Drawer::draw(State s,CameraSystem &cameraSystem,std::vector<Animatronic>&animatronics){
+void Drawer::draw(State s,CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics){
     if (s==State::Idle)
     {
         drawIdle(animatronics);
@@ -23,7 +23,7 @@ void Drawer::draw(State s,CameraSystem &cameraSystem,std::vector<Animatronic>&an
     }
 }
 
-void Drawer::drawCam(CameraSystem &cameraSystem,std::vector<Animatronic>&animatronics)
+void Drawer::drawCam(CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics)
 {
     sf::View camera=window->getView();
     window->setView(window->getDefaultView());
@@ -36,21 +36,23 @@ void Drawer::drawCam(CameraSystem &cameraSystem,std::vector<Animatronic>&animatr
 
 }
 
-sf::Texture* Drawer::getTextureCamera(CameraSystem &cameraSystem,std::vector<Animatronic>&animatronics)
+sf::Texture* Drawer::getTextureCamera(CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics)
 {
     std::string textureName="Cam"+std::to_string(cameraSystem.activeCam);
     
-    for (Animatronic & animatronic : animatronics)
+    for (std::unique_ptr<Animatronic> & animatronic : animatronics)
     {
-        if (animatronic.position==cameraSystem.activeCam)
+        if (animatronic->position==cameraSystem.activeCam)
         {
-            textureName+="-"+animatronic.nom;
+            
+            textureName+="-"+animatronic->nom;
         }
         
     }
+    
     return TM.getTexture(textureName); 
 }
-void Drawer::drawIdle(std::vector<Animatronic> &animatronics)
+void Drawer::drawIdle(std::vector<std::unique_ptr<Animatronic>> &animatronics)
 {
     sf::RectangleShape background;
     background.setPosition(0,0);

@@ -17,18 +17,17 @@ enum Nom{
 class Animatronic
 {
 private:
-    void choose_room();
     
+protected:
     sf::Clock moveClock;
     
 public:
+    Animatronic(std::string nom);
     std::string nom;
     int position;
-    std::unordered_map<int,std::vector<int>> deplacements;
     int lvl;
-    Animatronic(std::string);
     void resetClock();
     
-    void move();
+    virtual void move()=0;
 };
 

@@ -3,6 +3,8 @@
 #include"Button.hpp"
 #include"CameraSystem.hpp"
 #include"TextureManager.hpp"
+#include"Walker.hpp"
+#include<memory>
 
 enum State{
     Camera,
@@ -13,14 +15,14 @@ enum State{
 class Game
 {
 private:
-    /* data */
+    void addButton(State s,Button b);
+
 public:
     Game(sf::RenderWindow&window,sf::View&camera);
     State currentState=Idle;
     std::unordered_map<State,std::vector<Button>> activableButtons;
     CameraSystem cameras;
-    std::vector<Animatronic> animatronics;
-    void addButton(State s,Button b);
+    std::vector<std::unique_ptr<Animatronic>> animatronics;
 };
 
 
