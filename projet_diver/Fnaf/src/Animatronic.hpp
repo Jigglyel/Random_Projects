@@ -24,10 +24,10 @@ protected:
 public:
     Animatronic(std::string nom);
     std::string nom;
-    int position;
     int lvl;
     void resetClock();
-    
+    ~Animatronic() = default;
     virtual void move()=0;
+    int position;
 };
 

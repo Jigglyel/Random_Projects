@@ -1,7 +1,8 @@
 #include"Drawer.hpp"
 
 
-void Drawer::draw(State s,CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics){
+void Drawer::draw(State s,CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics)
+{
     if (s==State::Idle)
     {
         drawIdle(animatronics);
@@ -41,7 +42,7 @@ sf::Texture* Drawer::getTextureCamera(CameraSystem &cameraSystem,std::vector<std
     std::string textureName="Cam"+std::to_string(cameraSystem.activeCam);
     
     for (std::unique_ptr<Animatronic> & animatronic : animatronics)
-    {
+    {    
         if (animatronic->position==cameraSystem.activeCam)
         {
             
@@ -49,9 +50,9 @@ sf::Texture* Drawer::getTextureCamera(CameraSystem &cameraSystem,std::vector<std
         }
         
     }
-    
     return TM.getTexture(textureName); 
 }
+
 void Drawer::drawIdle(std::vector<std::unique_ptr<Animatronic>> &animatronics)
 {
     sf::RectangleShape background;

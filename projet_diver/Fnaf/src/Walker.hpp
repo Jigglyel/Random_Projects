@@ -10,7 +10,6 @@ protected:
 public:
     std::unordered_map<int,std::vector<int>> deplacements;
     void move() override;
-    int position;
     Walker(std::string);
     
 };

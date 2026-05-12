@@ -5,12 +5,12 @@ void Walker::choose_room()
 {
     std::vector<int>choix=deplacements[position];
     this->position=choix[rand()%choix.size()];
-    
-    std::cout<<"déplacement dans la salle "<<this->position<<std::endl;
+    std::cout<<this->nom<<" déplacement dans la salle "<<this->position<<std::endl;
 }
 
 
-void Walker::move(){
+void Walker::move()
+{
     if (this->moveClock.getElapsedTime().asSeconds()>2.5)
     {
         if (rand()%21<lvl)
@@ -21,6 +21,4 @@ void Walker::move(){
     }
 }
 
-Walker::Walker(std::string nom): Animatronic(nom)
-{
-}
+Walker::Walker(std::string nom): Animatronic(nom) {}

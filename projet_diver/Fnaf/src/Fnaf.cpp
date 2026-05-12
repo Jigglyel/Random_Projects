@@ -98,7 +98,7 @@ int main(int argc, char const *argv[])
         for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
         {
             animatronic->move();
-            std::cout<<animatronic->position<<std::endl;;
+            
         }
         
 
