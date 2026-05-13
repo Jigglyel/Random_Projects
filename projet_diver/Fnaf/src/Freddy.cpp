@@ -7,7 +7,7 @@ void Freddy::move()
     {
         this->resetClock();
     }
-    if (this->moveClock.getElapsedTime().asSeconds()>2.5)
+    if (this->moveClock.getElapsedTime().asSeconds()>25-lvl)
     {
         if (rand()%21<lvl)
             this->choose_room();

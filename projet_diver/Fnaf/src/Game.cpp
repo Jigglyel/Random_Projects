@@ -10,14 +10,17 @@ Game::Game(sf::RenderWindow &window,sf::View &camera)
     Bonnie->deplacements[0]={1};
     Bonnie->deplacements[1]={0,2,4};
     Bonnie->deplacements[2]={1};
-    Bonnie->deplacements[4]={1};
+    Bonnie->deplacements[4]={1,5,6};
+    Bonnie->deplacements[5]={4,1};
+    Bonnie->deplacements[6]={5};
 
 
     std::unique_ptr<Walker> Chica =std::make_unique<Walker>("Chica");
     Chica->deplacements[0]={1};
-    Chica->deplacements[1]={0,9};
+    Chica->deplacements[1]={0,9,7};
     Chica->deplacements[9]={1,10};
     Chica->deplacements[10]={9};
+    Chica->deplacements[7]={1};
 
     animatronics.emplace_back(std::move(Bonnie));
     animatronics.emplace_back(std::move(Chica));
@@ -34,6 +37,9 @@ Game::Game(sf::RenderWindow &window,sf::View &camera)
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1410,586,90,62),[this]{cameras.activeCam=1;},true));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1250,628,90,62),[this]{cameras.activeCam=2;},true));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1440,880,90,62),[this]{cameras.activeCam=4;},true));
+    this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1313,850,90,62),[this]{cameras.activeCam=5;},true));
+    this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1440,943,90,62),[this]{cameras.activeCam=6;},true));
+    this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1760,628,90,62),[this]{cameras.activeCam=7;},true));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1600,880,90,62),[this]{cameras.activeCam=9;},true));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1600,943,90,62),[this]{cameras.activeCam=10;},true));
     this->cameras.activeCam=0;

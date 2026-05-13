@@ -33,6 +33,18 @@ TextureManager::TextureManager()
     setTexture("Cam4",T);
     T.loadFromFile("../img/Camera/Camera4/Cam4Bonnie.png");
     setTexture("Cam4-Bonnie",T);
+    T.loadFromFile("../img/Camera/Camera5/Cam5Vide.png");
+    setTexture("Cam5",T);
+    T.loadFromFile("../img/Camera/Camera5/Cam5Bonnie.png");
+    setTexture("Cam5-Bonnie",T);
+    T.loadFromFile("../img/Camera/Camera6/Cam6Vide.png");
+    setTexture("Cam6",T);
+    T.loadFromFile("../img/Camera/Camera6/Cam6Bonnie.png");
+    setTexture("Cam6-Bonnie",T);
+    T.loadFromFile("../img/Camera/Camera7/Cam7Vide.png");
+    setTexture("Cam7",T);
+    T.loadFromFile("../img/Camera/Camera7/Cam7Bonnie.png");
+    setTexture("Cam7-Chica",T);
     T.loadFromFile("../img/Camera/Camera9/Cam9Chica.png");
     setTexture("Cam9-Chica",T);
     T.loadFromFile("../img/Camera/Camera9/Cam9Vide.png");
