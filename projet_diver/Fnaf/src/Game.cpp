@@ -43,8 +43,8 @@ Game::Game(sf::RenderWindow &window,sf::View &camera)
     std::cout<<"je switch en state camera"<<std::endl;},true));
     this->addButton(State::Camera,Button(ButtonType::Switch, sf::FloatRect(0,0,100,100) ,[this](){currentState=State::Idle;
     std::cout<<"je switch en state Idle"<<std::endl;},true));
-    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(0,0,100*windowRatio.x,100*windowRatio.y) ,[&window,&camera](){Button::moveCamLeft(camera,window);},true));
-    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(windowSize.x-100*windowRatio.x,0,100*windowRatio.x,100*windowRatio.y) ,[&window,&camera](){Button::moveCamRight(camera,window);},true));
+    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(0,0,100*windowRatio.x,windowSize.y) ,[&window,&camera](){Button::moveCamLeft(camera,window);},true));
+    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(windowSize.x-100*windowRatio.x,0,100*windowRatio.x,windowSize.y) ,[&window,&camera](){Button::moveCamRight(camera,window);},true));
     this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(90*windowRatio.x,550*windowRatio.y,80*windowRatio.x,105*windowRatio.y),[]{std::cout<<"lightActivated"<<std::endl;},false));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1440*windowRatio.x,500*windowRatio.y,90*windowRatio.x,62*windowRatio.y),[this]{cameras.activeCam=0;},true));
     this->addButton(State::Camera,Button(ButtonType::Hold,sf::FloatRect(1410*windowRatio.x,586*windowRatio.y,90*windowRatio.x,62*windowRatio.y),[this]{cameras.activeCam=1;},true));
