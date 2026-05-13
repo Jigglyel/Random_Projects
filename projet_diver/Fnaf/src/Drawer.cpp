@@ -40,17 +40,28 @@ void Drawer::drawCam(CameraSystem &cameraSystem,std::vector<std::unique_ptr<Anim
 sf::Texture* Drawer::getTextureCamera(CameraSystem &cameraSystem,std::vector<std::unique_ptr<Animatronic>> &animatronics)
 {
     std::string textureName="Cam"+std::to_string(cameraSystem.activeCam);
-    
-    for (std::unique_ptr<Animatronic> & animatronic : animatronics)
-    {    
-        if (animatronic->position==cameraSystem.activeCam)
-        {
-            
-            textureName+="-"+animatronic->nom;
-        }
-        
+    if (cameraSystem.activeCam==3)
+    {
+                
+        return TM.getTexture("Foxy"+std::to_string(static_cast<Foxy*>(animatronics[2].get())->stage));
     }
-    return TM.getTexture(textureName); 
+    else
+    {
+        for (std::unique_ptr<Animatronic> & animatronic : animatronics)
+        {    
+            if (animatronic->position==cameraSystem.activeCam)
+            {
+                if (animatronic->nom!="Freddy" or textureName=="Cam"+std::to_string(cameraSystem.activeCam))
+                {
+                    textureName+="-"+animatronic->nom;
+                }
+                
+                
+            }
+            
+        }
+        return TM.getTexture(textureName); 
+    }
 }
 
 void Drawer::drawIdle(std::vector<std::unique_ptr<Animatronic>> &animatronics)

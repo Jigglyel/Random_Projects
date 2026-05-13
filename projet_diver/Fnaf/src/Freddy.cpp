@@ -10,8 +10,15 @@ void Freddy::move()
     if (this->moveClock.getElapsedTime().asSeconds()>25-lvl)
     {
         if (rand()%21<lvl)
-            this->choose_room();
+        {
+            position=deplacements[position][0];
+            std::cout<<this->nom<<" déplacement dans la salle "<<this->position<<std::endl;
+        }
+        this->resetClock();
     }
     
     
+    
 }
+
+Freddy::Freddy(std::string nom):Walker(nom) {}

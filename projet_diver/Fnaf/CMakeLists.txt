@@ -26,6 +26,7 @@ add_executable(Fnaf
     ./src/Drawer.cpp
     ./src/Walker.cpp
     ./src/Freddy.cpp
+    ./src/Foxy.cpp
 )
 target_link_libraries(Fnaf PRIVATE sfml-graphics sfml-window sfml-system)
 target_compile_features(Fnaf PRIVATE cxx_std_17)
