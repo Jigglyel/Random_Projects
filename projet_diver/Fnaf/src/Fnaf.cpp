@@ -103,8 +103,8 @@ int main(int argc, char const *argv[])
         
 
         drawer.draw(jeu.currentState,jeu.cameras,jeu.animatronics);
-        //  for (Button & bouton : currentButtons)
-        //      bouton.draw(window);
+          for (Button & bouton : currentButtons)
+              bouton.draw(window);
         
 
         window.display();
