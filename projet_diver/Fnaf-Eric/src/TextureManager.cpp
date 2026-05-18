@@ -1,0 +1,152 @@
+#include "TextureManager.hpp"
+
+void TextureManager::setTexture(std::string nomTexture,sf::Texture &T)
+{
+    Map[nomTexture]=T; 
+}
+
+sf::Texture* TextureManager::getTexture(std::string nomTexture)
+{
+    return &Map[nomTexture];
+}
+TextureManager::TextureManager()
+{
+    sf::Texture T;
+    if (T.loadFromFile("../img/Camera/Camera0/Cam0Vide.png"))
+    {
+        setTexture("Cam0",T);
+    }
+    
+    if (T.loadFromFile("../img/Camera/Camera0/Cam0BonnieChicaFreddy.png"))
+    {
+        setTexture("Cam0-Bonnie-Chica-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera0/Cam0FreddyLooking.png"))
+    {
+        setTexture("Cam0-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera0/Cam0Chica.png"))
+    {
+        setTexture("Cam0-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera0/Cam0Bonnie.png"))
+    {
+        setTexture("Cam0-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera1/Cam1Bonnie.png"))
+    {
+        setTexture("Cam1-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera1/Cam1Chica.png"))
+    {
+        setTexture("Cam1-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera1/Cam1Chica.png"))
+    {
+        setTexture("Cam1-Bonnie-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera1/Cam1Freddy.png"))
+    {
+        setTexture("Cam1-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera1/Cam1Vide.png"))
+    {
+        setTexture("Cam1",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera2/Cam2Bonnie.png"))
+    {
+        setTexture("Cam2-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera2/Cam2Vide.png"))
+    {
+        setTexture("Cam2",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera4/Cam4Vide.png"))
+    {
+        setTexture("Cam4",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera4/Cam4Bonnie.png"))
+    {
+        setTexture("Cam4-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera5/Cam5Vide.png"))
+    {
+        setTexture("Cam5",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera5/Cam5Bonnie.png"))
+    {
+        setTexture("Cam5-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera6/Cam6Vide.png"))
+    {
+        setTexture("Cam6",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera6/Cam6Bonnie.png"))
+    {
+        setTexture("Cam6-Bonnie",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera7/Cam7Vide.png"))
+    {
+        setTexture("Cam7",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera7/Cam7Chica.png"))
+    {
+        setTexture("Cam7-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera7/Cam7Freddy.png"))
+    {
+        setTexture("Cam7-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera8/Cam8.png"))
+    {
+        setTexture("Cam8",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera8/Cam8.png"))
+    {
+        setTexture("Cam8-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera9/Cam9Chica.png"))
+    {
+        setTexture("Cam9-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera9/Cam9Vide.png"))
+    {
+        setTexture("Cam9",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera9/Cam9Freddy.png"))
+    {
+        setTexture("Cam9-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera10/Cam10Chica.png"))   
+    {
+         setTexture("Cam10-Chica",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera10/Cam10Vide.png"))
+    {
+        setTexture("Cam10",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera10/Cam10Freddy.png"))
+    {
+        setTexture("Cam10-Freddy",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage0.png"))
+    {
+        setTexture("Foxy0",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage1.png"))
+    {
+        setTexture("Foxy1",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage2.png"))
+    {
+        setTexture("Foxy2",T);
+    }
+    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage3.png"))
+    {
+        setTexture("Foxy3",T);
+    }
+    if (T.loadFromFile("../img/OfficeBaseLong.jpg"))
+    {
+        setTexture("Idle",T);
+    }
+}

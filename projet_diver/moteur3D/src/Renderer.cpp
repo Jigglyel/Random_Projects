@@ -6,82 +6,12 @@ Renderer::Renderer(MatManager &matManager)
 }
 int Renderer::count_hiden(Clipped_triangle &tri,const plan &P)
         {
-            Point aux;
-            int count=0;
-            if(prodscal3D(tri.p1.pos-P.N*P.D,P.N)<0)
-            {
-                count++;
-            }
-            if(prodscal3D(tri.p2.pos-P.N*P.D,P.N)<0)
-            {
-                count++;
-            }
-            if(prodscal3D(tri.p3.pos-P.N*P.D,P.N)<0)
-            {
-                count++;
-            }
-            if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p2.pos-P.N*P.D,P.N))
-            {
-                aux=tri.p1;
-                tri.p1=tri.p2;
-                tri.p2=aux;
-            }
-            if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
-            {
-                aux=tri.p1;
-                tri.p1=tri.p3;
-                tri.p3=aux;
-            }
-            if (prodscal3D(tri.p2.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
-            {
-                aux=tri.p2;
-                tri.p2=tri.p3;
-                tri.p3=aux;
-            }
-
-
-            return count;
+           
         }
 
 void Renderer::clip( plan &P,std::vector<Clipped_triangle> &visibles)
         {
-            std::vector<Clipped_triangle>aux;
-            for (Clipped_triangle &triangle : visibles)
-            {
-                int count=count_hiden(triangle,P);                  
-                if (count==0)
-                {
-                    aux.push_back(triangle);
-                }
-                if (count==1 )
-                {
-                    float t21=near_projection(triangle.p2.pos,triangle.p1.pos,P);
-                    float t31=near_projection(triangle.p3.pos,triangle.p1.pos,P);
-
-                    Eigen::Vector3f p21=triangle.p2.pos+t21*(triangle.p1.pos-triangle.p2.pos);
-                    Eigen::Vector3f p31=triangle.p3.pos+t31*(triangle.p1.pos-triangle.p3.pos);
-
-                    Eigen::Vector2f uv21=triangle.p2.uv+t21*(triangle.p1.uv-triangle.p2.uv);
-                    Eigen::Vector2f uv31=triangle.p3.uv+t31*(triangle.p1.uv-triangle.p3.uv);
-
-                    aux.push_back({triangle.p2,{p21,uv21,triangle.p1.vn},{p31,uv31,triangle.p1.vn},triangle.mat,triangle.proprietaire});
-                    aux.push_back({triangle.p3,triangle.p2,{p31,uv31,triangle.p1.vn},triangle.mat,triangle.proprietaire});
-                }
-                if (count==2 )
-                {
-                    float t31=near_projection(triangle.p3.pos,triangle.p1.pos,P);
-                    float t32=near_projection(triangle.p3.pos,triangle.p2.pos,P);
-
-                    Eigen::Vector3f p31=triangle.p3.pos+t31*(triangle.p1.pos-triangle.p3.pos);
-                    Eigen::Vector3f p32=triangle.p3.pos+t32*(triangle.p2.pos-triangle.p3.pos);
-
-                    Eigen::Vector2f uv31=triangle.p3.uv+t31*(triangle.p1.uv-triangle.p3.uv);
-                    Eigen::Vector2f uv32=triangle.p3.uv+t32*(triangle.p2.uv-triangle.p3.uv);
-                    
-                    aux.push_back({triangle.p3,{p31,uv31,triangle.p1.vn},{p32,uv32,triangle.p1.vn},triangle.mat,triangle.proprietaire});
-                }
-            }
-            visibles=aux;
+           
         }
 
 void Renderer::getTriangles(Objet3D &Model)
@@ -141,27 +71,6 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
 
         }
     }
-
-    float M_1_sqrt2=1/sqrt(2);
-    plan P;
-
-    P.N={0,0,1};
-    P.D=-1;
-    clip(P,visibles);//plan sur l'axe de la cam
-
-    P.D=0;
-    P.N={M_1_sqrt2,0,M_1_sqrt2};
-    clip(P,visibles);//plan sur l'axe gauche
-
-    P.N={-1*M_1_sqrt2,0,M_1_sqrt2};
-    clip(P,visibles);//plan sur l'axe droit
-
-    P.N={0,M_1_sqrt2,M_1_sqrt2};
-    clip(P,visibles);//plan sur l'axe bas
-
-    P.N={0,-1*M_1_sqrt2,M_1_sqrt2};
-    clip(P,visibles);//plan sur l'axe haut
-
     std::sort(visibles.begin(),visibles.end(),[this](const Clipped_triangle & a,const Clipped_triangle & b)
                                                     {
                                                         return (a.p1.pos.z()+a.p2.pos.z()+a.p3.pos.z())>(b.p1.pos.z()+b.p2.pos.z()+b.p3.pos.z());
@@ -194,7 +103,36 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
             
         }
             
-            sf::Vertex pr1=camera.Projection(triangle.p1.pos);
+           
+
+        
+        // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
+    }
+    matérieau* mat=matManager->getMaterieau(newmat,newobj);
+    if(mat->check_map_Kd)
+        target.draw(triangles,&mat->map_Kd);
+    else if(mat->check_map_Ke)
+            target.draw(triangles,&mat->map_Ke);
+    else
+    {
+        target.draw(triangles);
+    }
+    triangles.clear();
+    visibles.clear();
+}
+
+
+
+
+
+
+
+
+
+
+void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangle,matérieau* mat,Camera &camera,std::vector<Light*> &globalLights,sf::RenderTarget& target)
+{
+     sf::Vertex pr1=camera.Projection(triangle.p1.pos);
             sf::Vertex pr2=camera.Projection(triangle.p2.pos);
             sf::Vertex pr3=camera.Projection(triangle.p3.pos);
             pr1=SFMLScale(pr1.position,target);
@@ -303,21 +241,6 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
             triangles.append(pr2);
             triangles.append(pr3);
         
-
-        
-        // si la texture est une nouvelle, alors on dessine tous les triangles déjà implémentés, on reset le tableau et on initialise la nouvelle texture
-    }
-    matérieau* mat=matManager->getMaterieau(newmat,newobj);
-    if(mat->check_map_Kd)
-        target.draw(triangles,&mat->map_Kd);
-    else if(mat->check_map_Ke)
-            target.draw(triangles,&mat->map_Ke);
-    else
-    {
-        target.draw(triangles);
-    }
-    triangles.clear();
-    visibles.clear();
 }
 
 Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)

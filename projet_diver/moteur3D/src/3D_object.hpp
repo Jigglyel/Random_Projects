@@ -53,12 +53,12 @@ float RotationAngleZ;
 struct Point
 {
 
-Eigen::Vector3f pos;
+Eigen::Vector4f pos;
 Eigen::Vector2f uv;
 Eigen::Vector3f vn;
 Point()
 {}
-Point(Eigen::Vector3f pos,Eigen::Vector2f uv,Eigen::Vector3f vn)
+Point(Eigen::Vector4f pos,Eigen::Vector2f uv,Eigen::Vector3f vn)
 {
     this->pos=pos;
     this->uv=uv;
