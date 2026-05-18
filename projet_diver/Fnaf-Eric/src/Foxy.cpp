@@ -16,8 +16,8 @@ void Foxy::move(SoundManager & soundManager)
     {
         if (rand()%21<lvl)
         {
-            this->stage++;
-            if (stage==4 )
+            
+            if (stage==3 )
             {
                 if (!*leftDoorClose)
                 {
@@ -28,6 +28,8 @@ void Foxy::move(SoundManager & soundManager)
                 
                 
             }
+            else
+                this->stage++;
         }
         this->resetClock();
     }
