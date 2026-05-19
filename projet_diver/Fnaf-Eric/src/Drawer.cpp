@@ -34,10 +34,31 @@ void Drawer::drawCam(Game &game)
     background.setSize(sf::Vector2f(window->getSize()));
     background.setTexture(getTextureCamera(game));
     window->draw(background);
+    drawAM(game);
+    drawBatterie(game);
     window->setView(camera);
 
 }
-
+void Drawer::drawAM(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::Text text(FM.getFont("Jersey15-Regular"),std::to_string((int(game.nightClock.getElapsedTime().asSeconds())/85+11)%12+1)+"AM",50);
+    text.setCharacterSize(50);
+    text.setPosition(sf::Vector2f{1700,50});
+    window->draw(text);
+    window->setView(camera);
+}
+void Drawer::drawBatterie(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::Text text(FM.getFont("Jersey15-Regular"),std::to_string(int(game.batterie))+"%",50);
+    text.setCharacterSize(50);
+    text.setPosition(sf::Vector2f{150,900});
+    window->draw(text);
+    window->setView(camera);
+}
 sf::Texture* Drawer::getTextureCamera(Game &game)
 {
     std::string textureName="Cam"+std::to_string(game.cameras.activeCam);
@@ -83,7 +104,7 @@ void Drawer::drawIdle(Game &game)
     if (game.leftLightOn)
     {
         LeftDoorColor.a=50;
-        LeftDoorColor+={100,100,100};
+        LeftDoorColor+={90,90,90};
         if (game.animatronics[0]->position==100)
         {
             LeftDoorColor+={0,0,255};
@@ -101,15 +122,18 @@ void Drawer::drawIdle(Game &game)
     if (game.rightLightOn)
     {
         RightDoorColor.a=50;
-        RightDoorColor+={100,100,100};
+        RightDoorColor+={90,90,90};
         if (game.animatronics[1]->position==101)
         {
-            RightDoorColor+={150,150,0};
+            RightDoorColor+={100,100,0};
         }
         
     }
     RightDoor.setFillColor(RightDoorColor);
     window->draw(RightDoor);
+    drawAM(game);
+    drawBatterie(game);
+    
 }
 
 Drawer::Drawer(sf::RenderWindow&window)

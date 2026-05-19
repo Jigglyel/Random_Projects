@@ -4,5 +4,6 @@ enum State{
     Camera,
     Idle,
     Behind,
-    Door
+    Door,
+    Menu
 };

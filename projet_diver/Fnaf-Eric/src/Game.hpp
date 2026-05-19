@@ -2,6 +2,7 @@
 #include"Button.hpp"
 #include"CameraSystem.hpp"
 #include"TextureManager.hpp"
+#include"FontManager.hpp"
 #include"Bonnie.hpp"
 #include"Chica.hpp"
 #include "Foxy.hpp"
@@ -17,10 +18,12 @@ private:
 public:
     Game(sf::RenderWindow&window,sf::View&camera,SoundManager &soundManager);
     State currentState=State::Idle;
+    sf::Clock nightClock;
     bool leftDoorClose=false;
     bool rightDoorClose=false;
     bool leftLightOn=false;
     bool rightLightOn=false;
+    float batterie=100;
     std::unordered_map<State,std::vector<Button>> activableButtons;
     CameraSystem cameras;
     std::vector<std::unique_ptr<Animatronic>> animatronics;

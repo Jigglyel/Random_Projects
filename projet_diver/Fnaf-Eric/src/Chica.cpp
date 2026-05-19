@@ -5,7 +5,7 @@ Chica::Chica(std::string nom) : Walker(nom)
     lvl=15;
     this->deplacements[0]={1};
     this->deplacements[1]={9,7,8};
-    this->deplacements[9]={1,10};
+    this->deplacements[9]={1,10,101};
     this->deplacements[10]={9,101};
     this->deplacements[7]={1};
     this->deplacements[8]={1};

@@ -19,6 +19,7 @@ int main(int argc, char const *argv[])
     Game jeu(window,camera,soundManager);
     Drawer drawer(window);
     bool checkMove,checkReleased,checkPressed;
+    int powerUsage=0;
     while (window.isOpen())
     {
         checkMove=false;
@@ -85,7 +86,7 @@ int main(int argc, char const *argv[])
 
 
         
-        window.clear(sf::Color::Black);
+        
         for (int i = 0; i < currentButtons.size(); i++)
         {
             if (currentButtons[i].is_activated)
@@ -100,8 +101,15 @@ int main(int argc, char const *argv[])
             animatronic->move(soundManager);
             
         }
+        powerUsage=jeu.leftLightOn+jeu.rightLightOn+jeu.leftDoorClose+jeu.rightDoorClose+(jeu.currentState==State::Camera);
+        jeu.batterie-=powerUsage*0.002;
+        if (jeu.nightClock.getElapsedTime().asSeconds()>510)
+        {
+            jeu.currentState=State::Menu;
+        }
         
-
+        
+        window.clear(sf::Color::Black);
         drawer.draw(jeu);
         //   for (Button & bouton : currentButtons)
         //       bouton.draw(window);

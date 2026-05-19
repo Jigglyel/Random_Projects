@@ -31,6 +31,7 @@ add_executable(Fnaf
     ./src/Foxy.cpp
     ./src/Freddy.cpp
     ./src/SoundManager.cpp
+    ./src/FontManager.cpp
 )
 target_link_libraries(Fnaf PRIVATE sfml-graphics sfml-window sfml-system sfml-audio)
 target_compile_features(Fnaf PRIVATE cxx_std_17)

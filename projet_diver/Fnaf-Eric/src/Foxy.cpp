@@ -3,11 +3,12 @@
 Foxy::Foxy(std::string nom):Animatronic(nom)
 {
     this->position=3;
+    this->lvl=10;
 }
 
 void Foxy::move(SoundManager & soundManager)
 {
-    if (*actualState==State::Camera)
+    if (stage!=3 and *actualState==State::Camera)
     {
        moveClock.restart();
     }
