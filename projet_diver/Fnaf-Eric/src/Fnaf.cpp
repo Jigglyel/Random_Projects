@@ -12,12 +12,14 @@ int main(int argc, char const *argv[])
     sf::Vector2u windowSize=window.getSize();
     sf::View camera;
     SoundManager soundManager;
+    window.clear(sf::Color::Black);
+    window.display();
     srand(time(NULL));
-    camera.setSize(sf::Vector2f(windowSize.x*2/3,windowSize.y));
+    camera.setSize(sf::Vector2f(windowSize.x*3/4,windowSize.y));
     camera.setCenter(sf::Vector2f(windowSize.x/2,windowSize.y/2));
     window.setView(camera);
     Game jeu(window,camera,soundManager);
-    Drawer drawer(window);
+    Renderer renderer(window,jeu);
     bool checkMove,checkReleased,checkPressed;
     int powerUsage=0;
     while (window.isOpen())
@@ -86,7 +88,6 @@ int main(int argc, char const *argv[])
 
 
         
-        
         for (int i = 0; i < currentButtons.size(); i++)
         {
             if (currentButtons[i].is_activated)
@@ -96,23 +97,43 @@ int main(int argc, char const *argv[])
             
             
         }
-        for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
+        if (jeu.currentState!=Menu and jeu.currentState!=Loose)
         {
-            animatronic->move(soundManager);
+
+            if (jeu.batterie<0)
+            {
+                jeu.leftDoorClose=false;
+                jeu.leftLightOn=false;
+                jeu.rightDoorClose=false;
+                jeu.rightLightOn=false;
+            }
+            for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
+            {
+                animatronic->move(soundManager);
+                if (animatronic->jumpScare)
+                {
+                    jeu.currentState=State::Loose;
+                }
+            }
             
+            
+            powerUsage=jeu.leftLightOn+jeu.rightLightOn+jeu.leftDoorClose+jeu.rightDoorClose+(jeu.currentState==State::CameraState)+(jeu.batterie>0);
+            jeu.batterie-=(powerUsage)*0.002;
+
+            if (jeu.nightClock.getElapsedTime().asSeconds()>jeu.nightDuration)
+            {
+                jeu.currentState=State::Menu;
+            }
         }
-        powerUsage=jeu.leftLightOn+jeu.rightLightOn+jeu.leftDoorClose+jeu.rightDoorClose+(jeu.currentState==State::Camera);
-        jeu.batterie-=powerUsage*0.002;
-        if (jeu.nightClock.getElapsedTime().asSeconds()>510)
-        {
-            jeu.currentState=State::Menu;
-        }
+        
+        
+        
         
         
         window.clear(sf::Color::Black);
-        drawer.draw(jeu);
-        //   for (Button & bouton : currentButtons)
-        //       bouton.draw(window);
+        renderer.draw(jeu);
+            for (Button & bouton : currentButtons)
+                bouton.draw(window);
         
 
         window.display();

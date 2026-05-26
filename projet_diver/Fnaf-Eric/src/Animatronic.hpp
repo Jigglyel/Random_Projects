@@ -5,14 +5,7 @@
 #include<SFML/Graphics.hpp>
 #include<iostream>
 #include"SoundManager.hpp"
-enum Nom{
-    Raphael,
-    Lucie,
-    Lucas,
-    Leonie,
-    Baptiste,
-    Rondoudou
-};
+
 
 
 class Animatronic

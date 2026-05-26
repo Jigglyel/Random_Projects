@@ -3,7 +3,7 @@
 
 void Freddy::move(SoundManager &soundManager)
 {
-    if (*this->actualState==State::Camera and *this->actualCam==this->position)
+    if (*this->actualState==State::CameraState and *this->actualCam==this->position)
     {
         this->resetClock();
     }

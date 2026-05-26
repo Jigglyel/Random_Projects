@@ -5,7 +5,8 @@
 #include<vector>
 #include<unordered_map>
 #include"Animatronic.hpp"
-#include"Drawer.hpp"
+#include"Renderer.hpp"
 #include"Game.hpp"
+#include<thread>
 
 

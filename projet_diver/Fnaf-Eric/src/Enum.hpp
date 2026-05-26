@@ -1,9 +1,10 @@
 #pragma once
 
 enum State{
-    Camera,
+    CameraState,
     Idle,
     Behind,
     Door,
-    Menu
+    Menu,
+    Loose
 };

@@ -12,10 +12,9 @@ private:
 public:
     Soeur(std::string nom);
     soeur activesister;
-    int* actualCam;
-    State* actualState;
 
     void move(SoundManager & soundmanager) override;
+    void attack(SoundManager &soundManager) override;
 };
 
 

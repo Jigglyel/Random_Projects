@@ -10,6 +10,7 @@ protected:
 public:
     std::unordered_map<int,std::vector<int>> deplacements;
     Walker(std::string);
+    int illustration=1;
     
     
 };

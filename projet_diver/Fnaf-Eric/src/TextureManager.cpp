@@ -1,152 +1,80 @@
 #include "TextureManager.hpp"
 
-void TextureManager::setTexture(std::string nomTexture,sf::Texture &T)
+void TextureManager::setTexture(std::string nomTexture,std::string path)
 {
-    Map[nomTexture]=T; 
+    sf::Texture T;
+    if(T.loadFromFile(path))
+    {
+        std::cout<<"Texture "<<nomTexture<<" loaded successfully"<<std::endl;
+        Map[nomTexture]=std::move(T); 
+    }
 }
 
-sf::Texture* TextureManager::getTexture(std::string nomTexture)
+sf::Texture& TextureManager::getTexture(std::string nomTexture)
 {
-    return &Map[nomTexture];
+    return Map[nomTexture];
 }
 TextureManager::TextureManager()
 {
-    sf::Texture T;
-    if (T.loadFromFile("../img/Camera/Camera0/Cam0Vide.png"))
-    {
-        setTexture("Cam0",T);
-    }
-    
-    if (T.loadFromFile("../img/Camera/Camera0/Cam0BonnieChicaFreddy.png"))
-    {
-        setTexture("Cam0-Bonnie-Chica-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera0/Cam0FreddyLooking.png"))
-    {
-        setTexture("Cam0-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera0/Cam0Chica.png"))
-    {
-        setTexture("Cam0-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera0/Cam0Bonnie.png"))
-    {
-        setTexture("Cam0-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera1/Cam1Bonnie.png"))
-    {
-        setTexture("Cam1-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera1/Cam1Chica.png"))
-    {
-        setTexture("Cam1-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera1/Cam1Chica.png"))
-    {
-        setTexture("Cam1-Bonnie-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera1/Cam1Freddy.png"))
-    {
-        setTexture("Cam1-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera1/Cam1Vide.png"))
-    {
-        setTexture("Cam1",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera2/Cam2Bonnie.png"))
-    {
-        setTexture("Cam2-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera2/Cam2Vide.png"))
-    {
-        setTexture("Cam2",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera4/Cam4Vide.png"))
-    {
-        setTexture("Cam4",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera4/Cam4Bonnie.png"))
-    {
-        setTexture("Cam4-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera5/Cam5Vide.png"))
-    {
-        setTexture("Cam5",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera5/Cam5Bonnie.png"))
-    {
-        setTexture("Cam5-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera6/Cam6Vide.png"))
-    {
-        setTexture("Cam6",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera6/Cam6Bonnie.png"))
-    {
-        setTexture("Cam6-Bonnie",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera7/Cam7Vide.png"))
-    {
-        setTexture("Cam7",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera7/Cam7Chica.png"))
-    {
-        setTexture("Cam7-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera7/Cam7Freddy.png"))
-    {
-        setTexture("Cam7-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera8/Cam8.png"))
-    {
-        setTexture("Cam8",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera8/Cam8.png"))
-    {
-        setTexture("Cam8-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera9/Cam9Chica.png"))
-    {
-        setTexture("Cam9-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera9/Cam9Vide.png"))
-    {
-        setTexture("Cam9",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera9/Cam9Freddy.png"))
-    {
-        setTexture("Cam9-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera10/Cam10Chica.png"))   
-    {
-         setTexture("Cam10-Chica",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera10/Cam10Vide.png"))
-    {
-        setTexture("Cam10",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera10/Cam10Freddy.png"))
-    {
-        setTexture("Cam10-Freddy",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage0.png"))
-    {
-        setTexture("Foxy0",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage1.png"))
-    {
-        setTexture("Foxy1",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage2.png"))
-    {
-        setTexture("Foxy2",T);
-    }
-    if (T.loadFromFile("../img/Camera/Camera3/FoxyStage3.png"))
-    {
-        setTexture("Foxy3",T);
-    }
-    if (T.loadFromFile("../img/OfficeBaseLong.jpg"))
-    {
-        setTexture("Idle",T);
-    }
+}
+
+void TextureManager::loadTextures()
+{
+    setTexture("Couloir droite","../img/Camera/Couloir_droite/CD_Vide.jpg");
+
+    setTexture("Couloir droite-Raphael","../img/Camera/Couloir_droite/CD_Raph1.jpg");
+    setTexture("Couloir droite-Raphael-position2","../img/Camera/Couloir_droite/CD_Raph2.jpg");
+    setTexture("Couloir droite-Lucie","../img/Camera/Couloir_droite/CD_Lucie1.jpg");
+    setTexture("Couloir droite-Leonie","../img/Camera/Couloir_droite/CD_Léonie1.jpg");
+    setTexture("Couloir gauche","../img/Camera/Couloir_gauche/CG_Vide.jpg");
+    setTexture("Couloir gauche-Lucas-1","../img/Camera/Couloir_gauche/CG_Lucas1.jpg");
+    setTexture("Couloir gauche-Lucas-2","../img/Camera/Couloir_gauche/CG_Lucas2.jpg");
+    setTexture("Couloir gauche-Lucas-position2-1","../img/Camera/Couloir_gauche/CG_Lucas3.jpg");
+    setTexture("Couloir gauche-Lucas-position2-2","../img/Camera/Couloir_gauche/CG_Lucas4.jpg");
+    setTexture("Couloir gauche-Lucie","../img/Camera/Couloir_gauche/CG_Lucie1.jpg");
+    setTexture("Couloir gauche-Leonie","../img/Camera/Couloir_gauche/CG_Léonie1.jpg");
+    setTexture("Cuisine","../img/Camera/Cuisine/Cu_Vide.jpg");
+    setTexture("Idle","../img/Camera/Cuisine/Cu_Vide.jpg");
+    setTexture("Cuisine-Raphael-1","../img/Camera/Cuisine/Cu_Raph1.jpg");
+    setTexture("Cuisine-Raphael-2","../img/Camera/Cuisine/Cu_Raph2.jpg");
+    setTexture("Cuisine-Raphael-3","../img/Camera/Cuisine/Cu_Raph3.jpg");
+    setTexture("Cuisine-Lucie-1","../img/Camera/Cuisine/Cu_Lucie1.jpg");
+    setTexture("Cuisine-Lucie-2","../img/Camera/Cuisine/Cu_Lucie2.jpg");
+    setTexture("Cuisine-Leonie-1","../img/Camera/Cuisine/Cu_Léonie1.jpg");
+    setTexture("Cuisine-Leonie-2","../img/Camera/Cuisine/Cu_Léonie2.jpg");
+    setTexture("Cuisine-Raphael-Lucie","../img/Camera/Cuisine/Cu_Lucie-Raph1.jpg");
+    setTexture("Cuisine-Raphael-Leonie","../img/Camera/Cuisine/Cu_Léonie-Raph1.jpg");
+    setTexture("Escalier","../img/Camera/Escalier/Es_Vide.jpg");
+    setTexture("Escalier-Raphael-1","../img/Camera/Escalier/Es_Raph1.jpg");
+    setTexture("Escalier-Lucas-1","../img/Camera/Escalier/Es_Lucas1.jpg");
+    setTexture("Escalier-Lucie-1","../img/Camera/Escalier/Es_Lucie1.jpg");
+    setTexture("Escalier-Leonie-1","../img/Camera/Escalier/Es_Léonie1.jpg");
+    setTexture("Escalier-Raphael-2","../img/Camera/Escalier/Es_Raph2.jpg");
+    setTexture("Escalier-Lucas-2","../img/Camera/Escalier/Es_Lucas2.jpg");
+    setTexture("Escalier-Lucie-2","../img/Camera/Escalier/Es_Lucie2.jpg");
+    setTexture("Escalier-Leonie-2","../img/Camera/Escalier/Es_Léonie2.jpg");
+    setTexture("67-1","../img/Camera/Escalier/Es_Lucie67-1.jpg");
+    setTexture("67-2","../img/Camera/Escalier/Es_Lucie67-2.jpg");
+    setTexture("Grille","../img/Camera/Grille/Gr_0-Vide.jpg");
+    setTexture("Grille-Raphael","../img/Camera/Grille/Gr_1-Raph.jpg");
+    setTexture("Grille-Lucas","../img/Camera/Grille/Gr_1-Lucas.jpg");
+    setTexture("Grille-Lucie-Leonie","../img/Camera/Grille/Gr_2-Léonie-Lucie.jpg");
+    setTexture("Grille-Raphael-Lucas","../img/Camera/Grille/Gr_2-Lucas-Raph.jpg");
+    setTexture("Grille-Lucas-Lucie-Leonie","../img/Camera/Grille/Gr_3-Lucas-Léonie-Lucie.jpg");
+    setTexture("Grille-Raphael-Lucie-Leonie","../img/Camera/Grille/Gr_3-Raph-Léonie-Lucie.jpg");
+    setTexture("Grille-Raphael-Lucas-Lucie-Leonie","../img/Camera/Grille/Gr_4-Lucas-Raph-Léonie-Lucie.jpg");
+    setTexture("Laverie","../img/Camera/Laverie/La_Vide.jpg");
+    setTexture("Laverie-Raphael-1","../img/Camera/Laverie/La_Raph1.jpg");
+    setTexture("Laverie-Raphael-2","../img/Camera/Laverie/La_Raph2.jpg");
+    setTexture("Laverie-Lucie","../img/Camera/Laverie/La_Lucie1.jpg");
+    setTexture("Laverie-Leonie","../img/Camera/Laverie/La_Léonie1.jpg");
+    setTexture("Laverie-Raphael-Lucie","../img/Camera/Laverie/La_Raph-Lucie1.jpg");
+    setTexture("Laverie-Raphael-Leonie","../img/Camera/Laverie/La_Raph-Léonie1.jpg");
+    setTexture("Billard","../img/Camera/Billard/Bi_Vide.jpg");
+    setTexture("Billard-Lucas-1","../img/Camera/Billard/Bi_Lucas1.jpg");
+    setTexture("Billard-Lucas-2","../img/Camera/Billard/Bi_Lucas2.jpg");
+    setTexture("Billard-Lucie","../img/Camera/Billard/Bi_Lucie1.jpg");
+    setTexture("Billard-Leonie","../img/Camera/Billard/Bi_Léonie1.jpg");
+    setTexture("Billard-Lucas-Lucie","../img/Camera/Billard/Bi_Lucas-Lucie1.jpg");
+    setTexture("Billard-Lucas-Leonie","../img/Camera/Billard/Bi_Lucas-Léonie1.jpg");
 }

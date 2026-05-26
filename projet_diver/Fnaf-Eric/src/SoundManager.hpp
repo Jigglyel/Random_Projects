@@ -7,6 +7,7 @@ class SoundManager
 {
     private:
         std::unordered_map<std::string,sf::SoundBuffer> Map;
+        
     public:
         SoundManager();
         std::vector<sf::Sound> sons;

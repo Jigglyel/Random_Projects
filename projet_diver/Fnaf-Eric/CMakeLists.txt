@@ -23,12 +23,11 @@ add_executable(Fnaf
     ./src/Animatronic.cpp
     ./src/Game.cpp
     ./src/TextureManager.cpp
-    ./src/CameraSystem.cpp
-    ./src/Drawer.cpp
+    ./src/Renderer.cpp
     ./src/Walker.cpp
-    ./src/Bonnie.cpp
-    ./src/Chica.cpp
-    ./src/Foxy.cpp
+    ./src/Raphael.cpp
+    ./src/Lucas.cpp
+    ./src/soeur.cpp
     ./src/Freddy.cpp
     ./src/SoundManager.cpp
     ./src/FontManager.cpp

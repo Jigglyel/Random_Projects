@@ -3,10 +3,7 @@
 
 void Soeur::move(SoundManager & soundmanager)
 {
-    if (*this->actualState==State::Camera and *this->actualCam==this->position)
-    {
-        this->resetClock();
-    }
+    
     if (this->moveClock.getElapsedTime().asSeconds()>25-lvl)
     {
         if (rand()%21<lvl)
@@ -31,4 +28,20 @@ void Soeur::move(SoundManager & soundmanager)
     
 }
 
-Soeur::Soeur(std::string nom):Walker(nom) {}
+Soeur::Soeur(std::string nom):Walker(nom) {this->nom="Lucie-Leonie";lvl=10;
+    this->deplacements[0]={1};
+    this->deplacements[1]={2};
+    this->deplacements[2]={3};
+    this->deplacements[3]={4};
+    this->deplacements[4]={5};
+    this->deplacements[5]={6};
+    this->deplacements[6]={7};
+    this->deplacements[7]={0};
+}
+
+
+void Soeur::attack(SoundManager &soundManager)
+{
+    jumpScare=true;
+    soundManager.playNoise("JumpScare");
+}
