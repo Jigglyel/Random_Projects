@@ -34,7 +34,7 @@ void TextureManager::loadTextures()
     setTexture("Couloir gauche-Lucie","../img/Camera/Couloir_gauche/CG_Lucie1.jpg");
     setTexture("Couloir gauche-Leonie","../img/Camera/Couloir_gauche/CG_Léonie1.jpg");
     setTexture("Cuisine","../img/Camera/Cuisine/Cu_Vide.jpg");
-    setTexture("Idle","../img/Camera/Cuisine/Cu_Vide.jpg");
+    setTexture("Idle","../img/Office/Bu PF-R0-C0.jpg");
     setTexture("Cuisine-Raphael-1","../img/Camera/Cuisine/Cu_Raph1.jpg");
     setTexture("Cuisine-Raphael-2","../img/Camera/Cuisine/Cu_Raph2.jpg");
     setTexture("Cuisine-Raphael-3","../img/Camera/Cuisine/Cu_Raph3.jpg");

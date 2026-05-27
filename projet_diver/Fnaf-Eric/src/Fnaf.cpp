@@ -1,6 +1,5 @@
 #include"Fnaf.hpp"
 
-
 int main(int argc, char const *argv[])
 {
   sf::RenderWindow window(
@@ -15,13 +14,15 @@ int main(int argc, char const *argv[])
     window.clear(sf::Color::Black);
     window.display();
     srand(time(NULL));
-    camera.setSize(sf::Vector2f(windowSize.x*3/4,windowSize.y));
+    camera.setSize(sf::Vector2f(windowSize.x*1/3,windowSize.y));
     camera.setCenter(sf::Vector2f(windowSize.x/2,windowSize.y/2));
     window.setView(camera);
     Game jeu(window,camera,soundManager);
     Renderer renderer(window,jeu);
-    bool checkMove,checkReleased,checkPressed;
+    bool checkMove,checkReleased,checkPressed,drawButton=false;;
     int powerUsage=0;
+    soundManager.music.openFromFile("../audio/music/Menu fnaf eric v1.mp3");
+    soundManager.music.play();
     while (window.isOpen())
     {
         checkMove=false;
@@ -39,6 +40,10 @@ int main(int argc, char const *argv[])
             if (event->is<sf::Event::MouseButtonReleased>() and event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left)
             {
                 checkReleased=true;
+            }
+            if (event->is<sf::Event::KeyPressed>() and event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::B)
+            {
+                drawButton=!drawButton;
             }
             if (event->is<sf::Event::MouseMoved>())
             {
@@ -132,6 +137,7 @@ int main(int argc, char const *argv[])
         
         window.clear(sf::Color::Black);
         renderer.draw(jeu);
+        if (drawButton)
             for (Button & bouton : currentButtons)
                 bouton.draw(window);
         

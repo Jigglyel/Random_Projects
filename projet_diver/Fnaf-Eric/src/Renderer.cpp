@@ -146,7 +146,6 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Grille"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Grille";
-        std::cout<<"je draw grille"<<std::endl;
         for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
         {
             if (animatronic->position==0)
@@ -155,7 +154,6 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
             }
             
         }
-        std::cout<<nomTexture<<std::endl;
         return TM.getTexture(nomTexture);
         
     };
@@ -291,7 +289,6 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
             }
             
         }
-        std::cout<<nomTexture<<std::endl;
         return TM.getTexture(nomTexture);
         
     };

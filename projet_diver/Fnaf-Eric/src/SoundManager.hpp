@@ -11,6 +11,7 @@ class SoundManager
     public:
         SoundManager();
         std::vector<sf::Sound> sons;
+        sf::Music music;
         void setSound(std::string soundName,sf::SoundBuffer &T);
         sf::SoundBuffer* getSoundBuffer(std::string soundName);
         void playNoise(std::string noiseName);
