@@ -60,6 +60,14 @@ SoundManager::SoundManager()
     {
         setSound("light",T);
     }
+    if(!T.loadFromFile("../audio/PUFF.mpeg"))
+    {
+        std::cerr<<"Erreur lors du chargement du son PUFF.mpeg"<<std::endl;
+    }
+    else
+    {
+        setSound("PUFF",T);
+    }
 }   
 
 void SoundManager::playNoise(std::string noiseName)

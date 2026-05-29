@@ -15,14 +15,16 @@ int main(int argc, char const *argv[])
     window.display();
     srand(time(NULL));
     camera.setSize(sf::Vector2f(windowSize.x*1/3,windowSize.y));
-    camera.setCenter(sf::Vector2f(windowSize.x/2,windowSize.y/2));
+    camera.setCenter(sf::Vector2f(windowSize.x-camera.getSize().x/2,windowSize.y/2));
     window.setView(camera);
     Game jeu(window,camera,soundManager);
     Renderer renderer(window,jeu);
-    bool checkMove,checkReleased,checkPressed,drawButton=false;;
+    bool checkMove,checkReleased,checkPressed,drawButton=false;
     int powerUsage=0;
-    soundManager.music.openFromFile("../audio/music/Menu fnaf eric v1.mp3");
-    soundManager.music.play();
+    if(soundManager.music.openFromFile("../audio/music/Menu fnaf eric v1.mp3"))
+    {
+        soundManager.music.play();
+    }
     while (window.isOpen())
     {
         checkMove=false;
@@ -102,16 +104,9 @@ int main(int argc, char const *argv[])
             
             
         }
-        if (jeu.currentState!=Menu and jeu.currentState!=Loose)
+        if (jeu.currentState!=Menu and jeu.currentState!=Loose and jeu.currentState!=StartingNight)
         {
 
-            if (jeu.batterie<0)
-            {
-                jeu.leftDoorClose=false;
-                jeu.leftLightOn=false;
-                jeu.rightDoorClose=false;
-                jeu.rightLightOn=false;
-            }
             for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
             {
                 animatronic->move(soundManager);
@@ -122,12 +117,12 @@ int main(int argc, char const *argv[])
             }
             
             
-            powerUsage=jeu.leftLightOn+jeu.rightLightOn+jeu.leftDoorClose+jeu.rightDoorClose+(jeu.currentState==State::CameraState)+(jeu.batterie>0);
+            powerUsage=(jeu.currentState==State::CameraState)+(jeu.batterie>0);
             jeu.batterie-=(powerUsage)*0.002;
 
             if (jeu.nightClock.getElapsedTime().asSeconds()>jeu.nightDuration)
             {
-                jeu.currentState=State::Menu;
+                jeu.startingNight(jeu.currentNight+1,soundManager);
             }
         }
         

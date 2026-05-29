@@ -77,4 +77,13 @@ void TextureManager::loadTextures()
     setTexture("Billard-Leonie","../img/Camera/Billard/Bi_Léonie1.jpg");
     setTexture("Billard-Lucas-Lucie","../img/Camera/Billard/Bi_Lucas-Lucie1.jpg");
     setTexture("Billard-Lucas-Leonie","../img/Camera/Billard/Bi_Lucas-Léonie1.jpg");
+    setTexture("Chambre-PF-R0-C1","../img/Office/Bu PF-R0-C1.jpg");
+    setTexture("Chambre-PF-R0-C0","../img/Office/Bu PF-R0-C0.jpg");
+    setTexture("Chambre-PF-R1-C0","../img/Office/Bu PF-R1-C0.jpg");
+    setTexture("Chambre-PF-R2-C0","../img/Office/Bu PF-R2-C0.jpg");
+    setTexture("Chambre-PF-R3-C0","../img/Office/Bu PF-R3-C0.jpg");
+    setTexture("Chambre-PO-R0-C0","../img/Office/Bu PO-R0-C0.jpg");
+    setTexture("Chambre-PO-R1-C0","../img/Office/Bu PO-R1-C0.jpg");
+    setTexture("Chambre-PO-R2-C0","../img/Office/Bu PO-R2-C0.jpg");
+    setTexture("Chambre-PO-R3-C0","../img/Office/Bu PO-R3-C0.jpg");
 }

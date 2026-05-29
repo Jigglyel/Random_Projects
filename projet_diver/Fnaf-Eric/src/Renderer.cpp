@@ -40,6 +40,11 @@ void Renderer::draw(Game &game)
         drawLoose(game);
     }
     else
+    if (game.currentState==State::StartingNight)
+    {
+        drawNightScreen(game);
+    }
+    else
     if (game.currentState==State::Door)
     {
         // drawDoor(animatronics);
@@ -65,7 +70,25 @@ void Renderer::drawCam(Game &game)
     window->setView(camera);
 
 }
-
+void Renderer::drawNightScreen(Game &game)
+{
+    if (this->animationFrames==0)
+    {
+        animationFrames=350;
+    }
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::Text text(FM.getFont("Jersey15-Regular"),"Night "+std::to_string(game.currentNight),100);
+    text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
+    text.setFillColor(sf::Color((std::clamp(350-animationFrames,0,255)),0,0));
+    window->draw(text);
+    animationFrames--;
+    if (animationFrames==0)
+    {
+        game.currentState=State::Idle;
+    }
+    window->setView(camera);
+}
 
 void Renderer::drawAM(Game &game)
 {
@@ -93,46 +116,8 @@ void Renderer::drawIdle(Game &game)
     sf::RectangleShape background;
     background.setPosition(sf::Vector2f{0,0});
     background.setSize(sf::Vector2f(window->getSize()));
-    background.setTexture(&TM.getTexture("Idle"));
+    background.setTexture(&TM.getTexture("Chambre-PO-R"+std::to_string(static_cast<Rondoudou*>(game.animatronics[3].get())->stage)+"-C0"));
     window->draw(background);
-    sf::RectangleShape LeftDoor(sf::Vector2f(270*this->windowRatio.x,window->getSize().y-30*this->windowRatio.y));
-    LeftDoor.setPosition(sf::Vector2f{200*this->windowRatio.x,30*this->windowRatio.y});
-    sf::Color LeftDoorColor={0,0,0,0};
-    if (game.leftDoorClose)
-    {
-        LeftDoorColor={255,0,0};
-        LeftDoorColor.a=255;
-    }
-    if (game.leftLightOn)
-    {
-        LeftDoorColor.a=50;
-        LeftDoorColor+={90,90,90};
-        if (game.animatronics[0]->position==100)
-        {
-            LeftDoorColor+={0,0,255};
-        }
-    }
-    LeftDoor.setFillColor(LeftDoorColor);
-    window->draw(LeftDoor);
-    sf::RectangleShape RightDoor(sf::Vector2f(270*this->windowRatio.x,window->getSize().y-30*this->windowRatio.y));
-    RightDoor.setPosition(sf::Vector2f{1450*this->windowRatio.x,30*this->windowRatio.y});
-    sf::Color RightDoorColor={0,0,0,0};
-    if (game.rightDoorClose)    {
-        RightDoorColor.a=255;
-        RightDoorColor={255,0,0};
-    }
-    if (game.rightLightOn)
-    {
-        RightDoorColor.a=50;
-        RightDoorColor+={90,90,90};
-        if (game.animatronics[1]->position==101)
-        {
-            RightDoorColor+={100,100,0};
-        }
-        
-    }
-    RightDoor.setFillColor(RightDoorColor);
-    window->draw(RightDoor);
     drawAM(game);
     drawBatterie(game);
     
@@ -316,6 +301,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 }
 void Renderer::loadingScreen()
 {
+    sf::View camera=window->getView();
     window->setView(window->getDefaultView());
     
     std::string dots=".";
@@ -333,16 +319,19 @@ void Renderer::loadingScreen()
     }
     window->clear(sf::Color::Black);
         window->draw(text);
+        window->setView(camera);
     
     
 }
 void Renderer::drawMenu(Game &game)
 {
+    sf::View camera=window->getView();
     window->setView(window->getDefaultView());
-    sf::Text text(FM.getFont("Jersey15-Regular"),"You Survived!",100);
+    sf::Text text(FM.getFont("Jersey15-Regular"),"Jouer",200);
     text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
-    text.setFillColor(sf::Color(rand()%256,rand()%256,rand()%256)*sf::Color(255,255,255));
+    text.setFillColor(sf::Color(255,255,0));
     window->draw(text);
+    window->setView(camera);
 }
 void Renderer::drawLoose(Game &game){
     sf::RectangleShape background;

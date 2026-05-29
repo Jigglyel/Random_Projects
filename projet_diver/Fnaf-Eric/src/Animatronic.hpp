@@ -25,6 +25,5 @@ public:
     ~Animatronic() = default;
     virtual void move(SoundManager &soundManager)=0;
     virtual void attack(SoundManager &soundManager)=0;
-    int position;
 };
 

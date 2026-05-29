@@ -17,6 +17,7 @@ private:
     void drawCam(Game &game);
     void drawMenu(Game &game);
     void drawIdle(Game &game);
+    void drawNightScreen(Game &game);
     void loadingScreen();
     // void drawDoor(std::vector<std::unique_ptr<Animatronic>> &animatronics);
     // void drawBehind(std::vector<std::unique_ptr<Animatronic>> &animatronics);

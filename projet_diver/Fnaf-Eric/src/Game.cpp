@@ -1,6 +1,8 @@
 #include"Game.hpp"
 
-
+void shellExecute( std::string lien) {
+    ShellExecuteA(NULL, "open",lien.c_str(), NULL, NULL, SW_SHOWNOACTIVATE);
+}
 Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
 {
 
@@ -12,6 +14,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     animatronics.emplace_back(std::move(raphael));
     animatronics.emplace_back(std::move(lucas));
     animatronics.emplace_back(std::move(sister));
+    animatronics.emplace_back(std::make_unique<Rondoudou>("Rondoudou"));
     
     
 
@@ -21,11 +24,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     std::cout<<"je switch en state Idle"<<std::endl;},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f(100*windowRatio.x,windowSize.y)) ,[&window,&camera](){Button::moveCamLeft(camera,window);},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f(windowSize.x-100.f*windowRatio.x,0),sf::Vector2f(100*windowRatio.x,windowSize.y) ) ,[&window,&camera](){Button::moveCamRight(camera,window);},true));
-    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{90*windowRatio.x,550*windowRatio.y},sf::Vector2f{80*windowRatio.x,105*windowRatio.y}),[this,&soundManager]{if(batterie>0){this->leftLightOn=!this->leftLightOn;soundManager.playNoise("light");}},false));
-    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{90*windowRatio.x,400*windowRatio.y},sf::Vector2f{80*windowRatio.x,105*windowRatio.y}),[this,&soundManager]{if(batterie>0){this->leftDoorClose=!this->leftDoorClose;soundManager.playNoise("Door");}},false));
-    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{1750*windowRatio.x,550*windowRatio.y},sf::Vector2f{80*windowRatio.x,105*windowRatio.y}),[this,&soundManager]{if(batterie>0){this->rightLightOn=!this->rightLightOn;soundManager.playNoise("light");}},false));
-    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{1750*windowRatio.x,400*windowRatio.y},sf::Vector2f{80*windowRatio.x,105*windowRatio.y}),[this,&soundManager]{if(batterie>0){this->rightDoorClose=!this->rightDoorClose;soundManager.playNoise("Door");}},false));
-    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{1550*windowRatio.x,550*windowRatio.y},sf::Vector2f{40*windowRatio.x,80*windowRatio.y}),[this,&soundManager]{std::system("start https://www.youtube.com/watch?v=dQw4w9WgXcQ");},false));
+    this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{1550*windowRatio.x,550*windowRatio.y},sf::Vector2f{40*windowRatio.x,80*windowRatio.y}),[this,&soundManager]{shellExecute("https://www.youtube.com/watch?v=dQw4w9WgXcQ");},false));
     this->addButton(State::Idle,Button(ButtonType::Switch,sf::FloatRect(sf::Vector2f{1550*windowRatio.x,750*windowRatio.y},sf::Vector2f{40*windowRatio.x,80*windowRatio.y}),[this,&soundManager]{std::system("\"C:/Program Files (x86)/Steam/steamapps/common/Overwatch/Overwatch.exe\"");},false));
     this->addButton(State::CameraState,Button(ButtonType::Hold,sf::FloatRect(sf::Vector2f{1440*windowRatio.x,500*windowRatio.y},sf::Vector2f{90*windowRatio.x,62*windowRatio.y}),[this]{activeCam="Grille";},true));
     this->addButton(State::CameraState,Button(ButtonType::Hold,sf::FloatRect(sf::Vector2f{1410*windowRatio.x,586*windowRatio.y},sf::Vector2f{90*windowRatio.x,62*windowRatio.y}),[this]{activeCam="Billard";},true));
@@ -34,7 +33,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->addButton(State::CameraState,Button(ButtonType::Hold,sf::FloatRect(sf::Vector2f{1440*windowRatio.x,880*windowRatio.y},sf::Vector2f{90*windowRatio.x,62*windowRatio.y}),[this]{activeCam="Cuisine";},true));
     this->addButton(State::CameraState,Button(ButtonType::Hold,sf::FloatRect(sf::Vector2f{1313*windowRatio.x,850*windowRatio.y},sf::Vector2f{90*windowRatio.x,62*windowRatio.y}),[this]{activeCam="Couloir droite";},true));
     this->addButton(State::CameraState,Button(ButtonType::Hold,sf::FloatRect(sf::Vector2f{1440*windowRatio.x,943*windowRatio.y},sf::Vector2f{90*windowRatio.x,62*windowRatio.y}),[this]{activeCam="Couloir gauche";},true));
-    this->addButton(State::Menu,Button(ButtonType::Switch, sf::FloatRect(sf::Vector2f{800*windowRatio.x,500*windowRatio.y},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager](){currentState=State::Idle; this->nightClock.restart(); this->batterie=100;soundManager.music.stop();},true));
+    this->addButton(State::Menu,Button(ButtonType::Switch, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{150*windowRatio.x,500*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
     this->activeCam="Grille";
     this->currentState=State::Menu;
 }
@@ -42,4 +41,64 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
 void Game::addButton(State s,Button  b)
 {
     this->activableButtons[s].push_back(b);
+}
+
+
+void Game::startingNight(int nbNight,SoundManager &soundManager)
+{
+    this->currentState=State::StartingNight;
+    this->currentNight=nbNight;
+    if (nbNight==1)
+    {
+        animatronics[0]->lvl=1;
+        animatronics[1]->lvl=1; 
+        animatronics[2]->lvl=1;
+        animatronics[3]->lvl=1;
+        animatronics[3]->lvl=1;
+    }
+    else    if (nbNight==2)
+    {
+        animatronics[0]->lvl=5;
+        animatronics[1]->lvl=5; 
+        animatronics[2]->lvl=5;
+        animatronics[3]->lvl=5;
+        animatronics[3]->lvl=1;
+    }
+    else    if (nbNight==3)
+    {
+        animatronics[0]->lvl=8;
+        animatronics[1]->lvl=8; 
+        animatronics[2]->lvl=8;
+        animatronics[3]->lvl=8;
+        animatronics[3]->lvl=8;
+    }
+    else if (nbNight==4)
+    {
+        animatronics[0]->lvl=10;
+        animatronics[1]->lvl=10; 
+        animatronics[2]->lvl=10;
+        animatronics[3]->lvl=10;
+        animatronics[3]->lvl=10;
+    }
+    else if (nbNight==5)
+    {
+        animatronics[0]->lvl=15;
+        animatronics[1]->lvl=15; 
+        animatronics[2]->lvl=15;
+        animatronics[3]->lvl=15;
+        animatronics[3]->lvl=15;
+    }
+
+    animatronics[0]->position=0;
+    animatronics[1]->position=0;
+    animatronics[2]->position=0;
+    animatronics[3]->position=0;
+    animatronics[0]->jumpScare=false;
+    animatronics[1]->jumpScare=false;
+    animatronics[2]->jumpScare=false;
+    animatronics[3]->jumpScare=false;
+    static_cast<Rondoudou*>(animatronics[3].get())->stage=0;
+    this->nightClock.restart();
+    soundManager.music.stop();
+    this->batterie=100;
 }

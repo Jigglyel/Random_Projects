@@ -28,7 +28,7 @@ add_executable(Fnaf
     ./src/Raphael.cpp
     ./src/Lucas.cpp
     ./src/soeur.cpp
-    ./src/Freddy.cpp
+    ./src/Rondoudou.cpp
     ./src/SoundManager.cpp
     ./src/FontManager.cpp
 )

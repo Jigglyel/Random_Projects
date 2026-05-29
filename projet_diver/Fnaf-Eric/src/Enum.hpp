@@ -6,5 +6,6 @@ enum State{
     Behind,
     Door,
     Menu,
-    Loose
+    Loose,
+    StartingNight
 };
