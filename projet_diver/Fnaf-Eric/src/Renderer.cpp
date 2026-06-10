@@ -114,6 +114,7 @@ void Renderer::drawIdle(Game &game)
         if (this->animationZoom==20)
         {
             this->CameraBackup=window->getView();
+            this->moveCenter=sf::Vector2f(1750*this->windowRatio.x,616*this->windowRatio.y)-this->CameraBackup.getCenter();
         }
        Zoom(game);
     }
@@ -407,13 +408,12 @@ void Renderer::setAnimationZoom(int zoomNumber)
 void Renderer::Zoom(Game&game)
 {
     sf::View camera=window->getView();
-    camera.setCenter({1750*this->windowRatio.x,616*this->windowRatio.y});
+    camera.setCenter(camera.getCenter()+moveCenter/20.f);
         camera.zoom(0.90f);
     animationZoom--;
     window->setView(camera);
     if (animationZoom==0)
     {
-        window->setView(this->CameraBackup);
         game.currentState=State::CameraState;
     }
     

@@ -7,7 +7,7 @@ class Renderer
 private:
     sf::RenderWindow *window;
     int animationFlash=0;
-    int animationZoom=0;
+    
     int animationNight=0;
     std::string currentAnimation="";
     bool loading=false;
@@ -26,13 +26,14 @@ private:
     // void drawBehind(std::vector<std::unique_ptr<Animatronic>> &animatronics);
     void drawAM(Game &game);
     void drawLoose(Game &game);
-    sf::View CameraBackup;
+    sf::Vector2f moveCenter;
+    
     FontManager FM;
     TextureManager TM;
     sf::Vector2f windowRatio;
 public:
-    
-
+    int animationZoom=0;
+    sf::View CameraBackup;
     void draw(Game &game);
     void setAnimationFlash(int flashNumber);
     void setAnimationZoom(int zoomNumber);
