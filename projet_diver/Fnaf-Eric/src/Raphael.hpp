@@ -6,7 +6,7 @@ class Raphael : public Walker
 private:
     
 public:
-    Raphael(std::string nom);
+    Raphael();
     bool* leftDoorClose;
     void attack(SoundManager &soundManager) override;
     void move(SoundManager &soundManager) override;

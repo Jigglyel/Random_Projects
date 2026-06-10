@@ -19,7 +19,16 @@ void Soeur::move(SoundManager & soundmanager)
                     nom="Leonie";
             }
             
+            if (nom=="Lucie")
+            {
+                soundmanager.playNoise("LucieThung",position);
+            }
+            
             position=deplacements[position][0];
+            if (position==0)
+            {
+                nom="Lucie-Leonie";
+            }
             std::cout<<this->nom<<" déplacement dans la salle "<<this->position<<std::endl;
         }
         this->resetClock();
@@ -28,7 +37,7 @@ void Soeur::move(SoundManager & soundmanager)
     
 }
 
-Soeur::Soeur(std::string nom):Walker(nom) {this->nom="Lucie-Leonie";lvl=10;
+Soeur::Soeur():Walker("Lucie-Leonie") {
     this->deplacements[0]={1};
     this->deplacements[1]={2};
     this->deplacements[2]={3};

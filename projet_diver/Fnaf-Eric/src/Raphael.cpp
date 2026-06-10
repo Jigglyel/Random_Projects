@@ -1,20 +1,19 @@
 #include"Raphael.hpp"
 
-Raphael::Raphael(std::string nom) : Walker(nom)
+Raphael::Raphael() : Walker("Raphael")
 {
-    lvl=10;
     deplacements[0]={2};
     deplacements[2]={3};
     deplacements[3]={4};
     deplacements[4]={5};
     deplacements[5]={6};
-    deplacements[6]={0};
+    deplacements[6]={10};
 }
 
 void Raphael::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("JumpScare");
+    soundManager.playNoise("JumpScare",position);
 }
 
 void Raphael::move(SoundManager &soundManager)
@@ -23,6 +22,11 @@ void Raphael::move(SoundManager &soundManager)
     {
         if (rand()%21<lvl)
         {
+            if(position==10)
+            {
+                attack(soundManager);
+            }
+            else
                 this->choose_room();
         }
         this->resetClock();

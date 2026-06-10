@@ -12,6 +12,7 @@ public:
     Walker(std::string);
     int illustration=1;
     int position;
+
     
     
 };

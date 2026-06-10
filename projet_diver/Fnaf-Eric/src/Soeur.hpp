@@ -10,7 +10,7 @@ class Soeur : public Walker
 private:
     /* data */
 public:
-    Soeur(std::string nom);
+    Soeur();
     soeur activesister;
 
     void move(SoundManager & soundmanager) override;

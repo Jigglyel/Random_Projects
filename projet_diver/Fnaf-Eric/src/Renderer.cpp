@@ -66,25 +66,28 @@ void Renderer::drawCam(Game &game)
     background.setTexture(&manageCamera[game.activeCam](game));
     window->draw(background);
     drawAM(game);
-    drawBatterie(game);
     window->setView(camera);
+    drawWaterLevel(game);
+    drawLightLevel(game);
 
 }
 void Renderer::drawNightScreen(Game &game)
 {
-    if (this->animationFrames==0)
+    if (this->animationNight==0)
     {
-        animationFrames=350;
+        animationNight=350;
     }
     sf::View camera=window->getView();
     window->setView(window->getDefaultView());
     sf::Text text(FM.getFont("Jersey15-Regular"),"Night "+std::to_string(game.currentNight),100);
     text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
-    text.setFillColor(sf::Color((std::clamp(350-animationFrames,0,255)),0,0));
+    text.setFillColor(sf::Color((std::clamp(350-animationNight,0,255)),0,0));
     window->draw(text);
-    animationFrames--;
-    if (animationFrames==0)
+    
+    animationNight--;
+    if (animationNight==0)
     {
+        game.nightClock.restart();
         game.currentState=State::Idle;
     }
     window->setView(camera);
@@ -98,29 +101,32 @@ void Renderer::drawAM(Game &game)
     text.setCharacterSize(50);
     text.setPosition(sf::Vector2f{1700*this->windowRatio.x,50*this->windowRatio.y});
     window->draw(text);
-    window->setView(camera);
-}
-void Renderer::drawBatterie(Game &game)
-{
-    sf::View camera=window->getView();
-    window->setView(window->getDefaultView());
-    sf::Text text(FM.getFont("Jersey15-Regular"),std::to_string(int(game.batterie))+"%",50);
-    text.setCharacterSize(50);
-    text.setPosition(sf::Vector2f{150*this->windowRatio.x,900*this->windowRatio.y});
+    text.setString("Night "+std::to_string(game.currentNight));
+    text.setPosition({text.getPosition().x,text.getPosition().y+50*this->windowRatio.y});
     window->draw(text);
     window->setView(camera);
 }
 
 void Renderer::drawIdle(Game &game)
 {
+    if (this->animationZoom>0)
+    {
+        if (this->animationZoom==20)
+        {
+            this->CameraBackup=window->getView();
+        }
+       Zoom(game);
+    }
     sf::RectangleShape background;
     background.setPosition(sf::Vector2f{0,0});
     background.setSize(sf::Vector2f(window->getSize()));
     background.setTexture(&TM.getTexture("Chambre-PO-R"+std::to_string(static_cast<Rondoudou*>(game.animatronics[3].get())->stage)+"-C0"));
     window->draw(background);
+    if(this->animationFlash>0)
+        drawFlash();
     drawAM(game);
-    drawBatterie(game);
-    
+    drawWaterLevel(game);
+    drawLightLevel(game);
 }
 
 Renderer::Renderer(sf::RenderWindow&window,Game&game)
@@ -131,7 +137,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Grille"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Grille";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==0)
             {
@@ -145,7 +151,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Billard"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Billard";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==1)
             {
@@ -163,7 +169,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
     };
     this->manageCamera["Laverie"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Laverie";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==2)
             {
@@ -182,7 +188,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Escalier"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Escalier";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==3)
             {
@@ -190,7 +196,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
                 {
                     return TM.getTexture("67-1");
                 }
-                return TM.getTexture(nomTexture+"-"+animatronic->nom+"-"+std::to_string(static_cast<Walker*>(animatronic.get())->illustration));
+                return TM.getTexture(nomTexture+"-"+animatronic->nom+"-"+std::to_string(animatronic->illustration));
             }
             
         }
@@ -200,7 +206,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Cuisine"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Cuisine";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==4)
             {
@@ -240,7 +246,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
 
     this->manageCamera["Couloir droite"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Couloir droite";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==5)
             {
@@ -257,20 +263,20 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
     };
     this->manageCamera["Couloir gauche"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Couloir gauche";
-        for (std::unique_ptr<Animatronic> &animatronic : game.animatronics)
+        for (Walker* &animatronic : game.walkers)
         {
-            if (animatronic->position==7)
+            if (animatronic->position==8)
             {
                 nomTexture+="-"+animatronic->nom;
             }
             
-            if (animatronic->position==8)
+            if (animatronic->position==9)
             {
                 nomTexture+="-Lucas-position2";
             }
-            if (animatronic->nom=="Lucas" and (animatronic->position==7 or animatronic->position==8))
+            if (animatronic->nom=="Lucas" and (animatronic->position==8 or animatronic->position==9))
             {
-                nomTexture+="-"+std::to_string(static_cast<Lucas*>(animatronic.get())->illustration);
+                nomTexture+="-"+std::to_string(animatronic->illustration);
             }
             
         }
@@ -344,4 +350,71 @@ void Renderer::drawLoose(Game &game){
     text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
     text.setFillColor(sf::Color::White);
     window->draw(text);
+}
+
+void Renderer::drawFlash(){
+    sf::RectangleShape background(sf::Vector2f(window->getSize()));
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    background.setPosition(sf::Vector2f{0,0});
+    
+    background.setFillColor(sf::Color(255,255,255,std::clamp(0,255,this->animationFlash)));
+    
+    window->draw(background);
+    animationFlash--;
+    window->setView(camera);
+}
+
+void Renderer::setAnimationFlash(int flashNumber){
+    this->animationFlash=flashNumber;
+}
+
+void Renderer::drawWaterLevel(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::RectangleShape background({100*windowRatio.x,300*windowRatio.y});
+    background.setPosition(sf::Vector2f{100*windowRatio.x,700*windowRatio.y});
+    background.setFillColor(sf::Color::White);
+    float taille_eau=285*windowRatio.y*(game.waterPourcentage/100.f);
+    sf::RectangleShape water({90*windowRatio.x,taille_eau});
+    water.setPosition({105*windowRatio.x,710*windowRatio.y+285-taille_eau});
+    water.setFillColor(sf::Color::Blue);
+    window->draw(background);
+    window->draw(water);
+    window->setView(camera);
+}
+
+void Renderer::drawLightLevel(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::RectangleShape background({100*windowRatio.x,300*windowRatio.y});
+    background.setPosition(sf::Vector2f{250*windowRatio.x,700*windowRatio.y});
+    background.setFillColor(sf::Color::White);
+    float taille_eau=285*windowRatio.y*(game.lightPourcentage/100.f);
+    sf::RectangleShape water({90*windowRatio.x,taille_eau});
+    water.setPosition({255*windowRatio.x,710*windowRatio.y+285-taille_eau});
+    water.setFillColor(sf::Color::Yellow);
+    window->draw(background);
+    window->draw(water);
+    window->setView(camera);
+}
+void Renderer::setAnimationZoom(int zoomNumber)
+{
+    this->animationZoom=zoomNumber;
+}
+void Renderer::Zoom(Game&game)
+{
+    sf::View camera=window->getView();
+    camera.setCenter({1750*this->windowRatio.x,616*this->windowRatio.y});
+        camera.zoom(0.90f);
+    animationZoom--;
+    window->setView(camera);
+    if (animationZoom==0)
+    {
+        window->setView(this->CameraBackup);
+        game.currentState=State::CameraState;
+    }
+    
 }

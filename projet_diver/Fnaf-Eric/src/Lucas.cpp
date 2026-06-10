@@ -1,19 +1,18 @@
 #include"Lucas.hpp"
 
-Lucas::Lucas(std::string nom) : Walker(nom)
+Lucas::Lucas() : Walker("Lucas")
 {
-    lvl=10;
     this->deplacements[0]={1};
     this->deplacements[1]={3};
-    this->deplacements[3]={7};
-    this->deplacements[7]={8};
-    this->deplacements[8]={0};
+    this->deplacements[3]={8};
+    this->deplacements[8]={9};
+    this->deplacements[9]={10};
 }
 
 void Lucas::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("JumpScare");
+    soundManager.playNoise("JumpScare",position);
 }
 
 void Lucas::move(SoundManager &soundManager)
@@ -22,7 +21,18 @@ void Lucas::move(SoundManager &soundManager)
     {
         if (rand()%21<lvl)
         {
-                this->choose_room(); 
+            if(position==10)
+            {
+                attack(soundManager);
+            }
+            else
+            {
+                if(rand()%10==0)
+                {
+                    soundManager.playNoise("LucasSkibidi",position);
+                }
+                    this->choose_room(); 
+            }
         }
         this->resetClock();
     }

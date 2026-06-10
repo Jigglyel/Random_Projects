@@ -1,11 +1,10 @@
 #include "Rondoudou.hpp"
 
-Rondoudou::Rondoudou(std::string nom)
-: Animatronic(nom) // ensure base class is initialized (no default constructor)
+
+Rondoudou::Rondoudou() : Animatronic("Rondoudou")
 {
-    this->nom = nom;
-    this->position = 15;
-    this->lvl = 5;
+    this->nom = "Rondoudou";
+    this->pourcentage=0;
 }
 
 

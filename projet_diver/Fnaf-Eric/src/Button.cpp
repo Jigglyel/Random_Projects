@@ -9,7 +9,29 @@ Button::Button(ButtonType type, sf::FloatRect hitbox,std::function<void()> f,boo
     this->type = type;
     this->hitbox = hitbox;
     this->Hud=hud;
+    this->bouton=std::nullopt;
+    this->cooldown=0;
 }
+
+Button::Button(ButtonType type, sf::FloatRect hitbox,std::function<void()> f,bool hud,sf::Mouse::Button bouton)
+{
+    this->action=f;
+    this->type = type;
+    this->hitbox = hitbox;
+    this->Hud=hud;
+    this->bouton=bouton;
+    this->cooldown=0;
+}
+Button::Button(ButtonType type, sf::FloatRect hitbox,std::function<void()> f,bool hud,sf::Mouse::Button bouton,float cooldown)
+{
+    this->action=f;
+    this->type = type;
+    this->hitbox = hitbox;
+    this->Hud=hud;
+    this->bouton=bouton;
+    this->cooldown=cooldown;
+}
+
 ButtonType Button::getType()
 {
     return this->type;
@@ -67,4 +89,14 @@ void Button::draw(sf::RenderWindow & window)
     else
         window.draw(box);
         
+}
+
+void Button::activate()
+{
+    if (this->innerClock.getElapsedTime().asSeconds()>this->cooldown)
+    {
+        this->action();
+        this->innerClock.restart();
+    }
+    
 }

@@ -6,7 +6,7 @@ class Lucas : public Walker
 private:
     
 public:
-    Lucas(std::string nom);
+    Lucas();
     bool* RightDoorClose;
     void attack(SoundManager &soundManager) override;
     void move(SoundManager &soundManager) override;

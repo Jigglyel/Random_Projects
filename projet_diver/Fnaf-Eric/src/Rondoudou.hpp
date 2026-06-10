@@ -6,7 +6,8 @@ private:
     
 public:
     int stage=0;    
-    Rondoudou(std::string nom);
+    int pourcentage;
+    Rondoudou();
     void move(SoundManager & soundManager) override;
     void attack(SoundManager &soundManager) override;
 };

@@ -12,7 +12,9 @@ class SoundManager
         SoundManager();
         std::vector<sf::Sound> sons;
         sf::Music music;
+        std::unordered_map<int,sf::Vector3f> posToVector;
         void setSound(std::string soundName,sf::SoundBuffer &T);
         sf::SoundBuffer* getSoundBuffer(std::string soundName);
+        void playNoise(std::string noiseName,int pos);
         void playNoise(std::string noiseName);
 };
