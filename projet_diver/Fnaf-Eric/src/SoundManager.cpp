@@ -89,9 +89,9 @@ SoundManager::SoundManager()
     {
         setSound("LucasSkibidi",T);
     }
-    if(!T.loadFromFile("../audio/Lucie/ThungThungThung.ogg"))
+    if(!T.loadFromFile("../audio/Lucie/Muriel.ogg"))
     {
-        std::cerr<<"Erreur lors du chargement du son LucasSkibidi.mp3"<<std::endl;
+        std::cerr<<"Erreur lors du chargement du son LucieThung.ogg"<<std::endl;
     }
     else
     {
@@ -112,6 +112,14 @@ SoundManager::SoundManager()
     else
     {
         setSound("waterFilled",T);
+    }
+    if(!T.loadFromFile("../audio/sound/LightFilled.wav"))
+    {
+        std::cerr<<"Erreur lors du chargement du son LightFilled.wav"<<std::endl;
+    }
+    else
+    {
+        setSound("LightFilled",T);
     }
     if(!T.loadFromFile("../audio/sound/Rondoudou/hit1.mp3"))
     {
@@ -145,22 +153,60 @@ SoundManager::SoundManager()
     {
         setSound("RondoudouDeath",T);
     }
+    if(!T.loadFromFile("../audio/sound/watch.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son watch.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("Monkey",T);
+    }
+    if(!T.loadFromFile("../audio/sound/rddSing.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son rddSing.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("RddSing",T);
+    }
     
 }   
 
 void SoundManager::playNoise(std::string noiseName,int pos)
 {
+    deleteOldSounds();
     sf::Sound son(Map[noiseName]);
     son.setRelativeToListener(true);
     son.setPosition(this->posToVector[pos]);
-    sons.push_back(son);
+    sons.emplace_back(son);
     sons.back().play();
+    
+}
+
+void SoundManager::playNoise(std::string noiseName,sf::Vector3f pos)
+{
+    deleteOldSounds();
+    sf::Sound son(Map[noiseName]);
+    son.setRelativeToListener(true);
+    son.setPosition(pos);
+    sons.emplace_back(son);
+    sons.back().play();
+    
 }
 
 void SoundManager::playNoise(std::string noiseName)
 {
+    deleteOldSounds();
     sf::Sound son(Map[noiseName]);
     son.setRelativeToListener(false);
-    sons.push_back(son);
+    sons.emplace_back(son);
     sons.back().play();
+    
+}
+
+void SoundManager::deleteOldSounds()
+{
+    sons.erase(std::remove_if(sons.begin(),sons.end(),[](sf::Sound &son){
+        return son.getStatus()==sf::Sound::Status::Stopped;
+    }),sons.end());
 }

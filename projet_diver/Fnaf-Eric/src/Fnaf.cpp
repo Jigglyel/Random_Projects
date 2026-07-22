@@ -18,7 +18,7 @@ int main(int argc, char const *argv[])
     camera.setCenter(sf::Vector2f(windowSize.x-camera.getSize().x/2,windowSize.y/2));
     window.setView(camera);
     Game jeu(window,camera,soundManager);
-    Renderer renderer(window,jeu);
+    Renderer renderer(window,jeu,soundManager);
     jeu.renderer=&renderer;
     //creation des variables globales
     bool checkMove,checkReleased,checkPressed,drawButton=false;
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
                 checkPressed=true;
                 boutonPressed=event->getIf<sf::Event::MouseButtonPressed>()->button;
                 if(drawButton)
-                    std::cout<<"souris pressée en "<<window.mapPixelToCoords(sf::Mouse::getPosition(window)).x<<" "<<window.mapPixelToCoords(sf::Mouse::getPosition(window)).y<<std::endl;
+                    std::cout<<"souris pressée en "<<sf::Mouse::getPosition(window).x<<" "<<sf::Mouse::getPosition(window).y<<std::endl;
                 
             }
             if (event->is<sf::Event::MouseButtonReleased>() and event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left)
@@ -54,6 +54,11 @@ int main(int argc, char const *argv[])
             if (event->is<sf::Event::KeyPressed>() and event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::B)
             {
                 drawButton=!drawButton;
+            }
+            if (event->is<sf::Event::KeyPressed>() and event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::S)
+            {
+                if(drawButton)
+                    jeu.startingNight(jeu.currentNight+1,soundManager);
             }
             if (event->is<sf::Event::KeyPressed>() and event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::P)
             {
@@ -123,15 +128,22 @@ int main(int argc, char const *argv[])
             
         }
         //boucle de jeu
-        if (jeu.currentState!=Menu and jeu.currentState!=Loose and jeu.currentState!=StartingNight)
+        if (jeu.currentState!=Menu and jeu.currentState!=Loose and jeu.currentState!=StartingNight and jeu.currentState!=Credits)
         {
-
+            if (soundManager.music.getStatus()==sf::SoundSource::Status::Stopped)
+            {
+                if(soundManager.music.openFromFile("../audio/music/nightMusic.mp3"))
+                {
+                    soundManager.music.play();
+                }
+            }
+            
             for (std::unique_ptr<Animatronic> & animatronic : jeu.animatronics)
             {
                 animatronic->move(soundManager);
                 if (animatronic->jumpScare)
                 {
-                    jeu.currentState=State::Loose;
+                    jeu.currentState=State::Jumpscare;
                 }
             }
             

@@ -28,6 +28,10 @@ void Raphael::move(SoundManager &soundManager)
             }
             else
                 this->choose_room();
+            if(position==10 and Lucas->position==10)
+            {
+                this->position=6;    
+            }
         }
         this->resetClock();
     }

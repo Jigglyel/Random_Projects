@@ -18,18 +18,29 @@ void Soeur::move(SoundManager & soundmanager)
                 else
                     nom="Leonie";
             }
-            
-            if (nom=="Lucie")
+            if (position==10)
             {
-                soundmanager.playNoise("LucieThung",position);
+                if(rand()%2==0)
+                {
+                    attack(soundmanager);
+                }
             }
             
             position=deplacements[position][0];
-            if (position==0)
+            if (position==3 and rand()%100==0)
             {
-                nom="Lucie-Leonie";
+                sixSeven=true;
             }
-            std::cout<<this->nom<<" déplacement dans la salle "<<this->position<<std::endl;
+            else
+                sixSeven=false;
+            
+            if (position==10)
+            {
+                if (activesister==soeur::Lucie)
+                    soundmanager.playNoise(LucieSounds[rand()%LucieSounds->size()]);
+                else
+                    soundmanager.playNoise(LeonieSounds[rand()%LeonieSounds->size()]);
+            }
         }
         this->resetClock();
     }
@@ -45,7 +56,7 @@ Soeur::Soeur():Walker("Lucie-Leonie") {
     this->deplacements[4]={5};
     this->deplacements[5]={6};
     this->deplacements[6]={7};
-    this->deplacements[7]={0};
+    this->deplacements[7]={10};
 }
 
 

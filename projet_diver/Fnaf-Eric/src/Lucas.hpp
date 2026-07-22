@@ -7,7 +7,7 @@ private:
     
 public:
     Lucas();
-    bool* RightDoorClose;
+    Walker* Raphael; 
     void attack(SoundManager &soundManager) override;
     void move(SoundManager &soundManager) override;
 };

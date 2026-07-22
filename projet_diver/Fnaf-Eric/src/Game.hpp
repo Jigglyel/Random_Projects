@@ -20,13 +20,14 @@ public:
     void startingNight(int nbNight,SoundManager &soundManager);
     State currentState;
     sf::Clock nightClock;
-    int nightDuration=100;
+    int nightDuration=850;
     int currentNight=0;
     int waterPourcentage=100; 
     int lightPourcentage=100;
     Renderer* renderer;
     std::unordered_map<State,std::vector<Button>> activableButtons;
     std::vector<Walker*> walkers;
+    sf::Clock soundPlayClock;
     Rondoudou rondoudou;
     Raphael raphael;
     Lucas lucas;

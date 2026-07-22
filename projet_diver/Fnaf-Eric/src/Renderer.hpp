@@ -5,14 +5,15 @@
 class Renderer
 {
 private:
-    sf::RenderWindow *window;
+    
     int animationFlash=0;
     
     int animationNight=0;
     std::string currentAnimation="";
     bool loading=false;
     int loadingState=0;
-    sf::Clock loadingClock;
+    sf::Clock loadingClock, sixSevenClock;
+    bool sixseven;
     std::unordered_map<std::string,std::function<sf::Texture&(Game&game)>>manageCamera;
     void drawCam(Game &game);
     void drawMenu(Game &game);
@@ -21,24 +22,32 @@ private:
     void drawFlash();
     void loadingScreen();
     void drawWaterLevel(Game &game);
+    void drawTablette(Game &game);
     void drawLightLevel(Game &game);
-    // void drawDoor(std::vector<std::unique_ptr<Animatronic>> &animatronics);
-    // void drawBehind(std::vector<std::unique_ptr<Animatronic>> &animatronics);
     void drawAM(Game &game);
     void drawLoose(Game &game);
+    void drawCredits(Game &game);
     sf::Vector2f moveCenter;
+    sf::View shakeCamera(sf::View &camera);
+    void drawJumpscare(Game &game);
     
     FontManager FM;
     TextureManager TM;
+    SoundManager* SM;
     sf::Vector2f windowRatio;
+    bool credits=false;
 public:
     int animationZoom=0;
-    sf::View CameraBackup;
+    int animationShake=0;
+    sf::View cameraBackup;
     void draw(Game &game);
     void setAnimationFlash(int flashNumber);
     void setAnimationZoom(int zoomNumber);
-    Renderer(sf::RenderWindow&window,Game&game);
+    void setAnimationShake(int shakeNumber);
+    Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager);
     void Zoom(Game &game);
+    sf::RenderWindow *window;
+    
 
     
     

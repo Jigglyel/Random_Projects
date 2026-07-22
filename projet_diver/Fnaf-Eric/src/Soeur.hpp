@@ -8,11 +8,13 @@ enum soeur{
 class Soeur : public Walker
 {
 private:
-    /* data */
+    std::string* LucieSounds;
+    std::string* LeonieSounds;
+
 public:
     Soeur();
     soeur activesister;
-
+    bool sixSeven;
     void move(SoundManager & soundmanager) override;
     void attack(SoundManager &soundManager) override;
 };

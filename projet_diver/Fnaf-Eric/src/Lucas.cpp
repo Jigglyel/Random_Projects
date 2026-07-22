@@ -32,6 +32,11 @@ void Lucas::move(SoundManager &soundManager)
                     soundManager.playNoise("LucasSkibidi",position);
                 }
                     this->choose_room(); 
+
+                if(position==10 and Raphael->position==10)
+                {
+                    this->position=6;    
+                }
             }
         }
         this->resetClock();

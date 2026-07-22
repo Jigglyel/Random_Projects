@@ -17,4 +17,6 @@ class SoundManager
         sf::SoundBuffer* getSoundBuffer(std::string soundName);
         void playNoise(std::string noiseName,int pos);
         void playNoise(std::string noiseName);
+        void playNoise(std::string noiseName,sf::Vector3f pos);
+        void deleteOldSounds();
 };

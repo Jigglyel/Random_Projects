@@ -19,6 +19,16 @@ void Renderer::draw(Game &game)
     {
         loadingScreen();
     }
+    if(game.currentState==State::Jumpscare)
+    {
+        if(this->animationShake==0)
+        {
+            this->animationShake=60;
+            this->cameraBackup=window->getView();
+        }
+        
+        drawJumpscare(game);
+    }
     else
     if (game.currentState==State::Idle)
     {
@@ -45,14 +55,14 @@ void Renderer::draw(Game &game)
         drawNightScreen(game);
     }
     else
-    if (game.currentState==State::Door)
+    if (game.currentState==State::Tablette)
     {
-        // drawDoor(animatronics);
+        drawTablette(game);
     }
     else
-    if (game.currentState==State::Behind)
+    if (game.currentState==State::Credits)
     {
-        // drawBehind(animatronics);
+        drawCredits(game);
     }
 }
 
@@ -63,10 +73,41 @@ void Renderer::drawCam(Game &game)
     sf::RectangleShape background;
     background.setPosition(sf::Vector2f{0,0});
     background.setSize(sf::Vector2f(window->getSize()));
-    background.setTexture(&manageCamera[game.activeCam](game));
-    window->draw(background);
+    if(game.activeCam=="Cuisine Gauche")
+    {
+        background.setFillColor(sf::Color::Black);
+        window->draw(background);
+        sf::Text text(FM.getFont("Jersey15-Regular"),"Camera Disabled sound only ",70);
+        text.setPosition(sf::Vector2f{500*this->windowRatio.x,window->getSize().y-200*this->windowRatio.y});
+        text.setFillColor(sf::Color::White);
+        window->draw(text);
+        
+    }else
+    {
+        
+        background.setTexture(&manageCamera[game.activeCam](game));
+        window->draw(background);
+        
+    }
+    
+    sf::RectangleShape HUD({500*this->windowRatio.x,500*this->windowRatio.y});
+    HUD.setPosition({window->getSize().x-500*this->windowRatio.x,window->getSize().y-500*this->windowRatio.y});
+    HUD.setTexture(&TM.getTexture("CamHUD"));
+    if(HUD.getGlobalBounds().contains(sf::Vector2f(sf::Mouse::getPosition())))
+    {
+        HUD.setFillColor(sf::Color(255,255,255,255));
+    }
+    else
+        HUD.setFillColor(sf::Color(255,255,255,40));
+
+    window->draw(HUD);
+    sf::RectangleShape Cross({100*this->windowRatio.x,100*this->windowRatio.y});
+    Cross.setPosition({0,0});
+    Cross.setTexture(&TM.getTexture("Croix"));
+    window->draw(Cross);
     drawAM(game);
     window->setView(camera);
+
     drawWaterLevel(game);
     drawLightLevel(game);
 
@@ -79,7 +120,7 @@ void Renderer::drawNightScreen(Game &game)
     }
     sf::View camera=window->getView();
     window->setView(window->getDefaultView());
-    sf::Text text(FM.getFont("Jersey15-Regular"),"Night "+std::to_string(game.currentNight),100);
+    sf::Text text(FM.getFont("Jersey15-Regular"),"Nuit "+std::to_string(game.currentNight),100);
     text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
     text.setFillColor(sf::Color((std::clamp(350-animationNight,0,255)),0,0));
     window->draw(text);
@@ -89,6 +130,9 @@ void Renderer::drawNightScreen(Game &game)
     {
         game.nightClock.restart();
         game.currentState=State::Idle;
+        std::cout<<"Nuit "<<game.currentNight<<" commencée"<<std::endl;
+        if(SM->music.openFromFile("../audio/appels/nuit"+std::to_string(game.currentNight)+"-phoneCall.mp3"));
+            SM->music.play(); 
     }
     window->setView(camera);
 }
@@ -101,7 +145,7 @@ void Renderer::drawAM(Game &game)
     text.setCharacterSize(50);
     text.setPosition(sf::Vector2f{1700*this->windowRatio.x,50*this->windowRatio.y});
     window->draw(text);
-    text.setString("Night "+std::to_string(game.currentNight));
+    text.setString("Nuit "+std::to_string(game.currentNight));
     text.setPosition({text.getPosition().x,text.getPosition().y+50*this->windowRatio.y});
     window->draw(text);
     window->setView(camera);
@@ -113,15 +157,24 @@ void Renderer::drawIdle(Game &game)
     {
         if (this->animationZoom==20)
         {
-            this->CameraBackup=window->getView();
-            this->moveCenter=sf::Vector2f(1750*this->windowRatio.x,616*this->windowRatio.y)-this->CameraBackup.getCenter();
+            this->cameraBackup=window->getView();
+            this->moveCenter=sf::Vector2f(1750*this->windowRatio.x,616*this->windowRatio.y)-this->cameraBackup.getCenter();
         }
        Zoom(game);
     }
     sf::RectangleShape background;
     background.setPosition(sf::Vector2f{0,0});
     background.setSize(sf::Vector2f(window->getSize()));
-    background.setTexture(&TM.getTexture("Chambre-PO-R"+std::to_string(static_cast<Rondoudou*>(game.animatronics[3].get())->stage)+"-C0"));
+    std::string nomTexture="Chambre-R"+std::to_string(static_cast<Rondoudou*>(game.animatronics[3].get())->stage);
+    if(game.walkers[0]->position==10)
+    {
+        nomTexture+="-Raphael";
+    }
+    if(game.walkers[1]->position==10)
+    {
+        nomTexture+="-Lucas";
+    }
+    background.setTexture(&TM.getTexture(nomTexture));
     window->draw(background);
     if(this->animationFlash>0)
         drawFlash();
@@ -130,11 +183,12 @@ void Renderer::drawIdle(Game &game)
     drawLightLevel(game);
 }
 
-Renderer::Renderer(sf::RenderWindow&window,Game&game)
+Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
 {
     this->window=&window;
     sf::Vector2u windowSize=window.getSize();
     this->windowRatio=sf::Vector2f(windowSize.x/1920.f,windowSize.y/1080.f);
+    this->SM=&soundManager;
 
     this->manageCamera["Grille"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Grille";
@@ -193,9 +247,14 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
         {
             if (animatronic->position==3)
             {
-                if (animatronic->nom=="Lucie" and rand()%100==0)
+                if (animatronic->nom=="Lucie" and game.soeur.sixSeven)
                 {
-                    return TM.getTexture("67-1");
+                    if(sixSevenClock.getElapsedTime().asSeconds()>0.8)
+                    {
+                        sixseven=!sixseven;
+                        sixSevenClock.restart();
+                    }
+                    return TM.getTexture("67-"+(sixseven+1));
                 }
                 return TM.getTexture(nomTexture+"-"+animatronic->nom+"-"+std::to_string(animatronic->illustration));
             }
@@ -205,8 +264,8 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
         
     };
 
-    this->manageCamera["Cuisine"]= [this](Game&game) -> sf::Texture& {
-        std::string nomTexture="Cuisine";
+    this->manageCamera["Cuisine Droite"]= [this](Game&game) -> sf::Texture& {
+        std::string nomTexture="Cuisine Droite";
         for (Walker* &animatronic : game.walkers)
         {
             if (animatronic->position==4)
@@ -243,7 +302,6 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game)
         return TM.getTexture(nomTexture);
         
     };
-
 
     this->manageCamera["Couloir droite"]= [this](Game&game) -> sf::Texture& {
         std::string nomTexture="Couloir droite";
@@ -417,4 +475,205 @@ void Renderer::Zoom(Game&game)
         game.currentState=State::CameraState;
     }
     
+}
+
+void Renderer::drawTablette(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::RectangleShape backgroundLeft(sf::Vector2f(window->getSize().x/2,window->getSize().y));
+    backgroundLeft.setPosition({0,0});
+    if(game.soundPlayClock.getElapsedTime().asSeconds()<=10)
+    {
+        backgroundLeft.setFillColor(sf::Color(150,150,0));
+    }
+    else
+    {
+        backgroundLeft.setFillColor(sf::Color::Yellow);
+    }
+    window->draw(backgroundLeft);
+    sf::RectangleShape backgroundRight(sf::Vector2f(window->getSize().x/2,window->getSize().y));
+    backgroundRight.setPosition(sf::Vector2f(window->getSize().x/2,0));
+    if(game.soundPlayClock.getElapsedTime().asSeconds()<=10)
+    {
+        backgroundRight.setFillColor(sf::Color(255*0.7,150*0.7,150*0.7));
+    }
+    else
+    {
+        backgroundRight.setFillColor(sf::Color(255,150,150));
+    }
+    window->draw(backgroundRight);
+    sf::RectangleShape monkey({210*windowRatio.x,142*windowRatio.y});
+    monkey.setPosition({window->getSize().x/4-105*windowRatio.x,window->getSize().y/2-71*windowRatio.y});
+    monkey.setTexture(&TM.getTexture("singe"));
+    sf::RectangleShape rondoudou({150*windowRatio.x,150*windowRatio.y});
+    rondoudou.setPosition({window->getSize().x*3/4-75*windowRatio.x,window->getSize().y/2-75*windowRatio.y});
+    rondoudou.setTexture(&TM.getTexture("rondoudou"));
+    window->draw(monkey);
+    window->draw(rondoudou);
+    drawAM(game);
+    window->setView(camera);
+}
+
+
+
+void drawText(sf::Text &text,sf::RenderWindow& window,sf::Vector2f position,int size,std::string textString)
+{
+    text.setCharacterSize(size);
+    text.setString(textString);
+    text.setPosition(position-sf::Vector2f(text.getGlobalBounds().size.x/2,0));
+    
+    
+    window.draw(text);
+}
+void Renderer::drawCredits(Game &game)
+{
+    if(!credits)
+    {
+        credits=true;
+        sf::View camera=window->getView();
+        camera.setSize(sf::Vector2f(window->getSize()));
+        camera.setCenter(sf::Vector2f{window->getSize().x/2.f,0});
+        window->setView(camera);
+    }
+    sf::Text  text(FM.getFont("Jersey15-Regular"));
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f,100},100,"Merci d'avoir joué !");
+
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f,300},90,"programmer :");
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f-100,500},70,"Raphaël Croix");
+
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f,700},90,"acteurs :");
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f-100,800},70,"Raphaël Croix, Lucas Hall, Lucie Avrillaud, Léonie Avrillaud");
+
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f,1000},90,"réalisateur :");
+    drawText(text,*window,sf::Vector2f{window->getSize().x/2.f-100,1200},70,"Baptiste Marie");
+    sf::View camera=window->getView();
+    camera.setCenter(camera.getCenter()+sf::Vector2f{0,1});
+    window->setView(camera);
+    if (camera.getCenter().y>1400)
+    {
+        game.currentState=State::Menu;
+        credits=false;
+    }
+    
+}
+
+void Renderer::setAnimationShake(int shakeNumber)
+{
+    this->animationShake=shakeNumber;
+}
+
+sf::View Renderer::shakeCamera(sf::View &camera)
+{
+    if (this->animationShake>55)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,1.4}*2.f);
+    }
+    else
+    if (this->animationShake>50)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-1,0}*2.f);
+    }
+    else
+    if (this->animationShake>45)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1.4}*2.f);
+    }
+    else
+    if (this->animationShake>40)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-1.4,1.4}*2.f);
+    }
+    else
+    if (this->animationShake>35)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,-1}*2.f);
+    }
+    else
+    if (this->animationShake>30)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*2.f);
+    }
+    else
+    if (this->animationShake>25)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-2,1}*2.f);
+    }
+    else
+    if (this->animationShake>25)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1,-1}*2.f);
+    }
+    else
+    if (this->animationShake>20)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*2.f);
+    }
+    else
+    if (this->animationShake>15)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1}*2.f);
+    }
+    else
+    if (this->animationShake>10)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0.2,1}*2.f);
+    }
+    else
+    if (this->animationShake>5)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.5,-1}*2.f);
+    }
+    else
+    if (this->animationShake>0)
+    {
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.6,1}*2.f);
+    }
+    return camera;
+}
+
+void Renderer::drawJumpscare(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(cameraBackup);
+    sf::RectangleShape background(sf::Vector2f(window->getSize()));
+    background.setPosition(sf::Vector2f{0,0});
+    background.setTexture(&TM.getTexture("idle"));
+    window->draw(background);
+    window->setView(this->shakeCamera(camera));
+    sf::RectangleShape jumpscare(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
+    jumpscare.setPosition(sf::Vector2f{500,500});
+    jumpscare.setTexture(&TM.getTexture("singe"));
+    // if(game.raphael.jumpScare)
+    // {
+    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Raphael"));
+    // }
+    // else
+    // if(game.lucas.jumpScare)
+    // {
+    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Lucas"));
+    // }
+    // else
+    // if(game.rondoudou.jumpScare)
+    // {
+    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Rondoudou"));
+    // }
+    // else
+    // if(game.soeur.jumpScare )
+    // {
+    //     if(game.soeur.activesister==soeur::Lucie)
+    //     {
+    //         jumpscare.setTexture(&TM.getTexture("Jumpscare-Lucie"));
+    //     }
+    //     else
+    //     {
+    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Leonie"));
+    //     }
+    // } 
+    window->draw(jumpscare);
+    animationShake--;
+    if(animationShake==0)
+    {
+        game.currentState=State::Loose;
+    }
 }

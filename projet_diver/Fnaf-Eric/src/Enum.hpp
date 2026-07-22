@@ -7,5 +7,8 @@ enum State{
     Door,
     Menu,
     Loose,
-    StartingNight
+    StartingNight,
+    Tablette,
+    Credits,
+    Jumpscare
 };
