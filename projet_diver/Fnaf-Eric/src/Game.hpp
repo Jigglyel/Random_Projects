@@ -32,6 +32,7 @@ public:
     Raphael raphael;
     Lucas lucas;
     Soeur soeur;
+    bool callFinished=false;
     std::vector<std::unique_ptr<Animatronic>> animatronics;
 };
 

@@ -49,14 +49,6 @@ SoundManager::SoundManager()
     {
         setSound("cameraOpen",T);
     }
-    if(!T.loadFromFile("../audio/sound/Fnaf1JumpScare.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Fnaf1JumpScare.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("JumpScare",T);
-    }
     if(!T.loadFromFile("../audio/sound/Door.mp3"))
     {
         std::cerr<<"Erreur lors du chargement du son Door.mp3"<<std::endl;
@@ -168,6 +160,38 @@ SoundManager::SoundManager()
     else
     {
         setSound("RddSing",T);
+    }
+    if(!T.loadFromFile("../audio/sound/RaphaelJumpScare.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son RaphaelJumpScare.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("Raphael-JumpScare",T);
+    }
+    if(!T.loadFromFile("../audio/sound/LeonieJumpScare.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son LeonieJumpScare.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("Leonie-JumpScare",T);
+    }
+    if(!T.loadFromFile("../audio/sound/Lucie/FakeLéonie.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son Lucie:FakeLéonie.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("Lucie:FakeLeonie",T);
+    }
+    if(!T.loadFromFile("../audio/sound/Leonie/WhyRDD.mp3"))
+    {
+        std::cerr<<"Erreur lors du chargement du son Leonie:WhyRDD.mp3"<<std::endl;
+    }
+    else
+    {
+        setSound("Leonie:WhyRDD",T);
     }
     
 }   

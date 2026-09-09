@@ -104,6 +104,9 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     },true,sf::Mouse::Button::Left,10));
     this->activeCam="Grille";
     this->currentState=State::Menu;
+
+
+    this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{200*windowRatio.x,300*windowRatio.y},sf::Vector2f{200*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager](){if(nightClock.getElapsedTime().asSeconds()<nightDuration/10 and!callFinished)callFinished=true;soundManager.music.openFromFile("../audio/music/nightMusic.mp3");},true));
 }
 
 void Game::addButton(State s,Button  b)
@@ -181,6 +184,7 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
         animatronics[3]->jumpScare=false;
         rondoudou.stage=0;
         soeur.nom="Lucie-Leonie";
+        callFinished=false;
         this->waterPourcentage=100;
         this->lightPourcentage=100;
         this->nightClock.restart();

@@ -4,7 +4,7 @@
 void Soeur::move(SoundManager & soundmanager)
 {
     
-    if (this->moveClock.getElapsedTime().asSeconds()>25-lvl)
+    if (this->moveClock.getElapsedTime().asSeconds()>5)
     {
         if (rand()%21<lvl)
         {
@@ -25,7 +25,6 @@ void Soeur::move(SoundManager & soundmanager)
                     attack(soundmanager);
                 }
             }
-            
             position=deplacements[position][0];
             if (position==3 and rand()%100==0)
             {
@@ -57,11 +56,13 @@ Soeur::Soeur():Walker("Lucie-Leonie") {
     this->deplacements[5]={6};
     this->deplacements[6]={7};
     this->deplacements[7]={10};
+    this->LeonieSounds=new std::string[1]{"Leonie:WhyRDD"};
+    this->LucieSounds=new std::string[1]{"Lucie:FakeLeonie"};
 }
 
 
 void Soeur::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("JumpScare");
+    soundManager.playNoise("Leonie-Jumpscare");
 }

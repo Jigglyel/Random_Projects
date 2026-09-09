@@ -93,4 +93,5 @@ void TextureManager::loadTextures()
     setTexture("Croix","../img/cross.jpg");
     setTexture("singe","../img/singe.png");
     setTexture("rondoudou","../img/rdd.jpg");
+    setTexture("Leonie-Jumpscare","../img/Jumpscare/LeonieJumpscare.png");
 }

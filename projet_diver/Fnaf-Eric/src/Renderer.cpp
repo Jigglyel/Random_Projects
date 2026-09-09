@@ -130,8 +130,7 @@ void Renderer::drawNightScreen(Game &game)
     {
         game.nightClock.restart();
         game.currentState=State::Idle;
-        std::cout<<"Nuit "<<game.currentNight<<" commencée"<<std::endl;
-        if(SM->music.openFromFile("../audio/appels/nuit"+std::to_string(game.currentNight)+"-phoneCall.mp3"));
+        if(SM->music.openFromFile("../audio/appels/nuit1-Call.ogg"));
             SM->music.play(); 
     }
     window->setView(camera);
@@ -147,6 +146,16 @@ void Renderer::drawAM(Game &game)
     window->draw(text);
     text.setString("Nuit "+std::to_string(game.currentNight));
     text.setPosition({text.getPosition().x,text.getPosition().y+50*this->windowRatio.y});
+    window->draw(text);
+    window->setView(camera);
+}
+void Renderer::drawMute(Game &game)
+{
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    sf::Text text(FM.getFont("Jersey15-Regular"),"Mute",50);
+    text.setPosition(sf::Vector2f{200*windowRatio.x,300*windowRatio.y});
+    text.setFillColor(sf::Color(255,0,0));
     window->draw(text);
     window->setView(camera);
 }
@@ -181,6 +190,10 @@ void Renderer::drawIdle(Game &game)
     drawAM(game);
     drawWaterLevel(game);
     drawLightLevel(game);
+    if(game.nightClock.getElapsedTime().asSeconds()<game.nightDuration/10)
+    {
+        drawMute(game);
+    }
 }
 
 Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
@@ -567,83 +580,97 @@ sf::View Renderer::shakeCamera(sf::View &camera)
 {
     if (this->animationShake>55)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,1.4}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,1.4}*10.f);
     }
     else
     if (this->animationShake>50)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-1,0}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-1,0}*10.f);
     }
     else
     if (this->animationShake>45)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1.4}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1.4}*10.f);
     }
     else
     if (this->animationShake>40)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-1.4,1.4}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-1.4,1.4}*10.f);
     }
     else
     if (this->animationShake>35)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,-1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,-1}*10.f);
     }
     else
     if (this->animationShake>30)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*10.f);
     }
     else
     if (this->animationShake>25)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-2,1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-2,1}*10.f);
     }
     else
     if (this->animationShake>25)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1,-1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1,-1}*10.f);
     }
     else
     if (this->animationShake>20)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*10.f);
     }
     else
     if (this->animationShake>15)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1}*10.f);
     }
     else
     if (this->animationShake>10)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0.2,1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{0.2,1}*10.f);
     }
     else
     if (this->animationShake>5)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.5,-1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.5,-1}*10.f);
     }
     else
     if (this->animationShake>0)
     {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.6,1}*2.f);
+        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.6,1}*10.f);
     }
     return camera;
 }
 
 void Renderer::drawJumpscare(Game &game)
 {
-    sf::View camera=window->getView();
+
+    sf::View camera;
+    if (animationShake==60)
+    {
+        camera=window->getDefaultView();
+    }
+    else
+    {
+        camera=window->getView();
+    }
+    
+    
     window->setView(cameraBackup);
     sf::RectangleShape background(sf::Vector2f(window->getSize()));
     background.setPosition(sf::Vector2f{0,0});
-    background.setTexture(&TM.getTexture("idle"));
+    std::string nomTexture="Chambre-R"+std::to_string(static_cast<Rondoudou*>(game.animatronics[3].get())->stage);
+    background.setTexture(&TM.getTexture(nomTexture));
     window->draw(background);
     window->setView(this->shakeCamera(camera));
-    sf::RectangleShape jumpscare(sf::Vector2f(window->getSize().x/2,window->getSize().y/2));
-    jumpscare.setPosition(sf::Vector2f{500,500});
-    jumpscare.setTexture(&TM.getTexture("singe"));
+    sf::RectangleShape jumpscare;
+    jumpscare.setPosition(sf::Vector2f(window->getSize())/2.f +sf::Vector2f(0,100));
+    jumpscare.setTexture(&TM.getTexture("Leonie-Jumpscare"));
+    jumpscare.setSize(sf::Vector2f(115*windowRatio.x,204*windowRatio.y)*7.f);
+    jumpscare.setOrigin(sf::Vector2f(jumpscare.getSize().x/2.f,jumpscare.getSize().y/2.f));
     // if(game.raphael.jumpScare)
     // {
     //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Raphael"));

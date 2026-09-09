@@ -25,6 +25,7 @@ private:
     void drawTablette(Game &game);
     void drawLightLevel(Game &game);
     void drawAM(Game &game);
+    void drawMute(Game &game);
     void drawLoose(Game &game);
     void drawCredits(Game &game);
     sf::Vector2f moveCenter;
