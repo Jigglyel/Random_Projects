@@ -11,6 +11,6 @@ sf::Font& FontManager::getFont(std::string nomFont)
 }
 FontManager::FontManager()
 {
-    sf::Font F("../Font/Jersey15-Regular.ttf");
+    sf::Font F("../font/Jersey15-Regular.ttf");
     Map["Jersey15-Regular"] = F; 
 }

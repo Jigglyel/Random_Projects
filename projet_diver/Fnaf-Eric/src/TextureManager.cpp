@@ -90,8 +90,8 @@ void TextureManager::loadTextures()
     setTexture("Chambre-R2-Lucas","../img/Office/Bu LUCAS-R2.jpg");
     setTexture("Chambre-R3-Lucas","../img/Office/Bu LUCAS-R3.jpg");
     setTexture("CamHUD","../img/Camera/CAM.png");
-    setTexture("Croix","../img/cross.jpg");
+    setTexture("Croix","../img/cross.png");
     setTexture("singe","../img/singe.png");
-    setTexture("rondoudou","../img/rdd.jpg");
+    setTexture("rondoudou","../img/rdd.png");
     setTexture("Leonie-Jumpscare","../img/Jumpscare/LeonieJumpscare.png");
 }

@@ -6,7 +6,7 @@
 #include "Raphael.hpp"
 #include "Lucas.hpp"
 #include "Rondoudou.hpp"
-#include<windows.h>
+#include<algorithm>
 
 class Renderer;
 class Game

@@ -106,7 +106,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->currentState=State::Menu;
 
 
-    this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{200*windowRatio.x,300*windowRatio.y},sf::Vector2f{200*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager](){if(nightClock.getElapsedTime().asSeconds()<nightDuration/10 and!callFinished)callFinished=true;soundManager.music.openFromFile("../audio/music/nightMusic.mp3");},true));
+    this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{200*windowRatio.x,300*windowRatio.y},sf::Vector2f{200*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager](){if(nightClock.getElapsedTime().asSeconds()<nightDuration/10 and!callFinished)callFinished=true;soundManager.openMusic("../audio/music/nightMusic.mp3");},true));
 }
 
 void Game::addButton(State s,Button  b)
@@ -136,11 +136,10 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
         this->currentNight=nbNight;
         if (nbNight==1)
         {
-            animatronics[0]->lvl=1;
-            animatronics[1]->lvl=1; 
-            animatronics[2]->lvl=1;
-            animatronics[3]->lvl=1;
-            animatronics[3]->lvl=1;
+            raphael.lvl=1;
+            lucas.lvl=1; 
+            soeur.lvl=10;
+            rondoudou.lvl=1;
         }
         else    if (nbNight==2)
         {
@@ -148,14 +147,12 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
             animatronics[1]->lvl=5; 
             animatronics[2]->lvl=5;
             animatronics[3]->lvl=5;
-            animatronics[3]->lvl=1;
         }
         else    if (nbNight==3)
         {
             animatronics[0]->lvl=8;
             animatronics[1]->lvl=8; 
             animatronics[2]->lvl=8;
-            animatronics[3]->lvl=8;
             animatronics[3]->lvl=8;
         }
         else if (nbNight==4)
@@ -164,14 +161,12 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
             animatronics[1]->lvl=10; 
             animatronics[2]->lvl=10;
             animatronics[3]->lvl=10;
-            animatronics[3]->lvl=10;
         }
         else if (nbNight==5)
         {
             animatronics[0]->lvl=15;
             animatronics[1]->lvl=15; 
             animatronics[2]->lvl=15;
-            animatronics[3]->lvl=15;
             animatronics[3]->lvl=15;
         }
 

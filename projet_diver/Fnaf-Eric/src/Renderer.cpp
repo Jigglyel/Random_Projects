@@ -106,10 +106,24 @@ void Renderer::drawCam(Game &game)
     Cross.setTexture(&TM.getTexture("Croix"));
     window->draw(Cross);
     drawAM(game);
-    window->setView(camera);
-
+    if(game.activeCam=="Laverie")
+    {
+        sf::RectangleShape pump;
+        pump.setSize({100*windowRatio.x,60*windowRatio.y});
+        pump.setPosition({1300*windowRatio.x,800*windowRatio.y});
+        pump.setFillColor(sf::Color(20,20,20));
+        pump.setOutlineColor(sf::Color::White);
+        pump.setOutlineThickness(4);
+        window->draw(pump);
+        sf::Text text(FM.getFont("Jersey15-Regular"),"Pompe",30);
+        text.setPosition({1310*windowRatio.x,800*windowRatio.y});
+        window->draw(text);
+    }
     drawWaterLevel(game);
     drawLightLevel(game);
+    window->setView(camera);
+    
+    
 
 }
 void Renderer::drawNightScreen(Game &game)

@@ -8,8 +8,8 @@ enum soeur{
 class Soeur : public Walker
 {
 private:
-    std::string* LucieSounds;
-    std::string* LeonieSounds;
+    std::vector<std::string> LucieSounds;
+    std::vector<std::string> LeonieSounds;
 
 public:
     Soeur();

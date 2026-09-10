@@ -9,6 +9,26 @@ sf::SoundBuffer* SoundManager::getSoundBuffer(std::string soundName)
 {
     return &Map[soundName];
 }
+
+void SoundManager::openMusic(std::string musicName)
+{
+    if(!music.openFromFile(musicName))
+        std::cout<<"erreur de chargement de "+musicName<<std::endl;
+
+}
+
+void SoundManager::load(std::string pathName,std::string soundName)
+{
+    sf::SoundBuffer T;
+    if(!T.loadFromFile(pathName))
+    {
+        std::cerr<<"Erreur lors du chargement du chemin :"+pathName<<std::endl;
+    }
+    else
+    {
+        setSound(soundName,T);
+    }
+}
 SoundManager::SoundManager()
 {
 
@@ -57,7 +77,7 @@ SoundManager::SoundManager()
     {
         setSound("Door",T);
     }
-    if(!T.loadFromFile("../audio/sound/Flash.mp3"))
+    if(!T.loadFromFile("../audio/sound/Flash/Flash.mp3"))
     {
         std::cerr<<"Erreur lors du chargement du son Flash.mp3"<<std::endl;
     }
@@ -81,14 +101,6 @@ SoundManager::SoundManager()
     {
         setSound("LucasSkibidi",T);
     }
-    if(!T.loadFromFile("../audio/Lucie/Muriel.ogg"))
-    {
-        std::cerr<<"Erreur lors du chargement du son LucieThung.ogg"<<std::endl;
-    }
-    else
-    {
-        setSound("LucieThung",T);
-    }
     if(!T.loadFromFile("../audio/sound/waterFilling.wav"))
     {
         std::cerr<<"Erreur lors du chargement du son waterFilling.wav"<<std::endl;
@@ -105,7 +117,7 @@ SoundManager::SoundManager()
     {
         setSound("waterFilled",T);
     }
-    if(!T.loadFromFile("../audio/sound/LightFilled.wav"))
+    if(!T.loadFromFile("../audio/sound/Flash/LightFilled.wav"))
     {
         std::cerr<<"Erreur lors du chargement du son LightFilled.wav"<<std::endl;
     }
@@ -161,23 +173,23 @@ SoundManager::SoundManager()
     {
         setSound("RddSing",T);
     }
-    if(!T.loadFromFile("../audio/sound/RaphaelJumpScare.mp3"))
+    if(!T.loadFromFile("../audio/sound/Raphaeljumpscare.wav"))
     {
-        std::cerr<<"Erreur lors du chargement du son RaphaelJumpScare.mp3"<<std::endl;
+        std::cerr<<"Erreur lors du chargement du son Raphaeljumpscare.wav"<<std::endl;
     }
     else
     {
         setSound("Raphael-JumpScare",T);
     }
-    if(!T.loadFromFile("../audio/sound/LeonieJumpScare.mp3"))
+    if(!T.loadFromFile("../audio/sound/Léonie/Leoniejumpscare.wav"))
     {
-        std::cerr<<"Erreur lors du chargement du son LeonieJumpScare.mp3"<<std::endl;
+        std::cerr<<"Erreur lors du chargement du son Leoniejumpscare.mp3"<<std::endl;
     }
     else
     {
         setSound("Leonie-JumpScare",T);
     }
-    if(!T.loadFromFile("../audio/sound/Lucie/FakeLéonie.mp3"))
+    if(!T.loadFromFile("../audio/sound/Lucie/FakeLéonie.wav"))
     {
         std::cerr<<"Erreur lors du chargement du son Lucie:FakeLéonie.mp3"<<std::endl;
     }
@@ -185,7 +197,7 @@ SoundManager::SoundManager()
     {
         setSound("Lucie:FakeLeonie",T);
     }
-    if(!T.loadFromFile("../audio/sound/Leonie/WhyRDD.mp3"))
+    if(!T.loadFromFile("../audio/sound/Léonie/WhyRDD.wav"))
     {
         std::cerr<<"Erreur lors du chargement du son Leonie:WhyRDD.mp3"<<std::endl;
     }
