@@ -39,16 +39,16 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
 
     std::vector<Clipped_triangle> visibles;
     visibles.reserve(500000);
-    std::vector<Eigen::Vector4f>pointscam;
+    std::vector<sf::Vector4f>pointscam;
 
     for (Mesh* &mesh : meshs)
     {
         
         pointscam.resize(mesh->points.size());
         int n=0;
-        for(const  Eigen::Vector3f& point : mesh->points)
+        for(const  sf::Vector3f& point : mesh->points)
         {
-            pointscam[n]=camera.getMatriceView()*getMatriceTransformation(mesh)*Eigen::Vector4f(point.x(),point.y(),point.z(),1);
+            pointscam[n]=camera.switch_base(point);
             n++;
         }
         for(const triangle & tri : mesh->triangles)
@@ -144,8 +144,8 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
             pr3.texCoords={triangle.p3.uv.x()*size.x,(1-triangle.p3.uv.y())*size.y};
             if (camera.lights)
             {
-                Eigen::Vector3f diffuse1={0,0,0}, diffuse2={0,0,0},diffuse3={0,0,0};
-                Eigen::Vector3f spec1={0,0,0},spec2={0,0,0},spec3={0,0,0};
+                sf::Vector3f diffuse1={0,0,0}, diffuse2={0,0,0},diffuse3={0,0,0};
+                sf::Vector3f spec1={0,0,0},spec2={0,0,0},spec3={0,0,0};
                 sf::Color ambiantLight={150,150,150};
 
                 for(Light* &light  :globalLights)
@@ -155,11 +155,11 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
                     float dot3;
                     if(light->getType()==LightType::Directional)
                     {
-                        Eigen::Vector3f L=-Normalize3D(static_cast<Directional*>(light)->direction);
-                        Eigen::Vector3f lightcolor=Eigen::Vector3f(light->couleur.r/255.f,light->couleur.g/255.f,light->couleur.b/255.f);
-                        Eigen::Vector3f N1=Normalize3D(triangle.p1.vn);
-                        Eigen::Vector3f N2=Normalize3D(triangle.p2.vn);
-                        Eigen::Vector3f N3=Normalize3D(triangle.p3.vn);
+                        sf::Vector3f L=-Normalize3D(static_cast<Directional*>(light)->direction);
+                        sf::Vector3f lightcolor=sf::Vector3f(light->couleur.r/255.f,light->couleur.g/255.f,light->couleur.b/255.f);
+                        sf::Vector3f N1=Normalize3D(triangle.p1.vn);
+                        sf::Vector3f N2=Normalize3D(triangle.p2.vn);
+                        sf::Vector3f N3=Normalize3D(triangle.p3.vn);
                         dot1=prodscal3D(N1,L);
                         if(dot1>0)
                         {
@@ -179,7 +179,7 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
                         {
                             if (dot1>0)
                             {
-                                Eigen::Vector3f R1=2.f*N1*dot1-L;
+                                sf::Vector3f R1=2.f*N1*dot1-L;
                                 float dotr1=prodscal3D(R1,-Normalize3D(triangle.p1.pos));
                                 if (dotr1>0)
                                 {
@@ -191,7 +191,7 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
                             }
                             if (dot2>0)
                             {
-                                Eigen::Vector3f R2=2.f*N2*dot2-L;
+                                sf::Vector3f R2=2.f*N2*dot2-L;
                                 float dotr2=prodscal3D(R2,-Normalize3D(triangle.p2.pos));
                                 if (dotr2>0)
                                 {
@@ -203,7 +203,7 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
                             }
                             if (dot3>0)
                             {
-                                Eigen::Vector3f R3=2.f*N3*dot3-L;
+                                sf::Vector3f R3=2.f*N3*dot3-L;
                                 float dotr3=prodscal3D(R3,-Normalize3D(triangle.p3.pos));
                                 if (dotr3>0)
                                 {
@@ -217,14 +217,14 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
                     }
                         
                 }
-                Eigen::Vector3f constantemat=multvect(mat->ka,Eigen::Vector3f(ambiantLight.r/255.f,ambiantLight.g/255.f,ambiantLight.b/255.f))+mat->ke;
-                Eigen::Vector3f final_color1=multvect(diffuse1,mat->kd)+
+                sf::Vector3f constantemat=multvect(mat->ka,sf::Vector3f(ambiantLight.r/255.f,ambiantLight.g/255.f,ambiantLight.b/255.f))+mat->ke;
+                sf::Vector3f final_color1=multvect(diffuse1,mat->kd)+
                 multvect(spec1,mat->ks)+constantemat;
 
-                Eigen::Vector3f final_color2=multvect(diffuse2,mat->kd)+
+                sf::Vector3f final_color2=multvect(diffuse2,mat->kd)+
                 multvect(spec2,mat->ks)+constantemat;
 
-                Eigen::Vector3f final_color3=multvect(diffuse3,mat->kd)+
+                sf::Vector3f final_color3=multvect(diffuse3,mat->kd)+
                 multvect(spec3,mat->ks)+constantemat;
                 pr1.color=sf::Color(std::clamp(final_color1.x()*255.f,0.f,255.f),std::clamp(final_color1.y()*255.f,0.f,255.f),std::clamp(final_color1.z()*255.f,0.f,255.f));
                 pr2.color=sf::Color(std::clamp(final_color2.x()*255.f,0.f,255.f),std::clamp(final_color2.y()*255.f,0.f,255.f),std::clamp(final_color2.z()*255.f,0.f,255.f));
@@ -243,18 +243,18 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
         
 }
 
-Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
+sf::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
 {
 
         Transformation* transfo=Map[mesh->nomModel];
         
-        Eigen::Matrix4f Mtranslation;
+        sf::Matrix4f Mtranslation;
             Mtranslation<<transfo->size,0,0,transfo->position.x(),
             0,transfo->size,0,transfo->position.y(),
             0,0,transfo->size,transfo->position.z(),
             0,0,0,1;
         float c,s;
-        Eigen::Matrix4f Rx;
+        sf::Matrix4f Rx;
         
         c=cos(transfo->RotationAngleX);
         s=sin(transfo->RotationAngleX);
@@ -263,7 +263,7 @@ Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
             0,s,c,0,
             0,0,0,1;
 
-        Eigen::Matrix4f Ry;
+        sf::Matrix4f Ry;
         
         c=cos(transfo->RotationAngleY);
         s=sin(transfo->RotationAngleY);
@@ -272,7 +272,7 @@ Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
             -s,0,c,0,
             0,0,0,1;
 
-        Eigen::Matrix4f Rz;          
+        sf::Matrix4f Rz;          
         c=cos(transfo->RotationAngleZ);
         s=sin(transfo->RotationAngleZ);
         Rz<<c,-s,0,0,
@@ -280,7 +280,7 @@ Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
             0,0,1,0,
             0,0,0,1;
 
-        Eigen::Matrix4f M=Rz*Ry*Rx*Mtranslation;
+        sf::Matrix4f M=Rz*Ry*Rx*Mtranslation;
 
         return M;
    

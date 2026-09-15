@@ -13,6 +13,8 @@ FetchContent_Declare(SFML
     GIT_SHALLOW ON
     EXCLUDE_FROM_ALL
     SYSTEM)
+
+set(SFML_BUILD_AUDIO OFF)
 FetchContent_MakeAvailable(SFML)
 
 #importe la bibliothèque SFML depuis le repo github SFML

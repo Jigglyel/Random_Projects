@@ -29,15 +29,15 @@ class Light{
 class Directional : public Light{
     
     public:
-        Eigen::Vector3f direction;
-        Directional(const Eigen::Vector3f &direction, const sf::Color &couleur)
+        sf::Vector3f direction;
+        Directional(const sf::Vector3f &direction, const sf::Color &couleur)
         {
             this->direction=direction;
             this->couleur=couleur;
             this->type=LightType::Directional;
         }
 
-        Directional(Eigen::Vector3f &direction)
+        Directional(sf::Vector3f &direction)
         {
             this->direction=direction;
             this->type=LightType::Directional;
@@ -51,16 +51,16 @@ class Directional : public Light{
 
 class Positionnal : public Light{
     public:
-        Eigen::Vector3f position;
+        sf::Vector3f position;
 
-        Positionnal(const Eigen::Vector3f &position,const sf::Color &couleur)
+        Positionnal(const sf::Vector3f &position,const sf::Color &couleur)
         {
             this->position=position;
             this->couleur=couleur;
             this->type=LightType::Positionnal;
         }
 
-        Positionnal(Eigen::Vector3f &position)
+        Positionnal(sf::Vector3f &position)
         {
             this->position=position;
             this->type=LightType::Positionnal;
