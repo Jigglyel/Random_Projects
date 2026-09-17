@@ -159,35 +159,6 @@ void Objet3D::load(std::string dirname,MatManager&matManager)
         }
 }
 
-        std::vector<sf::Texture> Objet3D::loadTexturesFromFolder(const std::string& folderPath)
-        
-        {
-            std::vector<sf::Texture> textures;
-
-            for (const auto& entry : std::filesystem::directory_iterator(folderPath))
-            {
-                if (entry.is_regular_file())
-                {
-                    std::string path = entry.path().string();
-
-                    // Filtrer les extensions image
-                    if (entry.path().extension() == ".png" ||
-                        entry.path().extension() == ".jpg" ||
-                        entry.path().extension() == ".jpeg")
-                    {
-                        sf::Texture texture;
-                        if (texture.loadFromFile(path))
-                        {
-                            textures.push_back(std::move(texture));
-                        }
-                        else
-                            std::cout<<"erreur chargement texture"<<std::endl<<std::endl;
-                    }
-                }
-            }
-
-            return textures;
-        }
 
         void Objet3D::create_triangles(const std::string &mat)
         {
@@ -239,28 +210,28 @@ void Objet3D::load(std::string dirname,MatManager&matManager)
                     }
                     if(donneemtl=="Kd")
                     {
-                        ficmtl>>mat.kd.x();
-                        ficmtl>>mat.kd.y();
-                        ficmtl>>mat.kd.z();
+                        ficmtl>>mat.kd.x;
+                        ficmtl>>mat.kd.y;
+                        ficmtl>>mat.kd.z;
                     }
 
                     if(donneemtl=="Ke")
                     {
-                        ficmtl>>mat.ke.x();
-                        ficmtl>>mat.ke.y();
-                        ficmtl>> mat.ke.z();
+                        ficmtl>>mat.ke.x;
+                        ficmtl>>mat.ke.y;
+                        ficmtl>> mat.ke.z;
                     }
                     if(donneemtl=="Ka")
                     {
-                        ficmtl>>mat.ka.x();
-                        ficmtl>>mat.ka.y();
-                        ficmtl>> mat.ka.z();
+                        ficmtl>>mat.ka.x;
+                        ficmtl>>mat.ka.y;
+                        ficmtl>> mat.ka.z;
                     }
                     if(donneemtl=="Ks")
                     {
-                        ficmtl>>mat.ks.x();
-                        ficmtl>>mat.ks.y();
-                        ficmtl>> mat.ks.z();
+                        ficmtl>>mat.ks.x;
+                        ficmtl>>mat.ks.y;
+                        ficmtl>> mat.ks.z;
                     }
                     if(donneemtl=="d")
                     {

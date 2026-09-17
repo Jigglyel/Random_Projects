@@ -2,13 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 #include <iostream>
-#include<Eigen/Dense>
 
 
 
 struct matérieau
 {
-    Eigen::Vector3f kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
+    sf::Vector3f kd={0,0,0},ke={0,0,0},ka={0,0,0},ks={0,0,0};
     float d=1;
     float Ns=-1;
     sf::Texture map_Kd;

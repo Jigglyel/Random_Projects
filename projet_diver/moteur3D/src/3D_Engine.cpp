@@ -29,60 +29,60 @@ void input(Camera & camera)
         {
             angleXz=(camera.offsetX*2*M_PI/360);
             angleYz=(camera.offsetY*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*cos(angleYz),-sin(angleYz),cos(angleXz)*cos(angleYz))*camera.speed;
+            camera.velocity+=sf::Vector3f(sin(angleXz)*cos(angleYz),-sin(angleYz),cos(angleXz)*cos(angleYz))*camera.speed;
         }
         if(sf::Keyboard::isKeyPressed(Backward))
         {
             angleXz=((camera.offsetX+180)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Right))
         {
             angleXz=((camera.offsetX+90)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Left))
         {
             angleXz=((camera.offsetX-90)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(UP))
         {
-            camera.velocity+=Eigen::Vector3f(0,camera.speed,0);
+            camera.velocity+=sf::Vector3f(0,camera.speed,0);
         }
             if(sf::Keyboard::isKeyPressed(Down))
         {
-            camera.velocity+=Eigen::Vector3f(0,-camera.speed,0);
+            camera.velocity+=sf::Vector3f(0,-camera.speed,0);
         }
     }
     else
     //grounded camera
     {
-        camera.velocity.x()=0;
-        camera.velocity.z()=0;
+        camera.velocity.x=0;
+        camera.velocity.z=0;
         if(sf::Keyboard::isKeyPressed(Forward))
         {
             angleXz=(camera.offsetX*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Backward))
         {
             angleXz=((camera.offsetX+180)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Right))
         {
             angleXz=((camera.offsetX+90)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(Left))
         {
             angleXz=((camera.offsetX-90)*2*M_PI/360);
-            camera.velocity+=Eigen::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
+            camera.velocity+=sf::Vector3f(sin(angleXz)*camera.speed,0,cos(angleXz)*camera.speed);
         }
         if(sf::Keyboard::isKeyPressed(UP) and !camera.in_air)
         {
-            camera.velocity=Eigen::Vector3f(0,7,0);
+            camera.velocity=sf::Vector3f(0,7,0);
             camera.in_air=true;
         }
     }
@@ -101,31 +101,6 @@ int main()
     float MouseSensivity=0.25;
     Camera camera;
     camera.speed=0.2;
-    // sf::VertexArray repère(sf::Lines,6);
-    // Eigen::Vector3f o= camera.switch_base({0,0,0});
-    // Eigen::Vector3f x= camera.switch_base({1,0,0});
-    // Eigen::Vector3f y= camera.switch_base({0,1,0});
-    // Eigen::Vector3f z= camera.switch_base({0,0,1});
-    // sf::Vertex ocam;
-    // ocam.position=SFMLScale(camera.Projection(o),window);
-    // ocam.color=sf::Color::White;
-    // sf::Vertex xcam;
-    // xcam.position=SFMLScale(camera.Projection(x),window);
-    // xcam.color=sf::Color::Red;
-    // sf::Vertex ycam;
-    // ycam.position=SFMLScale(camera.Projection(y),window);
-    // ycam.color=sf::Color::Blue;
-    // sf::Vertex zcam;
-    // zcam.position=SFMLScale(camera.Projection(z),window);
-    // zcam.color=sf::Color::Green;
-    // int i=0;
-    // repère[0]=ocam;
-    // repère[1]=xcam;
-    // repère[2]=ocam;
-    // repère[3]=ycam;
-    // repère[4]=ocam;
-    // repère[5]=zcam;
-    
     bool pause=false;
     Renderer renderer(matManager);
     window.setFramerateLimit(60);

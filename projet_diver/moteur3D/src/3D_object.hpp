@@ -44,7 +44,7 @@ Objet3D* proprietaire;
 };
 struct Transformation
 {
-Eigen::Vector3f position;
+sf::Vector3f position;
 float size;
 float RotationAngleX;
 float RotationAngleY;
@@ -53,12 +53,12 @@ float RotationAngleZ;
 struct Point
 {
 
-Eigen::Vector4f pos;
-Eigen::Vector2f uv;
-Eigen::Vector3f vn;
+sf::Vector3f pos;
+sf::Vector2f uv;
+sf::Vector3f vn;
 Point()
 {}
-Point(Eigen::Vector4f pos,Eigen::Vector2f uv,Eigen::Vector3f vn)
+Point(sf::Vector3f pos,sf::Vector2f uv,sf::Vector3f vn)
 {
     this->pos=pos;
     this->uv=uv;
@@ -68,9 +68,9 @@ Point(Eigen::Vector4f pos,Eigen::Vector2f uv,Eigen::Vector3f vn)
 struct Mesh
 {
 
-std::vector<Eigen::Vector3f> points;
-std::vector<Eigen::Vector3f> vns;
-std::vector<Eigen::Vector2f> vts;
+std::vector<sf::Vector3f> points;
+std::vector<sf::Vector3f> vns;
+std::vector<sf::Vector2f> vts;
 std::vector<triangle> triangles;
 std::string nomModel;
 };

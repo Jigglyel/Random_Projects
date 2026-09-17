@@ -1,5 +1,6 @@
 #pragma once
-#include "3d_object.hpp"
+#include "3D_object.hpp"
+#include <Eigen/Dense>
 
 
 
@@ -13,7 +14,7 @@ private:
     int count_hiden(Clipped_triangle &tri,const plan &P);
     void clip( plan &P,std::vector<Clipped_triangle> &visibles);
     Eigen::Matrix4f getMatriceTransformation(Mesh* & mesh);
-    Eigen::Matrix4f getMatriceView(Camera &camera,Eigen::Vector4f &point);
+    Eigen::Matrix4f getMatriceView(Camera &camera,sf::Vector3f &point);
     void drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangle,matérieau* mat,Camera &camera,std::vector<Light*> &globalLights,sf::RenderTarget& target);
 
 public :

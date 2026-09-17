@@ -13,7 +13,7 @@ Camera::Camera(/* args */)
     lights=false;
 }
 
-Eigen::Vector3f Camera::switch_base(Eigen::Vector3f P)
+sf::Vector3f Camera::switch_base(sf::Vector3f P)
 {
     
     P=P-position; 
@@ -23,16 +23,16 @@ Eigen::Vector3f Camera::switch_base(Eigen::Vector3f P)
 
     return P;
 }   
-sf::Vector2f Camera::Projection(Eigen::Vector3f P)
+sf::Vector2f Camera::Projection(sf::Vector3f P)
 {
     sf::Vector2f Proj;
-    if (P.z()==0)
+    if (P.z==0)
     {
-        P.z()=0.0001;
+        P.z=0.0001;
     }
     
-    Proj.x=fov*P.x()/P.z();
-    Proj.y=fov*P.y()/P.z();
+    Proj.x=fov*P.x/P.z;
+    Proj.y=fov*P.y/P.z;
     
     
     return Proj;
@@ -46,14 +46,14 @@ void Camera::move()
 void Camera::apply_forces()
 {
     if (mode_survie)
-        velocity+=Eigen::Vector3f{0,-0.5,0};
+        velocity+=sf::Vector3f{0,-0.5,0};
 }
 
 void Camera::Check_collisions()
 {
-    if (mode_survie and position.y()<0)
+    if (mode_survie and position.y<0)
     {
-        position.y()=0;
+        position.y=0;
         in_air=false;
     }
     
@@ -65,9 +65,9 @@ Eigen::Matrix4f Camera::getMatriceView()
    
    float c,s;
     Eigen::Matrix4f T;
-    T<<1,0,0,position.x(),
-       0,1,0,position.y(),
-       0,0,1,position.z(),
+    T<<1,0,0,position.x,
+       0,1,0,position.y,
+       0,0,1,position.z,
        0,0,0,1;
 
 

@@ -22,54 +22,54 @@ void drawRectangle(sf::Vector2f P,sf::RenderWindow & window)
     window.draw(R);
 }
 
-float prodscal3D(Eigen::Vector3f v1,Eigen::Vector3f v2)
+float prodscal3D(sf::Vector3f v1,sf::Vector3f v2)
 {
-    return v1.x()*v2.x()+v1.y()*v2.y()+v1.z()*v2.z();
+    return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
 }
-float prodscal2D(Eigen::Vector2f v1,Eigen::Vector2f v2)
+float prodscal2D(sf::Vector2f v1,sf::Vector2f v2)
 {
-    return v1.x()*v2.x()+v1.y()*v2.y();
+    return v1.x*v2.x+v1.y*v2.y;
 }
-Eigen::Vector3f prodvect3D(Eigen::Vector3f v1,Eigen::Vector3f v2)
+sf::Vector3f prodvect3D(sf::Vector3f v1,sf::Vector3f v2)
 {
-    Eigen::Vector3f ortho;
-    ortho.x()=v1.y()*v2.z()-v1.z()*v2.y();
-    ortho.y()=v1.z()*v2.x()-v1.x()*v2.z();
-    ortho.z()=v1.x()*v2.y()-v1.y()*v2.x();
+    sf::Vector3f ortho;
+    ortho.x=v1.y*v2.z-v1.z*v2.y;
+    ortho.y=v1.z*v2.x-v1.x*v2.z;
+    ortho.z=v1.x*v2.y-v1.y*v2.x;
     return ortho;
 }
-float prodvect2D(Eigen::Vector2f v1,Eigen::Vector2f v2)
+float prodvect2D(sf::Vector2f v1,sf::Vector2f v2)
 {
-    return v1.x()*v2.y()-v1.y()*v2.x();
+    return v1.x*v2.y-v1.y*v2.x;
 }
-Eigen::Vector3f Normalize3D(Eigen::Vector3f v)
+sf::Vector3f Normalize3D(sf::Vector3f v)
 {
-    float distance=sqrt(v.x()*v.x()+v.y()*v.y()+v.z()*v.z());
-    return Eigen::Vector3f(v.x()/distance,v.y()/distance,v.z()/distance);
+    float distance=sqrt(v.x*v.x+v.y*v.y+v.z*v.z);
+    return sf::Vector3f(v.x/distance,v.y/distance,v.z/distance);
 }
-Eigen::Vector2f Normalize2D(Eigen::Vector2f v)
+sf::Vector2f Normalize2D(sf::Vector2f v)
 {  
-    float distance=sqrt(v.x()*v.x()+v.y()*v.y());
-    return Eigen::Vector2f(v.x()/distance,v.y()/distance);
+    float distance=sqrt(v.x*v.x+v.y*v.y);
+    return sf::Vector2f(v.x/distance,v.y/distance);
 }
-Eigen::Vector3f rotate_point(Eigen::Vector3f point,float angle,Eigen::Vector3f sens)
+sf::Vector3f rotate_point(sf::Vector3f point,float angle,sf::Vector3f sens)
 {
     angle=(angle*M_PI*2)/360;
         float c=cos(angle);
         float s=sin(angle);
-        float x=point.x(),y=point.y(),z=point.z();
+        float x=point.x,y=point.y,z=point.z;
         sens=Normalize3D(sens);
         float scalaire=prodscal3D(point,sens);
-        Eigen::Vector3f cross=prodvect3D(sens,point);
-        point.x()=x*c+(1-c)*scalaire*sens.x()+s*cross.x();
-        point.y()=y*c+(1-c)*scalaire*sens.y()+s*cross.y();
-        point.z()=z*c+(1-c)*scalaire*sens.z()+s*cross.z();
+        sf::Vector3f cross=prodvect3D(sens,point);
+        point.x=x*c+(1-c)*scalaire*sens.x+s*cross.x;
+        point.y=y*c+(1-c)*scalaire*sens.y+s*cross.y;
+        point.z=z*c+(1-c)*scalaire*sens.z+s*cross.z;
         return point;
 }
-Eigen::Vector3f getcenter(Eigen::Vector3f v1,Eigen::Vector3f v2) //basgauchedevant et hautdroitederrière
+sf::Vector3f getcenter(sf::Vector3f v1,sf::Vector3f v2) //basgauchedevant et hautdroitederrière
 {
     
-    return Eigen::Vector3f((v1.x()+v2.x())/2,(v1.y()+v2.y())/2,(v1.z()+v2.z())/2);
+    return sf::Vector3f((v1.x+v2.x)/2,(v1.y+v2.y)/2,(v1.z+v2.z)/2);
 }
 
 void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget& target)
@@ -83,7 +83,7 @@ void draw_line(sf::Vector2f p1,sf::Vector2f p2,sf::RenderTarget& target)
     target.draw(line);
 }
 
-float getangle(Eigen::Vector2f v1,Eigen::Vector2f v2)
+float getangle(sf::Vector2f v1,sf::Vector2f v2)
 {
     v1=Normalize2D(v1);
     v2=Normalize2D(v2);
@@ -124,7 +124,7 @@ std::vector<std::string> split(std::string s, const std::string& delimiter) {
     return tokens;
 }
 
-float near_projection(const Eigen::Vector3f &A,const Eigen::Vector3f &B,plan &P)
+float near_projection(const sf::Vector3f &A,const sf::Vector3f &B,plan &P)
 {
     return (P.D-prodscal3D(P.N,A))/prodscal3D(P.N,B-A);
 }
@@ -134,14 +134,14 @@ void affiche_couleur(sf::Color couleur)
     std::cout<<int(couleur.r)<<" "<<int(couleur.g)<<" "<<int(couleur.b)<<std::endl;
 }
 
-Eigen::Vector3f multvect(Eigen::Vector3f v1,Eigen::Vector3f v2)
+sf::Vector3f multvect(sf::Vector3f v1,sf::Vector3f v2)
 {
 
-    if (v1.x()>1 or v1.y()>1 or v1.z()>1 or v2.x()>1 or v2.y()>1 or v2.z()>1)
+    if (v1.x>1 or v1.y>1 or v1.z>1 or v2.x>1 or v2.y>1 or v2.z>1)
     {
         std::cout<<"out of range"<<std::endl;
     }
     
-    return {v1.x()*v2.x(),v1.y()*v2.y(),v1.z()*v2.z()};
+    return {v1.x*v2.x,v1.y*v2.y,v1.z*v2.z};
 }
 
