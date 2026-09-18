@@ -8,57 +8,49 @@ int Renderer::count_hiden(Clipped_triangle &tri,const plan &P)
         {
            Point aux;
 
+           float scal1=prodscal3D(tri.p1.pos-P.N*P.D,P.N);
+           float scal2=prodscal3D(tri.p2.pos-P.N*P.D,P.N);
+           float scal3=prodscal3D(tri.p3.pos-P.N*P.D,P.N);
                 int count=0;
-                if(prodscal3D(tri.p1.pos-P.N*P.D,P.N)<0)
+                if(scal1<0)
                 {
                     count++;
                 }
 
 
-                if(prodscal3D(tri.p2.pos-P.N*P.D,P.N)<0)
+                if(scal2<0)
                 {
                     count++;
                 }
 
 
-                if(prodscal3D(tri.p3.pos-P.N*P.D,P.N)<0)
+                if(scal3<0)
                 {
                     count++;
                 }
-                if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p2.pos-P.N*P.D,P.N))
+                if (scal1>scal2)
                 {
                     aux=tri.p1;
                     tri.p1=tri.p2;
                     tri.p2=aux;
+                    std::swap(scal1,scal2);
                 }
-                if (prodscal3D(tri.p1.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
+                if (scal1>scal3)
                 {
                     aux=tri.p1;
                     tri.p1=tri.p3;
                     tri.p3=aux;
+                    std::swap(scal1,scal3);
                 }
-                if (prodscal3D(tri.p2.pos-P.N*P.D,P.N)>prodscal3D(tri.p3.pos-P.N*P.D,P.N))
+                if (scal2>scal3)
                 {
                     aux=tri.p2;
                     tri.p2=tri.p3;
                     tri.p3=aux;
+                    std::swap(scal2,scal3);
                 }
 
-                sf::Vector3f p1 =tri.p1.pos,p2=tri.p2.pos,p3=tri.p3.pos;
-
-                if (p3.z<=1)
-                {
-                    return 3;
-                }
-                if (p2.z<=1)
-                {
-                    return 2;
-                }
-                if (p1.z<=1)
-                {
-                    return 1;
-                }
-                return 0;
+                return count;
         }
 
 void Renderer::clip( plan &P,std::vector<Clipped_triangle> &visibles)
@@ -160,7 +152,7 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
         float M_1_sqrt2=1/sqrt(2);
         plan P;
         P.N={0,0,1};
-        P.D=1;
+        P.D=0.001;
         clip(P,visibles);//plan sur l'axe de la cam
     }
     std::sort(visibles.begin(),visibles.end(),[this](const Clipped_triangle & a,const Clipped_triangle & b)
