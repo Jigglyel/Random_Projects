@@ -123,7 +123,8 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
         int n=0;
         for(const  sf::Vector3f& point : mesh->points)
         {
-            pointscam[n]=camera.switch_base(point);
+
+            pointscam[n]=camera.switch_base(rotate_point( rotate_point(point,Map[mesh->nomModel]->RotationAngleX,{0,1,0}),Map[mesh->nomModel]->RotationAngleY,{1,0,0})*Map[mesh->nomModel]->size+Map[mesh->nomModel]->position);
             n++;
         }
         for(const triangle & tri : mesh->triangles)
@@ -209,7 +210,58 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
 
 
 
+void Renderer::drawHitbox(Objet3D* model,Camera &camera,sf::RenderTarget& target)
+{
+    sf::VertexArray lines(sf::Lines,24);
+    float size=model->getTransfo()->size;
+    sf::Vector3f pos=model->getTransfo()->position;
+    sf::Vector3f topLeftNear=sf::Vector3f{model->left,model->top,model->near}*size+pos;
+    sf::Vector3f topRightNear=sf::Vector3f{model->right,model->top,model->near}*size+pos;
+    sf::Vector3f bottomLeftNear=sf::Vector3f{model->left,model->bottom,model->near}*size+pos;
+    sf::Vector3f bottomRightNear=sf::Vector3f{model->right,model->bottom,model->near}*size+pos;
 
+    sf::Vector3f topLeftFar=sf::Vector3f{model->left,model->top,model->far}*size+pos;
+    sf::Vector3f topRightFar=sf::Vector3f{model->right,model->top,model->far}*size+pos;
+    sf::Vector3f bottomLeftFar=sf::Vector3f{model->left,model->bottom,model->far}*size+pos;
+    sf::Vector3f bottomRightFar=sf::Vector3f{model->right,model->bottom,model->far}*size+pos;
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightNear)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightNear)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftNear)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftNear)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftFar)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightFar)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightFar)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftFar)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topLeftFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(topRightFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomRightFar)),target));
+
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftNear)),target));
+    lines.append(SFMLScale(camera.Projection(camera.switch_base(bottomLeftFar)),target));
+    target.draw(lines);
+}
 
 
 

@@ -116,6 +116,7 @@ public:
     Objet3D();
     Objet3D(std::string dirname,MatManager&matManager);
     Mesh mesh;
+    float top,bottom,left,right,near,far;
     Transformation transformation;
     std::string getNom();
     Mesh* getMesh();

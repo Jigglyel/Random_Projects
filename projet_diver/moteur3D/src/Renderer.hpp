@@ -22,6 +22,8 @@ public :
     void getTriangles(Objet3D &Model);
     void removeMesh(std::string nom);
     void draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> &globalLights);
+
+    void drawHitbox(Objet3D* model,Camera &camera,sf::RenderTarget& target);
     
 
 

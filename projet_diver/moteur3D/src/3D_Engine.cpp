@@ -102,6 +102,7 @@ int main()
     Camera camera;
     camera.speed=0.2;
     bool pause=false;
+    Objet3D* selectedModel=nullptr;
     Renderer renderer(matManager);
     window.setFramerateLimit(60);
     sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
@@ -171,47 +172,117 @@ int main()
                         static_cast<Directional*>(globalLights[0])->couleur.r=rand()%255;
                         static_cast<Directional*>(globalLights[0])->couleur.g=rand()%255;
                         static_cast<Directional*>(globalLights[0])->couleur.b=rand()%255;
+                        break;
+                    case sf::Keyboard::Up:
+                        if (selectedModel!=nullptr)
+                        {
+                            selectedModel->transformation.size+=0.05;
+                        }
+                        break;
+                    case sf::Keyboard::Down:
+                        if (selectedModel!=nullptr)
+                        {
+                            selectedModel->transformation.size-=0.05;
+                        }
+                        break;
+                    case sf::Keyboard::Left:
+                        if (selectedModel!=nullptr)
+                        {
+                            selectedModel->transformation.RotationAngleX-=0.5;
+                            std::cout<<"rotation X : "<<selectedModel->transformation.RotationAngleX<<std::endl;
+                        }
+                        break;
+                    case sf::Keyboard::Right:
+                        if (selectedModel!=nullptr)
+                        {
+                            selectedModel->transformation.RotationAngleX+=0.5;
+                        }
+                        break;
 
                     }
+
                     
                 // calculate the parcoured distance between two frame and then replace the mouse cursor at the center of the window
                 case sf::Event::MouseMoved:
-                if (!pause)         
-                {   
-                    
-                    
-                    
-                    camera.offsetX+= (sf::Mouse::getPosition(window).x-oldPos.x)*MouseSensivity;
-                    camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
-                    
-                    if(Time.getElapsedTime().asSeconds()>0.05 and sf::Mouse::getPosition().x-window.getPosition().x>0 and sf::Mouse::getPosition().x-window.getPosition().x<window.getSize().x )
-                    {
-                        sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
-                        Time.restart();
-                    }
-                    
-                    oldPos=sf::Mouse::getPosition(window);
-
-                    if (camera.offsetX>=360 or camera.offsetX<=-360)
-                    {
-                        camera.offsetX=0;
-                    }
-                    
-                    if (camera.offsetY>90)
-                    {
-                        camera.offsetY=90;
-                    }
-                    if (camera.offsetY<-90)
-                    {
-                        camera.offsetY=-90;
-                    }
-
-                    
+                    if (!pause)         
+                    {   
                         
-                    
+                        
+                        
+                        camera.offsetX+= (sf::Mouse::getPosition(window).x-oldPos.x)*MouseSensivity;
+                        camera.offsetY+=(sf::Mouse::getPosition(window).y-oldPos.y)*MouseSensivity;
+                        
+                        if(Time.getElapsedTime().asSeconds()>0.05 and sf::Mouse::getPosition().x-window.getPosition().x>0 and sf::Mouse::getPosition().x-window.getPosition().x<window.getSize().x )
+                        {
+                            sf::Mouse::setPosition(window.getPosition()+sf::Vector2i(window.getSize().x/2,window.getSize().y/2));
+                            Time.restart();
+                        }
+                        
+                        oldPos=sf::Mouse::getPosition(window);
+
+                        if (camera.offsetX>=360 or camera.offsetX<=-360)
+                        {
+                            camera.offsetX=0;
+                        }
+                        
+                        if (camera.offsetY>90)
+                        {
+                            camera.offsetY=90;
+                        }
+                        if (camera.offsetY<-90)
+                        {
+                            camera.offsetY=-90;
+                        }
+
+                        
+                            
+                        
+                    }
+                    break; 
+            case sf::Event::MouseButtonPressed:
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
+                    selectedModel = nullptr;
                 }
-                break; 
-                
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    for(Objet3D* &model : models)
+                    {
+                        sf::Vector3f pos = model->getTransfo()->position;
+                        float size = model->getTransfo()->size;
+                        sf::Vector3f topLeftNear=sf::Vector3f{model->left,model->top,model->near}*size+pos;
+                        sf::Vector3f topRightNear=sf::Vector3f{model->right,model->top,model->near}*size+pos;
+                        sf::Vector3f bottomLeftNear=sf::Vector3f{model->left,model->bottom,model->near}*size+pos;
+                        sf::Vector3f bottomRightNear=sf::Vector3f{model->right,model->bottom,model->near}*size+pos;
+
+                        sf::Vector3f topLeftFar=sf::Vector3f{model->left,model->top,model->far}*size+pos;
+                        sf::Vector3f topRightFar=sf::Vector3f{model->right,model->top,model->far}*size+pos;
+                        sf::Vector3f bottomLeftFar=sf::Vector3f{model->left,model->bottom,model->far}*size+pos;
+                        sf::Vector3f bottomRightFar=sf::Vector3f{model->right,model->bottom,model->far}*size+pos;
+
+                        topLeftNear=camera.switch_base(topLeftNear);
+                        topRightNear=camera.switch_base(topRightNear);
+                        bottomLeftNear=camera.switch_base(bottomLeftNear);
+                        bottomRightNear=camera.switch_base(bottomRightNear);
+                        topLeftFar=camera.switch_base(topLeftFar);
+                        topRightFar=camera.switch_base(topRightFar);
+                        bottomLeftFar=camera.switch_base(bottomLeftFar);
+                        bottomRightFar=camera.switch_base(bottomRightFar);
+
+                        float minX=std::min({topLeftNear.x,topRightNear.x,bottomLeftNear.x,bottomRightNear.x,topLeftFar.x,topRightFar.x,bottomLeftFar.x,bottomRightFar.x});
+                        float maxX=std::max({topLeftNear.x,topRightNear.x,bottomLeftNear.x,bottomRightNear.x,topLeftFar.x,topRightFar.x,bottomLeftFar.x,bottomRightFar.x});
+                        float minY=std::min({topLeftNear.y,topRightNear.y,bottomLeftNear.y,bottomRightNear.y,topLeftFar.y,topRightFar.y,bottomLeftFar.y,bottomRightFar.y});
+                        float maxY=std::max({topLeftNear.y,topRightNear.y,bottomLeftNear.y,bottomRightNear.y,topLeftFar.y,topRightFar.y,bottomLeftFar.y,bottomRightFar.y});
+                        float maxZ=std::max({topLeftNear.z,topRightNear.z,bottomLeftNear.z,bottomRightNear.z,topLeftFar.z,topRightFar.z,bottomLeftFar.z,bottomRightFar.z});
+                        if ((maxX)>0 and (minX)<0 and (maxY)>0 and (minY)<0 and (maxZ)>0)
+                        { 
+                            selectedModel = model;
+                            std::cout<<"model selected : "<<selectedModel->getNom()<<std::endl;
+                            break;
+                        }
+                    }
+                }
+                break;
             }
         }
 
@@ -221,7 +292,10 @@ int main()
         camera.move();
         camera.Check_collisions();
         window.clear(sf::Color::Black);
+        if(selectedModel!=nullptr)
+            renderer.drawHitbox(selectedModel,camera,window);
         renderer.draw(window,camera,globalLights);
+        
         
         
         

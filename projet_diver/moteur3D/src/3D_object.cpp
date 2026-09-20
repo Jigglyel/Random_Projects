@@ -6,15 +6,18 @@ Objet3D::Objet3D()
     transformation.position={0,0,0};
     transformation.RotationAngleX=0;
     transformation.RotationAngleY=0;
+    transformation.RotationAngleZ=0;
+    near=0;
+    right=0;
+    left=0;
+    far=0;
+    top=0;
+    bottom=0;
 }
-Objet3D::Objet3D(std::string dirname,MatManager&matManager)
+Objet3D::Objet3D(std::string dirname,MatManager&matManager) : Objet3D()
 {
     load(dirname,matManager);
-    transformation.size=1;
-    transformation.position={0,0,0};
-    transformation.RotationAngleX=0;
-    transformation.RotationAngleY=0;
-    transformation.RotationAngleZ=0;
+    
     
 }
 
@@ -79,6 +82,13 @@ void Objet3D::load(std::string dirname,MatManager&matManager)
             fic>>x;
             fic>>y;
             fic>>z;
+            if(x>right)right=x;
+            if(x<left)left=x;
+            if(y>top)top=y; 
+            if(y<bottom)bottom=y;
+            if(z>far)far=z;
+            if(z<near)near=z;
+            
             mesh.points.push_back({x,y,z});
         }
 
@@ -143,6 +153,12 @@ void Objet3D::load(std::string dirname,MatManager&matManager)
     create_triangles(currentmat);
     std::cout<<mesh.triangles.size()<<" triangles ont été fait"<<std::endl;
     std::cout<<mesh.points.size()<<" points ont été comptabilises"<<std::endl<<std::endl;
+    std::cout<<"top : "<<top<<std::endl;
+    std::cout<<"bottom : "<<bottom<<std::endl;
+    std::cout<<"left : "<<left<<std::endl;
+    std::cout<<"right : "<<right<<std::endl;
+    std::cout<<"near : "<<near<<std::endl;
+    std::cout<<"far : "<<far<<std::endl;
     faces.clear();
     if (mesh.vns.size()==0)
         {
