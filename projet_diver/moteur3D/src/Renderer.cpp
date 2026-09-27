@@ -92,7 +92,7 @@ void Renderer::clip( plan &P,std::vector<Clipped_triangle> &visibles)
 void Renderer::getTriangles(Objet3D &Model)
 {
     meshs.push_back(Model.getMesh());
-    Map[Model.getNom()]=Model.getTransfo();
+    Map[Model.getNom()]=&Model;
 }
 void Renderer::removeMesh(std::string nom)
 {
@@ -121,10 +121,12 @@ void Renderer::draw(sf::RenderTarget& target,Camera &camera,std::vector<Light*> 
         
         pointscam.resize(mesh->points.size());
         int n=0;
+        Objet3D* model=Map[mesh->nomModel];
         for(const  sf::Vector3f& point : mesh->points)
         {
+            
 
-            pointscam[n]=camera.switch_base(rotate_point( rotate_point(point,Map[mesh->nomModel]->RotationAngleX,{0,1,0}),Map[mesh->nomModel]->RotationAngleY,{1,0,0})*Map[mesh->nomModel]->size+Map[mesh->nomModel]->position);
+            pointscam[n]=camera.switch_base(model->apply_Rotation(point)*model->getTransfo()->size+model->getTransfo()->position);
             n++;
         }
         for(const triangle & tri : mesh->triangles)
@@ -383,7 +385,7 @@ void Renderer::drawTriangle(sf::VertexArray &triangles,Clipped_triangle &triangl
 Eigen::Matrix4f Renderer::getMatriceTransformation(Mesh* & mesh)
 {
 
-        Transformation* transfo=Map[mesh->nomModel];
+        Transformation* transfo=Map[mesh->nomModel]->getTransfo();
         
         Eigen::Matrix4f Mtranslation;
             Mtranslation<<transfo->size,0,0,transfo->position.x,

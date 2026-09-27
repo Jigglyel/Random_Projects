@@ -9,7 +9,7 @@ class Renderer
 private:
     std::vector<Clipped_triangle> Triangle3D;
     std::vector<Mesh*> meshs; 
-    std::unordered_map<std::string,Transformation*> Map;
+    std::unordered_map<std::string,Objet3D*> Map;
     MatManager *matManager;
     int count_hiden(Clipped_triangle &tri,const plan &P);
     void clip( plan &P,std::vector<Clipped_triangle> &visibles);

@@ -34,6 +34,13 @@ Transformation* Objet3D::getTransfo()
 {
     return &transformation;      
 }
+
+sf::Vector3f Objet3D::apply_Rotation(sf::Vector3f point)
+{
+    // Implementation for applying rotation to a point
+
+    return rotate_point(rotate_point(rotate_point(point,transformation.RotationAngleX,{0,1,0}),transformation.RotationAngleY,{1,0,0}),transformation.RotationAngleZ,{0,0,1});
+}
 void Objet3D::load(std::string dirname,MatManager&matManager)
 {
     this->matManager=&matManager;

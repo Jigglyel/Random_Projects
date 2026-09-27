@@ -121,6 +121,7 @@ public:
     std::string getNom();
     Mesh* getMesh();
     Transformation* getTransfo();
+    sf::Vector3f apply_Rotation(sf::Vector3f point);
     void load(std::string dirname,MatManager&matManager);
 };
 

@@ -5,7 +5,7 @@
 
 
 //first there is the input for the camera movements that require multiple buttons pressed at the same time
-void input(Camera & camera)
+void input(Camera & camera,Objet3D* &selectedModel)
 {
     float angleXz;
     float angleYz;
@@ -84,6 +84,105 @@ void input(Camera & camera)
         {
             camera.velocity=sf::Vector3f(0,7,0);
             camera.in_air=true;
+        }
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+    {
+    
+        if (selectedModel!=nullptr)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                {
+                    selectedModel->transformation.RotationAngleX+=0.5;
+                }
+                else
+                {
+                    selectedModel->transformation.position.x+=0.05;
+                }
+            }
+            else
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+                {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                    {
+                        selectedModel->transformation.RotationAngleY+=0.5;
+                    }
+                    else
+                    {
+                        selectedModel->transformation.position.y+=0.05;
+                    }
+                }
+                else
+                {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                    {
+                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                        {
+                            selectedModel->transformation.RotationAngleZ+=0.5;
+                        }
+                        else
+                        {
+                            selectedModel->transformation.position.z+=0.05;
+                        }
+                    }
+                    else
+                    {
+                        selectedModel->transformation.size+=0.05;
+                    }
+                }
+            }
+        }
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+    {
+        if (selectedModel!=nullptr)
+        {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                {
+                    selectedModel->transformation.RotationAngleX-=0.5;
+                }
+                else
+                {
+                    selectedModel->transformation.position.x-=0.05;
+                }
+            }
+            else
+            {
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
+                {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                    {
+                        selectedModel->transformation.RotationAngleY-=0.5;
+                    }
+                    else
+                    {
+                        selectedModel->transformation.position.y-=0.05;
+                    }
+                }
+                else
+                {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                    {
+                        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                        {
+                            selectedModel->transformation.RotationAngleZ-=0.5;
+                        }
+                        else
+                        {
+                            selectedModel->transformation.position.z-=0.05;
+                        }
+                    }
+                    else
+                    {
+                        selectedModel->transformation.size-=0.05;
+                    }
+                }
+            }
         }
     }
 }
@@ -173,35 +272,20 @@ int main()
                         static_cast<Directional*>(globalLights[0])->couleur.g=rand()%255;
                         static_cast<Directional*>(globalLights[0])->couleur.b=rand()%255;
                         break;
-                    case sf::Keyboard::Up:
-                        if (selectedModel!=nullptr)
-                        {
-                            selectedModel->transformation.size+=0.05;
-                        }
-                        break;
-                    case sf::Keyboard::Down:
-                        if (selectedModel!=nullptr)
-                        {
-                            selectedModel->transformation.size-=0.05;
-                        }
-                        break;
-                    case sf::Keyboard::Left:
-                        if (selectedModel!=nullptr)
-                        {
-                            selectedModel->transformation.RotationAngleX-=0.5;
-                            std::cout<<"rotation X : "<<selectedModel->transformation.RotationAngleX<<std::endl;
-                        }
-                        break;
-                    case sf::Keyboard::Right:
-                        if (selectedModel!=nullptr)
-                        {
-                            selectedModel->transformation.RotationAngleX+=0.5;
-                        }
-                        break;
+                    case sf::Keyboard::Delete:
 
+                       auto it = std::find(models.begin(), models.end(), selectedModel);
+
+                        if (it != models.end())
+                        {
+                            models.erase(it);
+                            renderer.removeMesh(selectedModel->getNom());
+                            delete selectedModel;
+                            selectedModel = nullptr;
+                        }
+
+                        break;
                     }
-
-                    
                 // calculate the parcoured distance between two frame and then replace the mouse cursor at the center of the window
                 case sf::Event::MouseMoved:
                     if (!pause)         
@@ -287,7 +371,7 @@ int main()
         }
 
         //self explanatory
-        input(camera);
+        input(camera,selectedModel);
         camera.apply_forces();
         camera.move();
         camera.Check_collisions();
