@@ -27,7 +27,8 @@ void Soeur::move(SoundManager & soundmanager)
             }
             else
             {
-                position=deplacements[position][0];
+                position=deplacements[position][rand()%deplacements[position].size()];
+                std::cout<<"Soeur moved to position "<<position<<std::endl;
                 if (position==3 and rand()%100==0)
                 {
                     sixSeven=true;
@@ -57,14 +58,27 @@ Soeur::Soeur():Walker("Lucie-Leonie") {
     this->deplacements[3]={4,7};
     this->deplacements[4]={5};
     this->deplacements[5]={10};
-    this->deplacements[7]={10};
+    this->deplacements[7]={8};
+    this->deplacements[8]={10};
     this->LeonieSounds.emplace_back("Leonie:WhyRDD");
+    this->LeonieSounds.emplace_back("Leonie:Peur");
+    this->LeonieSounds.emplace_back("Leonie:Massages");
+    this->LeonieSounds.emplace_back("Leonie:TicTac");
+    this->LeonieSounds.emplace_back("Leonie:Repos");
+    this->LeonieSounds.emplace_back("Leonie:Là?");
+    this->LeonieSounds.emplace_back("Leonie:Detestes");
+    
     this->LucieSounds.emplace_back("Lucie:FakeLeonie");
+    this->LucieSounds.emplace_back("Lucie:OpenDoor1");
+    this->LucieSounds.emplace_back("Lucie:OpenDoor2");
+    this->LucieSounds.emplace_back("Lucie:singe");
+    this->LucieSounds.emplace_back("Lucie:123");
+    this->LucieSounds.emplace_back("Lucie:OuvreMoi");
 }
 
 
 void Soeur::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("Leonie-Jumpscare");
+    soundManager.playNoise(this->nom + "-JumpScare");
 }

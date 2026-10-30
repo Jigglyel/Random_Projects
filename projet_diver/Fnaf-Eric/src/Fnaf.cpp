@@ -151,6 +151,7 @@ int main(int argc, char const *argv[])
 
             if (jeu.nightClock.getElapsedTime().asSeconds()>jeu.nightDuration)
             {
+                
                 jeu.startingNight(jeu.currentNight+1,soundManager);
             }
         }

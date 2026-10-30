@@ -14,5 +14,5 @@ class TextureManager
         void loadTextures();
         void setTexture(std::string nomTexture,std::string path);
         sf::Texture& getTexture(std::string nomTexture);
-        int loadingMade=0;
+        int loadingMade=28;
 };

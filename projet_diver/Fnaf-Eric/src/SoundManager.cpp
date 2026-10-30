@@ -1,10 +1,15 @@
 #include "SoundManager.hpp"
 
-void SoundManager::setSound(std::string soundName,sf::SoundBuffer &T)
+void SoundManager::setSound(std::string soundName,std::string path)
 {
-    Map[soundName]=T; 
+    sf::SoundBuffer T;
+    if(T.loadFromFile(path))
+    {
+        loadingMade++;
+        std::cout<<"["<<loadingMade*100/66<<"%"<<"] Sound "<<soundName<<" loaded successfully"<<std::endl;
+        Map[soundName]=std::move(T); 
+    }
 }
-
 sf::SoundBuffer* SoundManager::getSoundBuffer(std::string soundName)
 {
     return &Map[soundName];
@@ -17,21 +22,10 @@ void SoundManager::openMusic(std::string musicName)
 
 }
 
-void SoundManager::load(std::string pathName,std::string soundName)
-{
-    sf::SoundBuffer T;
-    if(!T.loadFromFile(pathName))
-    {
-        std::cerr<<"Erreur lors du chargement du chemin :"+pathName<<std::endl;
-    }
-    else
-    {
-        setSound(soundName,T);
-    }
-}
 SoundManager::SoundManager()
 {
 
+    this->controledSound.pause();
     sf::Vector3f gauche={-2,-1,-3};
     sf::Vector3f droite={2,-1,-3};
     this->posToVector[0]=gauche*5.f;
@@ -45,166 +39,40 @@ SoundManager::SoundManager()
     this->posToVector[8]=gauche*3.f;
     this->posToVector[9]=gauche*2.5f;
     sf::SoundBuffer T;
-    if(!T.loadFromFile("../audio/sound/Footsteps.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Footsteps.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("footSteps",T);
-    }
-    if(!T.loadFromFile("../audio/sound/fnaf-freddys-laugh.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son fnaf-freddys-laugh.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("freddyLaugh",T);
-    }
-    if(!T.loadFromFile("../audio/sound/CameraOpen.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son CameraOpen.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("cameraOpen",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Door.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Door.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Door",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Flash/Flash.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Flash.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Flash",T);
-    }
-    if(!T.loadFromFile("../audio/sound/PUFF.mpeg"))
-    {
-        std::cerr<<"Erreur lors du chargement du son PUFF.mpeg"<<std::endl;
-    }
-    else
-    {
-        setSound("PUFF",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Lucas/Lucas_Skibidi.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son LucasSkibidi.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("LucasSkibidi",T);
-    }
-    if(!T.loadFromFile("../audio/sound/waterFilling.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son waterFilling.wav"<<std::endl;
-    }
-    else
-    {
-        setSound("waterFilling",T);
-    }
-    if(!T.loadFromFile("../audio/sound/waterFilled.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son waterFilled.wav"<<std::endl;
-    }
-    else
-    {
-        setSound("waterFilled",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Flash/LightFilled.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son LightFilled.wav"<<std::endl;
-    }
-    else
-    {
-        setSound("LightFilled",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Rondoudou/hit1.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son hit1.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("RondoudouHit1",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Rondoudou/hit2.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son hit2.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("RondoudouHit2",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Rondoudou/hit3.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son hit3.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("RondoudouHit3",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Rondoudou/Death.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Death.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("RondoudouDeath",T);
-    }
-    if(!T.loadFromFile("../audio/sound/watch.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son watch.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Monkey",T);
-    }
-    if(!T.loadFromFile("../audio/sound/rddSing.mp3"))
-    {
-        std::cerr<<"Erreur lors du chargement du son rddSing.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("RddSing",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Raphaeljumpscare.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Raphaeljumpscare.wav"<<std::endl;
-    }
-    else
-    {
-        setSound("Raphael-JumpScare",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Léonie/Leoniejumpscare.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Leoniejumpscare.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Leonie-JumpScare",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Lucie/FakeLéonie.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Lucie:FakeLéonie.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Lucie:FakeLeonie",T);
-    }
-    if(!T.loadFromFile("../audio/sound/Léonie/WhyRDD.wav"))
-    {
-        std::cerr<<"Erreur lors du chargement du son Leonie:WhyRDD.mp3"<<std::endl;
-    }
-    else
-    {
-        setSound("Leonie:WhyRDD",T);
-    }
+    setSound("footSteps", "../audio/sound/Footsteps.mp3");
+    setSound("freddyLaugh", "../audio/sound/fnaf-freddys-laugh.mp3");
+    setSound("cameraOpen","../audio/sound/CameraOpen.mp3");
+    setSound("Door","../audio/sound/Door.mp3");
+    setSound("Flash","../audio/sound/Flash/Flash.mp3");
+    setSound("PUFF","../audio/sound/PUFF.mpeg");
+    setSound("LucasSkibidi", "../audio/sound/Lucas/Lucas_Skibidi.mp3");
+    setSound("waterFilling", "../audio/sound/waterFilling.wav");
+    setSound("waterFilled", "../audio/sound/waterFilled.wav");
+    setSound("LightFilled", "../audio/sound/Flash/LightFilled.wav");
+    setSound("RondoudouHit1", "../audio/sound/Rondoudou/hit1.mp3");
+    setSound("RondoudouHit2", "../audio/sound/Rondoudou/hit2.mp3");
+    setSound("RondoudouHit3", "../audio/sound/Rondoudou/hit3.mp3");
+    setSound("RondoudouDeath", "../audio/sound/Rondoudou/Death.mp3");
+    setSound("Monkey", "../audio/sound/watch.mp3");
+    setSound("RddSing", "../audio/sound/rddSing.mp3");
+    setSound("Raphael-JumpScare", "../audio/sound/Raphaeljumpscare.wav");
+    setSound("Leonie-JumpScare", "../audio/sound/Léonie/LeonieJumpscare.wav");
+    setSound("Lucie-JumpScare", "../audio/sound/Lucie/LucieJumpscare.wav");
+    setSound("Lucie:FakeLeonie", "../audio/sound/Lucie/FakeLéonie.wav");
+    setSound("Leonie:WhyRDD", "../audio/sound/Léonie/WhyRDD.wav");
+    setSound("Water", "../audio/sound/Water.mp3");
+    setSound("Leonie:Peur", "../audio/sound/Léonie/peur.wav");
+    setSound("Leonie:Massages", "../audio/sound/Léonie/massages.wav");
+    setSound("Leonie:TicTac", "../audio/sound/Léonie/TicTac.wav");
+    setSound("Leonie:Repos", "../audio/sound/Léonie/Tu_dev_rep.wav");
+    setSound("Leonie:La?", "../audio/sound/Léonie/Tu_es_la.wav");
+    setSound("Leonie:Detestes", "../audio/sound/Léonie/deteste.wav");
+    setSound("Lucie:OpenDoor1", "../audio/sound/Lucie/Ouvre la porte.wav");
+    setSound("Lucie:OpenDoor2", "../audio/sound/Lucie/OuvreLaporte2.wav");
+    setSound("Lucie:singe", "../audio/sound/Lucie/singe.wav");
+    setSound("Lucie:123", "../audio/sound/Lucie/123.wav");
+    setSound("Lucie:OuvreMoi", "../audio/sound/Lucie/OuvreMoi.wav");
+    setSound("NightBell", "../audio/sound/6AMbell.wav");
     
 }   
 

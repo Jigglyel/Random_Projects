@@ -14,12 +14,9 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     walkers.emplace_back(dynamic_cast<Walker*>(animatronics[2].get()));
     raphael.Lucas=&lucas;
     lucas.Raphael=&raphael;
-    this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f(1640*windowRatio.x,220*windowRatio.y),sf::Vector2f(250*windowRatio.x,800*windowRatio.y)) ,[this,&soundManager](){soundManager.playNoise("cameraOpen"); renderer->setAnimationZoom(20);
-    std::cout<<"je Click en state camera"<<std::endl;},false));
-    this->addButton(State::CameraState,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);
-    std::cout<<"je Click en state Idle"<<std::endl;},true));
-    this->addButton(State::Tablette,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);
-    std::cout<<"je Click en state Idle"<<std::endl;},true));
+    this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f(1640*windowRatio.x,220*windowRatio.y),sf::Vector2f(250*windowRatio.x,800*windowRatio.y)) ,[this,&soundManager](){soundManager.playNoise("cameraOpen"); renderer->setAnimationZoom(20);},false));
+    this->addButton(State::CameraState,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);},true));
+    this->addButton(State::Tablette,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f(100*windowRatio.x,windowSize.y)) ,[this,&window,&camera](){if(renderer->animationZoom==0){Button::moveCamLeft(camera,window);}},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f(windowSize.x-100.f*windowRatio.x,0),sf::Vector2f(100*windowRatio.x,windowSize.y) ) ,[this,&window,&camera](){if(renderer->animationZoom==0){Button::moveCamRight(camera,window);}},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{0,windowSize.y-50.f*windowRatio.y},sf::Vector2f(windowSize.x,50*windowRatio.y)) ,[this,&window,&camera](){currentState=State::Tablette;},true));
@@ -35,6 +32,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
         waterPourcentage-=30; 
         if(walkers[1]->position==10) 
         walkers[1]->position=0; 
+        soundManager.playNoise("Water");renderer->setAnimationWater(127);  
     }},false,sf::Mouse::Button::Right,5));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1617*windowRatio.x,600*windowRatio.y},sf::Vector2f{100*windowRatio.x,50*windowRatio.y}),[this]{activeCam="Grille";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1518*windowRatio.x,695*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Billard";},true));
@@ -132,42 +130,47 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
     }
     else
     {
+        if(nbNight>1)
+        {
+            soundManager.playNoise("NightBell");
+        }
+
         this->currentState=State::StartingNight;
         this->currentNight=nbNight;
         if (nbNight==1)
         {
-            raphael.lvl=1;
-            lucas.lvl=1; 
-            soeur.lvl=10;
-            rondoudou.lvl=1;
+            raphael.lvl=2;
+            lucas.lvl=2; 
+            soeur.lvl=0;
+            rondoudou.lvl=0;
         }
         else    if (nbNight==2)
         {
-            animatronics[0]->lvl=5;
-            animatronics[1]->lvl=5; 
-            animatronics[2]->lvl=5;
-            animatronics[3]->lvl=5;
+            raphael.lvl=5;
+            lucas.lvl=5; 
+            soeur.lvl=3;
+            rondoudou.lvl=0;
         }
         else    if (nbNight==3)
         {
-            animatronics[0]->lvl=8;
-            animatronics[1]->lvl=8; 
-            animatronics[2]->lvl=8;
-            animatronics[3]->lvl=8;
+            raphael.lvl=6;
+            lucas.lvl=6; 
+            soeur.lvl=5;
+            rondoudou.lvl=2;
         }
         else if (nbNight==4)
         {
-            animatronics[0]->lvl=10;
-            animatronics[1]->lvl=10; 
-            animatronics[2]->lvl=10;
-            animatronics[3]->lvl=10;
+            raphael.lvl=8;
+            lucas.lvl=8; 
+            soeur.lvl=7;
+            rondoudou.lvl=6;
         }
         else if (nbNight==5)
         {
-            animatronics[0]->lvl=15;
-            animatronics[1]->lvl=15; 
-            animatronics[2]->lvl=15;
-            animatronics[3]->lvl=15;
+            raphael.lvl=15;
+            lucas.lvl=15; 
+            soeur.lvl=14;
+            rondoudou.lvl=10;
         }
 
         walkers[0]->position=0;
@@ -182,7 +185,6 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
         callFinished=false;
         this->waterPourcentage=100;
         this->lightPourcentage=100;
-        this->nightClock.restart();
         
 }
     

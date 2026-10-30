@@ -6,7 +6,7 @@ void TextureManager::setTexture(std::string nomTexture,std::string path)
     if(T.loadFromFile(path))
     {
         loadingMade++;
-        std::cout<<"["<<loadingMade*100/66<<"%"<<"] Texture "<<nomTexture<<" loaded successfully"<<std::endl;
+        std::cout<<"["<<loadingMade*100/101<<"%"<<"] Texture "<<nomTexture<<" loaded successfully"<<std::endl;
         Map[nomTexture]=std::move(T); 
     }
 }
@@ -22,14 +22,13 @@ TextureManager::TextureManager()
 void TextureManager::loadTextures()
 {
     setTexture("Couloir droite","../img/Camera/Couloir_droite/CD_Vide.jpg");
-
-    setTexture("Couloir droite-Raphael","../img/Camera/Couloir_droite/CD_Raph1.jpg");
+    setTexture("Couloir droite-Raphael-position1","../img/Camera/Couloir_droite/CD_Raph1.jpg");
     setTexture("Couloir droite-Raphael-position2","../img/Camera/Couloir_droite/CD_Raph2.jpg");
     setTexture("Couloir droite-Lucie","../img/Camera/Couloir_droite/CD_Lucie1.jpg");
     setTexture("Couloir droite-Leonie","../img/Camera/Couloir_droite/CD_Léonie1.jpg");
     setTexture("Couloir gauche","../img/Camera/Couloir_gauche/CG_Vide.jpg");
-    setTexture("Couloir gauche-Lucas-1","../img/Camera/Couloir_gauche/CG_Lucas1.jpg");
-    setTexture("Couloir gauche-Lucas-2","../img/Camera/Couloir_gauche/CG_Lucas2.jpg");
+    setTexture("Couloir gauche-Lucas-position1-1","../img/Camera/Couloir_gauche/CG_Lucas1.jpg");
+    setTexture("Couloir gauche-Lucas-position1-2","../img/Camera/Couloir_gauche/CG_Lucas2.jpg");
     setTexture("Couloir gauche-Lucas-position2-1","../img/Camera/Couloir_gauche/CG_Lucas3.jpg");
     setTexture("Couloir gauche-Lucas-position2-2","../img/Camera/Couloir_gauche/CG_Lucas4.jpg");
     setTexture("Couloir gauche-Lucie","../img/Camera/Couloir_gauche/CG_Lucie1.jpg");
@@ -94,4 +93,7 @@ void TextureManager::loadTextures()
     setTexture("singe","../img/singe.png");
     setTexture("rondoudou","../img/rdd.png");
     setTexture("Leonie-Jumpscare","../img/Jumpscare/LeonieJumpscare.png");
+    setTexture("Lucie-Jumpscare","../img/Jumpscare/LucieJumpscare.jpeg");
+    setTexture("Lucas-Jumpscare","../img/Jumpscare/LucasJumpscare.jpeg");
+    setTexture("Water","../img/Water.jpg");
 }

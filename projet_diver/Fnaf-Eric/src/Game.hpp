@@ -20,7 +20,7 @@ public:
     void startingNight(int nbNight,SoundManager &soundManager);
     State currentState;
     sf::Clock nightClock;
-    int nightDuration=850;
+    int nightDuration=535;
     int currentNight=0;
     int waterPourcentage=100; 
     int lightPourcentage=100;

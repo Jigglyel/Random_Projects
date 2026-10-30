@@ -7,7 +7,6 @@
 #include"SoundManager.hpp"
 
 
-
 class Animatronic
 {
 private:

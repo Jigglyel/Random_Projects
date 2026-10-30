@@ -18,7 +18,7 @@ void Raphael::attack(SoundManager &soundManager)
 
 void Raphael::move(SoundManager &soundManager)
 {
-    if (this->moveClock.getElapsedTime().asSeconds()>2.5)
+    if (this->moveClock.getElapsedTime().asSeconds()>5)
     {
         if (rand()%21<lvl)
         {

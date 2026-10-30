@@ -21,6 +21,7 @@ void Renderer::draw(Game &game)
     }
     if(game.currentState==State::Jumpscare)
     {
+        SM->controledSound.stop();
         if(this->animationShake==0)
         {
             this->animationShake=60;
@@ -32,6 +33,7 @@ void Renderer::draw(Game &game)
     else
     if (game.currentState==State::Idle)
     {
+        SM->controledSound.pause();
         drawIdle(game);
     }
     else
@@ -80,11 +82,50 @@ void Renderer::drawCam(Game &game)
         sf::Text text(FM.getFont("Jersey15-Regular"),"Camera Disabled sound only ",70);
         text.setPosition(sf::Vector2f{500*this->windowRatio.x,window->getSize().y-200*this->windowRatio.y});
         text.setFillColor(sf::Color::White);
+        if(game.soeur.position==7)
+        {
+            if(game.soeur.activesister==soeur::Lucie)
+            {
+                if(SM->controledSound.getStatus()==sf::Music::Status::Stopped)
+                {
+                    if(SM->controledSound.openFromFile("../audio/sound/Lucie/bordeLucie.wav"))
+                    {
+                        SM->controledSound.play();
+                    }
+                }
+                else if(SM->controledSound.getStatus()==sf::Music::Status::Paused)
+                {
+                    SM->controledSound.play();
+                }
+                
+            }
+        }
+        else
+        if(game.lucas.position==7)
+        {
+            
+            if(SM->controledSound.getStatus()==sf::Music::Status::Stopped)
+                {
+                    if(SM->controledSound.openFromFile("../audio/sound/Lucas/Lucas_Skibidi.mp3"))
+                    {
+                        SM->controledSound.play();
+                    }
+                }
+            else if(SM->controledSound.getStatus()==sf::Music::Status::Paused)
+            {
+                SM->controledSound.play();
+            }
+        }
+        else
+        {
+            SM->controledSound.stop();
+        }
         window->draw(text);
         
     }else
     {
-        
+        SM->controledSound.pause();
+        std::cout<<"drawing camera "<<game.activeCam<<std::endl;
         background.setTexture(&manageCamera[game.activeCam](game));
         window->draw(background);
         
@@ -130,13 +171,13 @@ void Renderer::drawNightScreen(Game &game)
 {
     if (this->animationNight==0)
     {
-        animationNight=350;
+        animationNight=600;
     }
     sf::View camera=window->getView();
     window->setView(window->getDefaultView());
     sf::Text text(FM.getFont("Jersey15-Regular"),"Nuit "+std::to_string(game.currentNight),100);
     text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
-    text.setFillColor(sf::Color((std::clamp(350-animationNight,0,255)),0,0));
+    text.setFillColor(sf::Color((std::clamp((600-animationNight)/2,0,255)),0,0));
     window->draw(text);
     
     animationNight--;
@@ -144,8 +185,12 @@ void Renderer::drawNightScreen(Game &game)
     {
         game.nightClock.restart();
         game.currentState=State::Idle;
-        if(SM->music.openFromFile("../audio/appels/nuit1-Call.ogg"));
-            SM->music.play(); 
+            if(SM->music.openFromFile("../audio/appels/nuit"+std::to_string(game.currentNight)+"-Call.wav"))
+            {
+                SM->music.play();
+            }
+
+        
     }
     window->setView(camera);
 }
@@ -201,6 +246,8 @@ void Renderer::drawIdle(Game &game)
     window->draw(background);
     if(this->animationFlash>0)
         drawFlash();
+    if(this->animationWater>0)
+        drawWater();
     drawAM(game);
     drawWaterLevel(game);
     drawLightLevel(game);
@@ -336,7 +383,14 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
         {
             if (animatronic->position==5)
             {
-                nomTexture+="-"+animatronic->nom;
+                if (animatronic->nom=="Raphael")
+                {
+                   return TM.getTexture("Couloir droite-Raphael-position1");
+                }
+                else
+                {
+                   nomTexture+="-"+animatronic->nom;
+                }
             }
             if (animatronic->position==6)
             {
@@ -351,18 +405,20 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
         std::string nomTexture="Couloir gauche";
         for (Walker* &animatronic : game.walkers)
         {
-            if (animatronic->position==8)
+             if (animatronic->position==8)
             {
-                nomTexture+="-"+animatronic->nom;
+                if (animatronic->nom=="Lucas")
+                {
+                   return TM.getTexture("Couloir gauche-Lucas-position1-"+std::to_string(animatronic->illustration));
+                }
+                else
+                {
+                   nomTexture+="-"+animatronic->nom;
+                }
             }
-            
             if (animatronic->position==9)
             {
-                nomTexture+="-Lucas-position2";
-            }
-            if (animatronic->nom=="Lucas" and (animatronic->position==8 or animatronic->position==9))
-            {
-                nomTexture+="-"+std::to_string(animatronic->illustration);
+                return TM.getTexture("Couloir gauche-Lucas-position2-"+std::to_string(animatronic->illustration));
             }
             
         }
@@ -450,11 +506,25 @@ void Renderer::drawFlash(){
     animationFlash--;
     window->setView(camera);
 }
-
+void Renderer::drawWater(){
+    sf::RectangleShape background(sf::Vector2f(window->getSize()));
+    sf::View camera=window->getView();
+    window->setView(window->getDefaultView());
+    background.setPosition(sf::Vector2f{0,0});
+    
+    background.setTexture(&TM.getTexture("Water"));
+    background.setFillColor(sf::Color(200,200,200,std::clamp(0,255,this->animationWater*2)));
+    window->draw(background);
+    animationWater--;
+    window->setView(camera);
+}
 void Renderer::setAnimationFlash(int flashNumber){
     this->animationFlash=flashNumber;
 }
 
+void Renderer::setAnimationWater(int waterNumber){
+    this->animationWater=waterNumber;
+}
 void Renderer::drawWaterLevel(Game &game)
 {
     sf::View camera=window->getView();
@@ -592,71 +662,24 @@ void Renderer::setAnimationShake(int shakeNumber)
 
 sf::View Renderer::shakeCamera(sf::View &camera)
 {
-    if (this->animationShake>55)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,1.4}*10.f);
-    }
-    else
-    if (this->animationShake>50)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-1,0}*10.f);
-    }
-    else
-    if (this->animationShake>45)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1.4}*10.f);
-    }
-    else
-    if (this->animationShake>40)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-1.4,1.4}*10.f);
-    }
-    else
-    if (this->animationShake>35)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,-1}*10.f);
-    }
-    else
-    if (this->animationShake>30)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*10.f);
-    }
-    else
-    if (this->animationShake>25)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-2,1}*10.f);
-    }
-    else
-    if (this->animationShake>25)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1,-1}*10.f);
-    }
-    else
-    if (this->animationShake>20)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0,1}*10.f);
-    }
-    else
-    if (this->animationShake>15)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{1.4,-1}*10.f);
-    }
-    else
-    if (this->animationShake>10)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{0.2,1}*10.f);
-    }
-    else
-    if (this->animationShake>5)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.5,-1}*10.f);
-    }
-    else
-    if (this->animationShake>0)
-    {
-        camera.setCenter(camera.getCenter()+sf::Vector2f{-0.6,1}*10.f);
-    }
+
+
+    sf::Vector2f* movements= new sf::Vector2f[12]{
+        {14*2,14*2},
+        {-10*2,0},
+        {14*2,-14*2},
+        {-14*2,14*2},
+        {0,-10*2},
+        {0,10*2},
+        {-20*2,10*2},
+        {10*2,-10*2},
+        {0,10*2},
+        {14*2,-14*2},
+    };
+
+    camera.setCenter(camera.getCenter()+movements[(animationShake/3)%10]);
     return camera;
+    
 }
 
 void Renderer::drawJumpscare(Game &game)
@@ -682,35 +705,27 @@ void Renderer::drawJumpscare(Game &game)
     window->setView(this->shakeCamera(camera));
     sf::RectangleShape jumpscare;
     jumpscare.setPosition(sf::Vector2f(window->getSize())/2.f +sf::Vector2f(0,100));
-    jumpscare.setTexture(&TM.getTexture("Leonie-Jumpscare"));
     jumpscare.setSize(sf::Vector2f(115*windowRatio.x,204*windowRatio.y)*7.f);
     jumpscare.setOrigin(sf::Vector2f(jumpscare.getSize().x/2.f,jumpscare.getSize().y/2.f));
-    // if(game.raphael.jumpScare)
-    // {
-    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Raphael"));
-    // }
-    // else
-    // if(game.lucas.jumpScare)
-    // {
-    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Lucas"));
-    // }
-    // else
-    // if(game.rondoudou.jumpScare)
-    // {
-    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Rondoudou"));
-    // }
-    // else
-    // if(game.soeur.jumpScare )
-    // {
-    //     if(game.soeur.activesister==soeur::Lucie)
-    //     {
-    //         jumpscare.setTexture(&TM.getTexture("Jumpscare-Lucie"));
-    //     }
-    //     else
-    //     {
-    //     jumpscare.setTexture(&TM.getTexture("Jumpscare-Leonie"));
-    //     }
-    // } 
+
+    if(game.lucas.jumpScare)
+    {
+        jumpscare.setTexture(&TM.getTexture("Lucas-Jumpscare"));
+    }
+    else
+    if(game.soeur.jumpScare )
+    {
+        if(game.soeur.activesister==soeur::Lucie)
+        {
+            jumpscare.setTexture(&TM.getTexture("Lucie-Jumpscare"));
+        }
+        else
+        {
+        jumpscare.setTexture(&TM.getTexture("Leonie-Jumpscare"));
+        }
+    } 
+    else
+    jumpscare.setTexture(&TM.getTexture("Leonie-Jumpscare"));
     window->draw(jumpscare);
     animationShake--;
     if(animationShake==0)

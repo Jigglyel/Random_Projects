@@ -20,6 +20,7 @@ private:
     void drawIdle(Game &game);
     void drawNightScreen(Game &game);
     void drawFlash();
+    void drawWater();
     void loadingScreen();
     void drawWaterLevel(Game &game);
     void drawTablette(Game &game);
@@ -39,10 +40,12 @@ private:
     bool credits=false;
 public:
     int animationZoom=0;
+    int animationWater=0;
     int animationShake=0;
     sf::View cameraBackup;
     void draw(Game &game);
     void setAnimationFlash(int flashNumber);
+    void setAnimationWater(int waterNumber);
     void setAnimationZoom(int zoomNumber);
     void setAnimationShake(int shakeNumber);
     Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager);
