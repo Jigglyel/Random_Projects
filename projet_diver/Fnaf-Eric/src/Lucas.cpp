@@ -4,7 +4,7 @@ Lucas::Lucas() : Walker("Lucas")
 {
     this->deplacements[0]={1};
     this->deplacements[1]={3};
-    this->deplacements[3]={7};
+    this->deplacements[3]={1,7};
     this->deplacements[7]={8};
     this->deplacements[8]={9};
     this->deplacements[9]={10};
@@ -13,7 +13,7 @@ Lucas::Lucas() : Walker("Lucas")
 void Lucas::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("JumpScare",position);
+    soundManager.playNoise("Lucas-Jumpscare",position);
 }
 
 void Lucas::move(SoundManager &soundManager)
@@ -30,7 +30,14 @@ void Lucas::move(SoundManager &soundManager)
             {
                 if(rand()%10==0)
                 {
-                    soundManager.playNoise("LucasSkibidi",position);
+                    if(rand()%2==0)
+                    {
+                        soundManager.playNoise("Lucas-Skibidi",position);
+                    }
+                    else
+                    {
+                        soundManager.playNoise("Lucas-Moaning",position);
+                    }
                 }
                     this->choose_room(); 
 

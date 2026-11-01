@@ -53,8 +53,8 @@ void Soeur::move(SoundManager & soundmanager)
 
 Soeur::Soeur():Walker("Lucie-Leonie") {
     this->deplacements[0]={1};
-    this->deplacements[1]={2};
-    this->deplacements[2]={3};
+    this->deplacements[1]={2,4};
+    this->deplacements[2]={3,7};
     this->deplacements[3]={4,7};
     this->deplacements[4]={5};
     this->deplacements[5]={10};
@@ -80,5 +80,5 @@ Soeur::Soeur():Walker("Lucie-Leonie") {
 void Soeur::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise(this->nom + "-JumpScare");
+    soundManager.playNoise(this->nom + "-Jumpscare");
 }

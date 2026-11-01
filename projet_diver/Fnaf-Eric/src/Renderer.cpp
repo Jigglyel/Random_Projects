@@ -99,6 +99,21 @@ void Renderer::drawCam(Game &game)
                 }
                 
             }
+            else
+            {
+                if(SM->controledSound.getStatus()==sf::Music::Status::Stopped)
+                {
+                    if(SM->controledSound.openFromFile("../audio/sound/Léonie/LeonieChinoise.wav"))
+                    {
+                        SM->controledSound.play();
+                    }
+                }
+                else if(SM->controledSound.getStatus()==sf::Music::Status::Paused)
+                {
+                    SM->controledSound.play();
+                }
+            }
+
         }
         else
         if(game.lucas.position==7)
@@ -125,7 +140,6 @@ void Renderer::drawCam(Game &game)
     }else
     {
         SM->controledSound.pause();
-        std::cout<<"drawing camera "<<game.activeCam<<std::endl;
         background.setTexture(&manageCamera[game.activeCam](game));
         window->draw(background);
         
@@ -251,7 +265,7 @@ void Renderer::drawIdle(Game &game)
     drawAM(game);
     drawWaterLevel(game);
     drawLightLevel(game);
-    if(game.nightClock.getElapsedTime().asSeconds()<game.nightDuration/10)
+    if(game.nightClock.getElapsedTime().asSeconds()<game.nightDuration/10 and !game.callFinished)
     {
         drawMute(game);
     }
@@ -534,7 +548,7 @@ void Renderer::drawWaterLevel(Game &game)
     background.setFillColor(sf::Color::White);
     float taille_eau=285*windowRatio.y*(game.waterPourcentage/100.f);
     sf::RectangleShape water({90*windowRatio.x,taille_eau});
-    water.setPosition({105*windowRatio.x,710*windowRatio.y+285-taille_eau});
+    water.setPosition({105*windowRatio.x,710*windowRatio.y+285*windowRatio.y-taille_eau});
     water.setFillColor(sf::Color::Blue);
     window->draw(background);
     window->draw(water);
@@ -550,7 +564,7 @@ void Renderer::drawLightLevel(Game &game)
     background.setFillColor(sf::Color::White);
     float taille_eau=285*windowRatio.y*(game.lightPourcentage/100.f);
     sf::RectangleShape water({90*windowRatio.x,taille_eau});
-    water.setPosition({255*windowRatio.x,710*windowRatio.y+285-taille_eau});
+    water.setPosition({255*windowRatio.x,710*windowRatio.y+285*windowRatio.y-taille_eau});
     water.setFillColor(sf::Color::Yellow);
     window->draw(background);
     window->draw(water);
@@ -609,6 +623,10 @@ void Renderer::drawTablette(Game &game)
     window->draw(monkey);
     window->draw(rondoudou);
     drawAM(game);
+    sf::RectangleShape Cross({100*this->windowRatio.x,100*this->windowRatio.y});
+    Cross.setPosition({0,0});
+    Cross.setTexture(&TM.getTexture("Croix"));
+    window->draw(Cross);
     window->setView(camera);
 }
 
@@ -707,7 +725,11 @@ void Renderer::drawJumpscare(Game &game)
     jumpscare.setPosition(sf::Vector2f(window->getSize())/2.f +sf::Vector2f(0,100));
     jumpscare.setSize(sf::Vector2f(115*windowRatio.x,204*windowRatio.y)*7.f);
     jumpscare.setOrigin(sf::Vector2f(jumpscare.getSize().x/2.f,jumpscare.getSize().y/2.f));
-
+    if(game.raphael.jumpScare)
+    {
+        jumpscare.setTexture(&TM.getTexture("Raphael-Jumpscare"));
+    }
+    else
     if(game.lucas.jumpScare)
     {
         jumpscare.setTexture(&TM.getTexture("Lucas-Jumpscare"));
@@ -725,7 +747,11 @@ void Renderer::drawJumpscare(Game &game)
         }
     } 
     else
-    jumpscare.setTexture(&TM.getTexture("Leonie-Jumpscare"));
+    {
+        jumpscare.setPosition(sf::Vector2f(window->getSize())/2.f);
+        jumpscare.setSize(sf::Vector2f(window->getSize()));
+        jumpscare.setTexture(&TM.getTexture("Rondoudou-Jumpscare"));
+    }
     window->draw(jumpscare);
     animationShake--;
     if(animationShake==0)

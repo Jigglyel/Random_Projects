@@ -4,7 +4,7 @@ Raphael::Raphael() : Walker("Raphael")
 {
     deplacements[0]={2};
     deplacements[2]={3};
-    deplacements[3]={4};
+    deplacements[3]={4,2};
     deplacements[4]={5};
     deplacements[5]={6};
     deplacements[6]={10};
@@ -13,7 +13,7 @@ Raphael::Raphael() : Walker("Raphael")
 void Raphael::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("JumpScare",position);
+    soundManager.playNoise("Raphael-Jumpscare",position);
 }
 
 void Raphael::move(SoundManager &soundManager)

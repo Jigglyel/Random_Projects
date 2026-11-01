@@ -11,15 +11,21 @@ Rondoudou::Rondoudou() : Animatronic("Rondoudou")
 void Rondoudou::move(SoundManager & soundManager)
 {
     
-    if (this->moveClock.getElapsedTime().asSeconds()>20-lvl)
+    if (this->moveClock.getElapsedTime().asSeconds()>7- lvl*0.2)
     {
         if (rand()%21<lvl)
         {
-            soundManager.playNoise("PUFF");
             if (stage==3 )
                 attack(soundManager);
             else
+            {
                 this->stage++;
+                if(rand()%5==0)
+                {
+                    soundManager.playNoise("PUFF");
+                }
+            }
+
         }
         this->resetClock();
     }
@@ -29,5 +35,5 @@ void Rondoudou::move(SoundManager & soundManager)
 void Rondoudou::attack(SoundManager &soundManager)
 {
     jumpScare=true;
-    soundManager.playNoise("PUFF");
+    soundManager.playNoise("Rondoudou-Jumpscare");
 }

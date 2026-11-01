@@ -93,7 +93,9 @@ void TextureManager::loadTextures()
     setTexture("singe","../img/singe.png");
     setTexture("rondoudou","../img/rdd.png");
     setTexture("Leonie-Jumpscare","../img/Jumpscare/LeonieJumpscare.png");
-    setTexture("Lucie-Jumpscare","../img/Jumpscare/LucieJumpscare.jpeg");
-    setTexture("Lucas-Jumpscare","../img/Jumpscare/LucasJumpscare.jpeg");
+    setTexture("Lucie-Jumpscare","../img/Jumpscare/Lucie_Screamer.png");
+    setTexture("Lucas-Jumpscare","../img/Jumpscare/Lucas_Screamer.png");
+    setTexture("Raphael-Jumpscare","../img/Jumpscare/Raph_Screamer.png");
+    setTexture("Rondoudou-Jumpscare","../img/Jumpscare/rest.jpg");
     setTexture("Water","../img/Water.jpg");
 }

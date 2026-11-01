@@ -19,7 +19,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->addButton(State::Tablette,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f(100*windowRatio.x,windowSize.y)) ,[this,&window,&camera](){if(renderer->animationZoom==0){Button::moveCamLeft(camera,window);}},true));
     this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f(windowSize.x-100.f*windowRatio.x,0),sf::Vector2f(100*windowRatio.x,windowSize.y) ) ,[this,&window,&camera](){if(renderer->animationZoom==0){Button::moveCamRight(camera,window);}},true));
-    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{0,windowSize.y-50.f*windowRatio.y},sf::Vector2f(windowSize.x,50*windowRatio.y)) ,[this,&window,&camera](){currentState=State::Tablette;},true));
+    this->addButton(State::Idle,Button(ButtonType::Hover, sf::FloatRect(sf::Vector2f{810*windowRatio.x,windowSize.y-50.f*windowRatio.y},sf::Vector2f(300*windowRatio.x,50*windowRatio.y)) ,[this,&window,&camera](){currentState=State::Tablette;},true));
     this->addButton(State::Idle,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f(1290*windowRatio.x,0),sf::Vector2f(95*windowRatio.x,windowSize.y)),[this,&soundManager]{
         if(lightPourcentage>=30){
             lightPourcentage-=30;
@@ -42,7 +42,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
             {waterPourcentage+=1; 
                 if(waterPourcentage==100) 
                     {soundManager.playNoise("waterFilled");} 
-                else {soundManager.playNoise("waterFilling");} 
+                else {soundManager.playNoise("waterFilling",{0,0,10});} 
             } },true,sf::Mouse::Button::Left,0.1));
     this->addButton(State::Idle,Button(ButtonType::Hover,sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f(windowSize.x/5,windowSize.y)),[this,&soundManager]{
         if(lightPourcentage<100) 
@@ -57,7 +57,7 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1701*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir droite";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1563*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir gauche";},true));
     this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
-    this->addButton(State::Loose,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
+    this->addButton(State::Loose,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(this->currentNight,soundManager);},true));
     this->addButton(State::Idle,Button(ButtonType::Hold, sf::FloatRect(sf::Vector2f{900*windowRatio.x,500*windowRatio.y},sf::Vector2f{100*windowRatio.x,400*windowRatio.y}) ,[this,&soundManager](){
         if(rondoudou.stage>0) 
         {
@@ -66,11 +66,11 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
             {
                 rondoudou.stage=0;
                 rondoudou.pourcentage=0;
-                soundManager.playNoise("RondoudouDeath");
+                soundManager.playNoise("RondoudouDeath",sf::Vector3f{0,0,4});
             }
             else
             {
-                soundManager.playNoise("RondoudouHit"+std::to_string(rand()%3+1));
+                soundManager.playNoise("RondoudouHit"+std::to_string(rand()%3+1),sf::Vector3f{0,0,4});
             }
         }
         

@@ -55,9 +55,11 @@ SoundManager::SoundManager()
     setSound("RondoudouDeath", "../audio/sound/Rondoudou/Death.mp3");
     setSound("Monkey", "../audio/sound/watch.mp3");
     setSound("RddSing", "../audio/sound/rddSing.mp3");
-    setSound("Raphael-JumpScare", "../audio/sound/Raphaeljumpscare.wav");
-    setSound("Leonie-JumpScare", "../audio/sound/Léonie/LeonieJumpscare.wav");
-    setSound("Lucie-JumpScare", "../audio/sound/Lucie/LucieJumpscare.wav");
+    setSound("Raphael-Jumpscare", "../audio/sound/Raphael/Jumpscare.wav");
+    setSound("Leonie-Jumpscare", "../audio/sound/Léonie/LeonieJumpscare.wav");
+    setSound("Lucie-Jumpscare", "../audio/sound/Lucie/LucieJumpscare.wav");
+    setSound("Lucas-Jumpscare", "../audio/sound/Lucas/LucasJumpscare.wav");
+    setSound("Rondoudou-Jumpscare", "../audio/sound/Rondoudou/Jumpscare.wav");
     setSound("Lucie:FakeLeonie", "../audio/sound/Lucie/FakeLéonie.wav");
     setSound("Leonie:WhyRDD", "../audio/sound/Léonie/WhyRDD.wav");
     setSound("Water", "../audio/sound/Water.mp3");
@@ -73,6 +75,7 @@ SoundManager::SoundManager()
     setSound("Lucie:123", "../audio/sound/Lucie/123.wav");
     setSound("Lucie:OuvreMoi", "../audio/sound/Lucie/OuvreMoi.wav");
     setSound("NightBell", "../audio/sound/6AMbell.wav");
+    setSound("Lucas-Moaning", "../audio/sound/Lucas/moaning.wav");
     
 }   
 
