@@ -488,10 +488,25 @@ void Renderer::drawMenu(Game &game)
 {
     sf::View camera=window->getView();
     window->setView(window->getDefaultView());
-    sf::Text text(FM.getFont("Jersey15-Regular"),"Jouer",200);
-    text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/2-text.getGlobalBounds().size.y/2});
+    sf::Text text(FM.getFont("Jersey15-Regular"),"Nouvelle partie",200);
+    text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y/3-text.getGlobalBounds().size.y/2});
     text.setFillColor(sf::Color(255,255,0));
     window->draw(text);
+    text.setString("Continuer");
+    text.setPosition(sf::Vector2f{window->getSize().x/2-text.getGlobalBounds().size.x/2,window->getSize().y*2/3-text.getGlobalBounds().size.y/2});
+    if (game.currentNight==0)
+    {
+        text.setFillColor(sf::Color(100,100,20));
+        window->draw(text);
+    }
+    else
+    {
+        window->draw(text);
+        text.setString("(Nuit "+std::to_string(game.currentNight)+")");
+        text.setPosition(text.getPosition()+sf::Vector2f{0,text.getGlobalBounds().size.y+10*windowRatio.y});
+        window->draw(text);
+    }
+    
     window->setView(camera);
 }
 void Renderer::drawLoose(Game &game){

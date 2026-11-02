@@ -6,7 +6,7 @@ void TextureManager::setTexture(std::string nomTexture,std::string path)
     if(T.loadFromFile(path))
     {
         loadingMade++;
-        std::cout<<"["<<loadingMade*100/101<<"%"<<"] Texture "<<nomTexture<<" loaded successfully"<<std::endl;
+        std::cout<<"["<<loadingMade*100/114<<"%"<<"] Texture "<<nomTexture<<" loaded successfully"<<std::endl;
         Map[nomTexture]=std::move(T); 
     }
 }

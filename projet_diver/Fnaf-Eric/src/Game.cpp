@@ -14,6 +14,12 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     walkers.emplace_back(dynamic_cast<Walker*>(animatronics[2].get()));
     raphael.Lucas=&lucas;
     lucas.Raphael=&raphael;
+    std::ifstream fic("./save.txt");
+    if (fic.is_open())
+    {
+        fic>>this->currentNight;
+    }
+    
     this->addButton(State::Idle,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f(1640*windowRatio.x,220*windowRatio.y),sf::Vector2f(250*windowRatio.x,800*windowRatio.y)) ,[this,&soundManager](){soundManager.playNoise("cameraOpen"); renderer->setAnimationZoom(20);},false));
     this->addButton(State::CameraState,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);},true));
     this->addButton(State::Tablette,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{0,0},sf::Vector2f{100*windowRatio.x,100*windowRatio.y}) ,[this,&soundManager,&window](){currentState=State::Idle;soundManager.playNoise("cameraOpen"); window.setView(renderer->cameraBackup);},true));
@@ -56,15 +62,11 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1473*windowRatio.x,840*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Cuisine Gauche";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1701*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir droite";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1563*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir gauche";},true));
-    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,275*windowRatio.y},sf::Vector2f{500*windowRatio.x,300*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
-    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,300*windowRatio.y}) ,[this,&soundManager](){
-        std::ifstream fic;
-        fic.open("./save.txt");
-        if(fic.is_open())
+    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{419*windowRatio.x,376*windowRatio.y},sf::Vector2f{1103*windowRatio.x,200*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
+    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{610*windowRatio.x,752*windowRatio.y},sf::Vector2f{715*windowRatio.x,200*windowRatio.y}) ,[this,&soundManager](){
+        if(this->currentNight!=0)
         {
-            int x;
-            fic>>x;
-            this->startingNight(x,soundManager);
+            this->startingNight(this->currentNight,soundManager);
         }
         },true));
     this->addButton(State::Loose,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(this->currentNight,soundManager);},true));
@@ -140,10 +142,6 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
     }
     else
     {
-        if(nbNight>1)
-        {
-            soundManager.playNoise("NightBell");
-        }
         
         this->currentState=State::StartingNight;
         this->currentNight=nbNight;

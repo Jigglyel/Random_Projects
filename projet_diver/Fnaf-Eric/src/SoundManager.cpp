@@ -6,7 +6,7 @@ void SoundManager::setSound(std::string soundName,std::string path)
     if(T.loadFromFile(path))
     {
         loadingMade++;
-        std::cout<<"["<<loadingMade*100/66<<"%"<<"] Sound "<<soundName<<" loaded successfully"<<std::endl;
+        std::cout<<"["<<loadingMade*100/114<<"%"<<"] Sound "<<soundName<<" loaded successfully"<<std::endl;
         Map[soundName]=std::move(T); 
     }
 }
@@ -76,7 +76,6 @@ SoundManager::SoundManager()
     setSound("Lucie:OuvreMoi", "../audio/sound/Lucie/OuvreMoi.wav");
     setSound("NightBell", "../audio/sound/6AMbell.wav");
     setSound("Lucas-Moaning", "../audio/sound/Lucas/moaning.wav");
-    
 }   
 
 void SoundManager::playNoise(std::string noiseName,int pos)
