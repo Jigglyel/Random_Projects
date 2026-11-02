@@ -6,6 +6,7 @@
 #include "Raphael.hpp"
 #include "Lucas.hpp"
 #include "Rondoudou.hpp"
+#include <fstream>
 #include<algorithm>
 
 class Renderer;
@@ -34,6 +35,7 @@ public:
     Soeur soeur;
     bool callFinished=false;
     std::vector<std::unique_ptr<Animatronic>> animatronics;
+    void save();
 };
 
 

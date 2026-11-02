@@ -367,7 +367,7 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
         {
             if (splitName[1]=="Raphael")
             {
-                int illu=static_cast<Raphael*>(game.animatronics[0].get())->illustration;
+                int illu=game.raphael.illustration;
                 if (illu==2)
                 {
                     if (rand()%5==0)
@@ -381,12 +381,11 @@ Renderer::Renderer(sf::RenderWindow&window,Game&game,SoundManager &soundManager)
                     return TM.getTexture(nomTexture+"-1");
             }
             else
-                return TM.getTexture(nomTexture+"-"+std::to_string(static_cast<Walker*>(game.animatronics[2].get())->illustration)); 
+            {
+                return TM.getTexture(nomTexture+"-"+std::to_string(game.soeur.illustration)); 
+            }
 
         }
-            
-            
-        
         return TM.getTexture(nomTexture);
         
     };

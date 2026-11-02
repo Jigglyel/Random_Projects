@@ -56,7 +56,17 @@ Game::Game(sf::RenderWindow &window,sf::View &camera,SoundManager &soundManager)
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1473*windowRatio.x,840*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Cuisine Gauche";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1701*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir droite";},true));
     this->addButton(State::CameraState,Button(ButtonType::Click,sf::FloatRect(sf::Vector2f{1563*windowRatio.x,940*windowRatio.y},sf::Vector2f{100*windowRatio.x,60*windowRatio.y}),[this]{activeCam="Couloir gauche";},true));
-    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
+    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,275*windowRatio.y},sf::Vector2f{500*windowRatio.x,300*windowRatio.y}) ,[this,&soundManager](){this->startingNight(1,soundManager);},true));
+    this->addButton(State::Menu,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,300*windowRatio.y}) ,[this,&soundManager](){
+        std::ifstream fic;
+        fic.open("./save.txt");
+        if(fic.is_open())
+        {
+            int x;
+            fic>>x;
+            this->startingNight(x,soundManager);
+        }
+        },true));
     this->addButton(State::Loose,Button(ButtonType::Click, sf::FloatRect(sf::Vector2f{750*windowRatio.x,600*windowRatio.y},sf::Vector2f{500*windowRatio.x,150*windowRatio.y}) ,[this,&soundManager](){this->startingNight(this->currentNight,soundManager);},true));
     this->addButton(State::Idle,Button(ButtonType::Hold, sf::FloatRect(sf::Vector2f{900*windowRatio.x,500*windowRatio.y},sf::Vector2f{100*windowRatio.x,400*windowRatio.y}) ,[this,&soundManager](){
         if(rondoudou.stage>0) 
@@ -134,9 +144,10 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
         {
             soundManager.playNoise("NightBell");
         }
-
+        
         this->currentState=State::StartingNight;
         this->currentNight=nbNight;
+        this->save();
         if (nbNight==1)
         {
             raphael.lvl=2;
@@ -186,7 +197,17 @@ void Game::startingNight(int nbNight,SoundManager &soundManager)
         this->waterPourcentage=100;
         this->lightPourcentage=100;
         
+    }
+    
+
+    
 }
-    
-    
+
+void Game::save()
+{
+    std::ofstream fic;
+    fic.open("./save.txt");
+    if(fic.is_open())
+        fic<<std::to_string(this->currentNight);
+    fic.close();
 }

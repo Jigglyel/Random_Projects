@@ -27,8 +27,7 @@ void Soeur::move(SoundManager & soundmanager)
             }
             else
             {
-                position=deplacements[position][rand()%deplacements[position].size()];
-                std::cout<<"Soeur moved to position "<<position<<std::endl;
+                this->choose_room();
                 if (position==3 and rand()%100==0)
                 {
                     sixSeven=true;
