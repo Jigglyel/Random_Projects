@@ -363,12 +363,12 @@ int main()
     ajoute_Plat(map,450,250,550,250,true);
     int r=0, g=0, b=0;
     #ifdef _WIN32
-        police_path="C:/Users/mu37/OneDrive/Images/Documents/Image-Line/FL Studio/Settings/Hardware/NI Komplete Kontrol/docs/_static/fonts/Oswald.ttf";
+        police_path="../Assets/Font/oswald-regular.ttf";
     #else
         police_path="/usr/share/fonts/type1/urw-base35/P052-Italic.t1";
     #endif
     
-    if(!flecheImage.loadFromFile("../fleche.png"))
+    if(!flecheImage.loadFromFile("../Assets/img/fleche.png"))
         std::cout<<"la fleche n'a pas pu être chargée"<<std::endl;
     if(!font.loadFromFile(police_path))
         std::cout<<"la police d'écriture n'a pas pu être chargée"<<std::endl;

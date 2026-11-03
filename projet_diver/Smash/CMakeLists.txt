@@ -17,13 +17,13 @@ FetchContent_MakeAvailable(SFML)
 
 #importe la bibliothèque SFML depuis le repo github SFML
 add_executable(Smash
-    ./Smash.cpp
-    ./Perso.cpp
-    ./Hitbox.cpp
-    ./miruka.cpp
-    ./itsuyo.cpp
-    ./Death_Particules.cpp
-    ./arrow.cpp
+    ./src/Smash.cpp
+    ./src/Perso.cpp
+    ./src/Hitbox.cpp
+    ./src/miruka.cpp
+    ./src/itsuyo.cpp
+    ./src/Death_Particules.cpp
+    ./src/arrow.cpp
 )
 
 target_link_libraries(Smash PRIVATE sfml-graphics sfml-window sfml-system)

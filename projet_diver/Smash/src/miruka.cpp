@@ -17,7 +17,7 @@ Miruka::Miruka(int id) :Perso(id){
     jump_height=11;
     pourcentage=0;
     
-    if(!T.loadFromFile("../miruka.jpg"))
+    if(!T.loadFromFile("../Assets/img/miruka.jpg"))
         std::cout<<"erreur"<<std::endl;
     Sprite.setTexture(T);
     Sprite.setScale(0.1,0.1);

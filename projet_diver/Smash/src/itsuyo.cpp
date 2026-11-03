@@ -15,7 +15,7 @@ Itsuyo::Itsuyo(int id) :Perso(id){
     jump_height=11;
     pourcentage=0;
     
-    if(!T.loadFromFile("../itsuyo.jpeg"))
+    if(!T.loadFromFile("../Assets/img/itsuyo.jpeg"))
         std::cout<<"erreur"<<std::endl;
     Sprite.setTexture(T);
     Sprite.setScale(0.1,0.1);
